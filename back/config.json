@@ -1,0 +1,107 @@
+{
+    "悬赏令刷新": {
+        "resp": {
+            "进行中的": {
+                "progress": "悬赏令结算",
+                "result": "已接,准备结算"
+            },
+            "的个人悬赏令": {
+                "pre": {
+                    "progress": ["choice_task", "resp"]
+                },
+                "result": "成功,准备接取"
+            },
+            "次数已用尽": {
+                "progress": "悬赏令刷新",
+                "next_type": "delay",
+                "next_duration": 8,
+                "next_unit": "h",
+                "result": "结束,跳过阶段"
+            },
+            "秘境": {
+                "wait": "秘境",
+                "result": "失败,等待秘境"
+            }
+        }
+    },
+    "悬赏令接取": {
+        "resp": {
+            "没有可以接取的": {
+                "progress": "悬赏令刷新",
+                "result": "失败，准备刷新"
+            },
+            "成功": {
+                "progress": "悬赏令结算",
+                "result": "完成，准备结算"
+            }
+        }
+    },
+    "悬赏令结算": {
+        "resp": {
+            "悬赏令结算": {
+                "progress": "悬赏令刷新",
+                "result": "成功，准备刷新"
+            },
+            "进行中的悬赏令": {
+                "pre": {
+                    "next_duration": ["find_one_int", "resp", "(\d+)分钟"]
+                },
+                "next_type": "delay",
+                "next_unit": "min",
+                "result": "未完,延迟结算"
+            },
+            "没有查到": {
+                "progress": "悬赏令刷新",
+                "result": "失败，准备刷新"
+            }
+        }
+    },
+    "探索秘境": {
+        "resp": {
+            "正在秘境中": {
+                "progress": "秘境结算",
+                "result": "已接,准备结算"
+            },
+            "进入秘境": {
+                "progress": "秘境结算",
+                "result": "成功,准备结算"
+            },
+            "道友已经参加过本次秘境啦": {
+                "progress": "秘境结算",
+                "result": "结束,跳过阶段"
+            },
+            "修炼": {
+                "wait": "修炼",
+                "result": "失败,等待修炼"
+            },
+            "悬赏令": {
+                "wait": "悬赏令",
+                "result": "失败,等待悬赏令"
+            }
+        }
+    },
+    "秘境结算": {
+        "resp": {
+            "翻开一看|气血|修为|空手|踢出": {
+
+                "result": "空军,准备探索"
+            },
+            "灵石|防具|神通|辅修|功法|法器|符器": {
+                "progress": "秘境结算",
+                "result": "完成,准备探索"
+            },
+            "进行中的": {
+                "pre": {
+                    "next_duration": ["find_one_int", "resp", "(\d+)分钟"]
+                },
+                "next_type": "delay",
+                "next_unit": "min",
+                "result": "未完,延迟结算"
+            },
+            "什么都没干呢|修炼|悬赏令": {
+                "progress": "秘境探索",
+                "result": "失败,准备探索"
+            }
+        }
+    }
+}
