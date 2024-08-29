@@ -20,10 +20,10 @@ class ZongMenRenWu(Module):
             cd = self.set_next_period(7, 0, 0)
             self.log = f"info 宗门接取 跳过 {cd}"
         elif "除害" in resp:  # 查抄
-            self.progress = "完成"
+            self.progress = "宗门任务完成"
             self.log = "info 宗门接取 成功"
         else:
-            self.progress = "刷新"
+            self.progress = "宗门任务刷新"
             self.log = "info 宗门接取 无效"
 
     def __shua_xin(self, resp):
@@ -31,14 +31,14 @@ class ZongMenRenWu(Module):
             cd = self.set_delay(15, "min")
             self.log = f"warn 宗门接取 无返回 {cd}"
         elif "除害" in resp:  # "查抄"
-            self.progress = "完成"
+            self.progress = "宗门任务完成"
             self.log = "info 宗门刷新 成功"
         elif "没有宗门任务" in resp:
             cd = self.set_delay(10, "s")
             self.log = f"info 宗门刷新 回退 {cd}"
-            self.progress = ""
+            self.progress = "宗门任务接取"
         elif "时间还没到" in resp:
-            seconds = int(re.findall(r"(\d+)秒", resp)[0])
+            seconds = int(re.findall(r"(\d+) 秒", resp)[0])
             cd = self.set_delay(seconds, "s")
             self.log = f"info 宗门刷新 进行中 {cd}"
         else:
@@ -57,11 +57,11 @@ class ZongMenRenWu(Module):
             cd = self.set_delay(10, "min")
             self.log = "info 宗门结算 无效"
         elif "当前没有接取宗门任务" in resp:
-            self.progress = ""
+            self.progress = "宗门任务接取"
             cd = self.set_delay(3, "min")
             self.log = "info 宗门结算 回退 {cd}"
         elif "宗门贡献" in resp:
-            self.progress = ""
+            self.progress = "宗门任务接取"
             self.log = "info 宗门结算 完成 {cd}"
 
     def get_cmd(self):
