@@ -4,50 +4,36 @@ import time
 import json
 
 from utils import Bot
+from module import Module
+from typing import Dict
 
-from bu_chang import BuChang
-from dan_yao import DanYao
 from fang_shi import FangShi
-from ling_zhuang import LingZhuang
-from ling_tian import LingTian
-from mi_jing import MiJing
-from qian_dao import QianDao
-from shuang_xiu import ShuangXiu
-from xiu_lian import XiuLian
 from xuan_shang_ling import XuanShangLing
-from zong_meng_ren_wu import ZongMenRenWu
 
 
 # class OperateBot(threading.Thread):
 class Task(Bot):
     """自动化任务"""
 
-    def __init__(self, name, profile) -> None:
-        bot_config = profile if "bot_config" in profile else {}
-        Bot.__init__(self, bot_config)
+    def __init__(self, name, task_profile) -> None:
+        bot_profile = task_profile["bot"] if "bot" in task_profile else {}
+        Bot.__init__(self, bot_profile)
 
         self.task_name = name
         self.enable = False
         self._module_wait_map = {}
-        self._code_module_map = {
-            "灵庄": LingZhuang,
-            "灵田": LingTian,
-            "补偿": BuChang,
-            "签到": QianDao,
-            "宗门丹药": DanYao,
-            "双修": ShuangXiu,
-            "宗门任务": ZongMenRenWu,
-            "悬赏令": XuanShangLing,
-            "秘境": MiJing,
-            "修炼": XiuLian,
-            "坊市": FangShi,
-        }
+        self._support_modules: Dict[str, Module] = {}
+        try:
+            with open("data/modules.json", "r", encoding="utf-8") as rf:
+                self._support_modules = json.load(rf)
+        except Exception as e:
+            print(f"加载模块配置文件data/modules.json失败 {type(e)} {e}")
         self.modules = {}
-        module_profile = profile["modules"] if "modules" in profile else {}
-        for code, module in self._code_module_map.items():
-            module_config = module_profile[code] if code in module_profile else {}
-            module_config['name'] = code
-            self.modules[code] = module(module_config)
+        module_profiles = task_profile["modules"] if "modules" in task_profile else {}
+        for code, support_module in self._support_modules.items():
+            module_profile = module_profile[code] if code in module_profiles else {}
+            module_profile['name'] = code
+            self.modules[code] = Module(support_module, module_profile)
 
     def save(self):
         """保存类成员参数"""
@@ -57,7 +43,7 @@ class Task(Bot):
         profile = {
             "task_name": self.task_name,
             "enable": self.enable,
-            "bot_config": self.bot_config,
+            "bot": self.get_bot_profile(),
             "modules": module_profile
         }
         with open(f"profiles/{self.task_name}.json", "w", encoding="utf-8") as fw:

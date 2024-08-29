@@ -1,0 +1,276 @@
+{
+    "补偿": {
+        "补偿": {
+            "type": "send",
+            "next_type": "delay",
+            "next_duration": 12,
+            "next_unit": "h",
+            "result": "结束,跳过阶段"
+        }
+    },
+    "悬赏令": {
+        "悬赏令刷新": {
+            "type": "recv",
+            "resp": {
+                "进行中的": {
+                    "progress": "悬赏令结算",
+                    "result": "已接,准备结算"
+                },
+                "的个人悬赏令": {
+                    "pre": {
+                        "progress": [
+                            "choice_task"
+                        ]
+                    },
+                    "result": "成功,准备接取"
+                },
+                "次数已用尽": {
+                    "progress": "悬赏令刷新",
+                    "next_type": "delay",
+                    "next_duration": 8,
+                    "next_unit": "h",
+                    "result": "结束,跳过阶段"
+                },
+                "秘境": {
+                    "wait": "秘境",
+                    "result": "失败,等待秘境"
+                }
+            }
+        },
+        "悬赏令接取": {
+            "type": "recv",
+            "resp": {
+                "没有可以接取的": {
+                    "progress": "悬赏令刷新",
+                    "result": "失败，准备刷新"
+                },
+                "成功": {
+                    "progress": "悬赏令结算",
+                    "result": "完成，准备结算"
+                }
+            }
+        },
+        "悬赏令结算": {
+            "type": "recv",
+            "resp": {
+                "悬赏令结算": {
+                    "progress": "悬赏令刷新",
+                    "result": "成功，准备刷新"
+                },
+                "进行中的悬赏令": {
+                    "pre": {
+                        "next_duration": [
+                            "find_one_int",
+                            "(\\d+)分钟"
+                        ]
+                    },
+                    "next_type": "delay",
+                    "next_unit": "min",
+                    "result": "未完,延迟结算"
+                },
+                "没有查到": {
+                    "progress": "悬赏令刷新",
+                    "result": "失败，准备刷新"
+                }
+            }
+        }
+    },
+    "秘境": {
+        "探索秘境": {
+            "type": "recv",
+            "resp": {
+                "正在秘境中": {
+                    "progress": "秘境结算",
+                    "result": "已接,准备结算"
+                },
+                "进入秘境": {
+                    "progress": "秘境结算",
+                    "result": "成功,准备结算"
+                },
+                "道友已经参加过本次秘境啦": {
+                    "progress": "秘境结算",
+                    "result": "结束,跳过阶段"
+                },
+                "修炼": {
+                    "wait": "修炼",
+                    "result": "失败,等待修炼"
+                },
+                "悬赏令": {
+                    "wait": "悬赏令",
+                    "result": "失败,等待悬赏令"
+                }
+            }
+        },
+        "秘境结算": {
+            "type": "recv",
+            "resp": {
+                "翻开一看|气血|修为|空手|踢出": {
+                    "progress": "探索秘境",
+                    "result": "空军,准备探索"
+                },
+                "灵石|防具|神通|辅修|功法|法器|符器": {
+                    "progress": "探索秘境",
+                    "result": "完成,准备探索"
+                },
+                "进行中的": {
+                    "pre": {
+                        "next_duration": [
+                            "find_one_int",
+                            "(\\d+)分钟"
+                        ]
+                    },
+                    "next_type": "delay",
+                    "next_unit": "min",
+                    "result": "未完,延迟结算"
+                },
+                "什么都没干呢|修炼|悬赏令": {
+                    "progress": "秘境探索",
+                    "result": "失败,准备探索"
+                }
+            }
+        }
+    },
+    "双修": {
+        "双修北条惠古": {
+            "type": "recv",
+            "resp": {
+                "情投意合": {
+                    "result": "成功,准备双修"
+                },
+                "到达上限": {
+                    "next_type": "delay",
+                    "next_duration": 12,
+                    "next_unit": "h",
+                    "result": "结束,跳过阶段"
+                },
+                "无法与自己": {
+                    "next_type": "delay",
+                    "next_duration": 12,
+                    "next_unit": "h",
+                    "result": "失败,跳过阶段"
+                }
+            }
+        }
+    },
+    "灵庄": {
+        "灵庄结算": {
+            "type": "recv",
+            "resp": {
+                "结息": {
+                    "next_type": "delay",
+                    "next_duration": 30,
+                    "next_unit": "min",
+                    "result": "成功,跳过阶段"
+                }
+            }
+        }
+    },
+    "丹药": {
+        "宗门丹药领取": {
+            "type": "recv",
+            "resp": {
+                "成功": {
+                    "next_type": "delay",
+                    "next_duration": 8,
+                    "next_unit": "h",
+                    "result": "成功,跳过阶段"
+                },
+                "贪心": {
+                    "next_type": "delay",
+                    "next_duration": 8,
+                    "next_unit": "h",
+                    "result": "失败,跳过阶段"
+                }
+            }
+        }
+    },
+    "签到": {
+        "修仙签到": {
+            "type": "recv",
+            "resp": {
+                "签到成功": {
+                    "next_type": "delay",
+                    "next_duration": 8,
+                    "next_unit": "h",
+                    "result": "成功,跳过阶段"
+                },
+                "贪心": {
+                    "next_type": "delay",
+                    "next_duration": 8,
+                    "next_unit": "h",
+                    "result": "失败,跳过阶段"
+                }
+            }
+        }
+    },
+    "灵田": {
+        "灵田收取": {
+            "type": "recv",
+            "resp": {
+                "道友成功收取药材": {
+                    "next_type": "delay",
+                    "next_duration": 48,
+                    "next_unit": "h",
+                    "result": "成功,跳过阶段"
+                },
+                "道友的灵田还不能收取": {
+                    "pre": {
+                        "next_duration": [
+                            "find_one_float",
+                            "(\\d+\\.?\\d*)小时"
+                        ]
+                    },
+                    "next_type": "delay",
+                    "next_unit": "h",
+                    "result": "失败,延迟收取"
+                }
+            }
+        }
+    },
+    "修炼": {
+        "修炼": {
+            "type": "recv",
+            "resp": {
+                "开始": {
+                    "next_type": "delay",
+                    "next_duration": 48,
+                    "next_unit": "h",
+                    "result": "成功,跳过阶段"
+                },
+                "时间还没到": {
+                    "pre": {
+                        "next_duration": [
+                            "find_one_int",
+                            "(\\d+)秒"
+                        ]
+                    },
+                    "next_type": "delay",
+                    "next_unit": "s",
+                    "result": "未完,延迟修炼"
+                },
+                "秘境": {
+                    "wait": "秘境",
+                    "result": "失败,等待秘境"
+                },
+                "悬赏令": {
+                    "wait": "悬赏令",
+                    "result": "失败,等待悬赏令"
+                }
+            }
+        }
+    },
+    "坊市": {
+        "坊市查看": {
+            "type": "recv",
+            "resp": {
+                "线下交易": {
+                    "pre": {
+                        "progress": [
+                            "fang_shi_pre"
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}
