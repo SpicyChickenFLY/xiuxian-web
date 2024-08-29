@@ -4,7 +4,9 @@ import datetime
 class Module:
     """自动化功能模块基类"""
 
-    def __init__(self, config) -> None:
+    def __init__(self, profile, data) -> None:
+        self.profile = profile
+
         self.name = ""
         self.enable = False
         self.prev = 0.0
@@ -14,7 +16,7 @@ class Module:
 
         self.log = ""
 
-        self.__dict__.update(config)
+        self.__dict__.update(data)
 
     def record_prev(self):
         self.prev = time.time()

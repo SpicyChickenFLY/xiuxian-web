@@ -9,12 +9,12 @@ import pyperclip
 class Bot:
     """通用消息机器人"""
 
-    def __init__(self, bot_profile) -> None:
+    def __init__(self, bot_data) -> None:
         self.i_x: 0.0
         self.i_y: 0.0
         self.o_x: 0.0
         self.o_y: 0.0
-        self.__dict__.update(bot_profile)
+        self.__dict__.update(bot_data)
 
     def log(self, task_name, msg):
         """日志输出"""
@@ -70,6 +70,6 @@ class Bot:
         # 重发3次,重收10次都不行,可能是服务器问题
         return ""
 
-    def get_bot_profile(self):
+    def get_bot_data(self):
         """可视化界面机器人配置返回"""
         return {"i_x": self.i_x, "i_y": self.i_y, "o_x": self.o_x, "o_y": self.o_y}
