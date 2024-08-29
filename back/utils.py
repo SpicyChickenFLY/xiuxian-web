@@ -1,6 +1,9 @@
+"""工具算法"""
+
 import re
 
 class FuncUtil():
+    """工具算法"""
     def find_one_int(self, resp, regex):
         return int(re.findall(regex, resp)[0])
     def find_one_float(self, resp, regex):

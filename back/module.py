@@ -1,3 +1,5 @@
+"""自动化功能模块基类"""
+
 import time
 import datetime
 
