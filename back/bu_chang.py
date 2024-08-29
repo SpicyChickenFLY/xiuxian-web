@@ -13,4 +13,4 @@ class BuChang(Module):
 
     def run(self, resp):
         cd = self.set_delay(12, "h")
-        self._log = f"info 补偿 成功 {cd}"
+        self.log = f"info 补偿 成功 {cd}"

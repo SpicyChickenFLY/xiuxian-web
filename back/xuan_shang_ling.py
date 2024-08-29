@@ -58,53 +58,53 @@ class XuanShangLing(Module):
     def __shua_xin(self, resp):
         if resp == "":
             cd = self.set_delay(15, "min")
-            self._log = f"warn 悬赏刷新 无返回 {cd}"
+            self.log = f"warn 悬赏刷新 无返回 {cd}"
         elif "进行中的" in resp:
             self.progress = "悬赏令结算"
         elif "的个人悬赏令" in resp:
             choice = self.__assemble_resp_to_task(resp)
-            self._log = f"info 悬赏令刷新 选择{choice}"
+            self.log = f"info 悬赏令刷新 选择{choice}"
             self.progress = f"悬赏令接取{choice}"
         elif "次数已用尽" in resp:
             cd = self.set_delay(8, "h")
-            self._log = f"info 悬赏令刷新 跳过 {cd}"
+            self.log = f"info 悬赏令刷新 跳过 {cd}"
         elif "秘境" in resp:
             self.wait = "mj"
-            self._log = "info 悬赏令刷新 等待秘境"
+            self.log = "info 悬赏令刷新 等待秘境"
         else:
             cd = self.set_delay(15, "min")
-            self._log = f"warn 悬赏令刷新 返回异常{resp} {cd}"
+            self.log = f"warn 悬赏令刷新 返回异常{resp} {cd}"
 
     def __jie_qu(self, resp):
         if resp == "":
             cd = self.set_delay(15, "min")
-            self._log = f"warn 悬赏接取 无返回 {cd}"
+            self.log = f"warn 悬赏接取 无返回 {cd}"
         elif "没有可以接取的" in resp:
             self.progress = ""
-            self._log = "info 悬赏接取 回退"
+            self.log = "info 悬赏接取 回退"
         elif "成功" in resp:
             self.progress = "悬赏令结算"
-            self._log = "info 悬赏接取 成功"
+            self.log = "info 悬赏接取 成功"
         else:
             cd = self.set_delay(15, "min")
-            self._log = "warn 悬赏接取 返回异常{resp} {cd}"
+            self.log = "warn 悬赏接取 返回异常{resp} {cd}"
 
     def __jie_suan(self, resp):
         if "悬赏令结算" in resp:
             self.progress = "悬赏令刷新"
             cd = self.set_delay(10, "s")
-            self._log = f"info 悬赏令结算 完成 {cd}"
+            self.log = f"info 悬赏令结算 完成 {cd}"
         elif "没有查到" in resp:
             self.progress = "悬赏令刷新"
             cd = self.set_delay(10, "s")
-            self._log = f"info 悬赏令结算 回退 {cd}"
+            self.log = f"info 悬赏令结算 回退 {cd}"
         elif "进行中的" in resp:
             minutes = float(re.findall(r"(\d+\.?\d*)分钟", resp)[0])
             cd = self.set_delay(minutes, "min")
-            self._log = f"info 悬赏结算 进行中 {cd}"
+            self.log = f"info 悬赏结算 进行中 {cd}"
         else:
             cd = self.set_delay(15, "min")
-            self._log = "warn 悬赏结算 返回异常{resp} {cd}"
+            self.log = "warn 悬赏结算 返回异常{resp} {cd}"
 
     def get_cmd(self):
         if self.progress == "悬赏令刷新":

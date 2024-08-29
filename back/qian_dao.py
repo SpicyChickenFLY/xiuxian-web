@@ -15,7 +15,7 @@ class QianDao(Module):
     def run(self, resp):
         if resp == "":
             cd = self.set_delay(15, "min")
-            self._log = f"warn 修仙签到 无返回 {cd}"
+            self.log = f"warn 修仙签到 无返回 {cd}"
         else:
-            cd = self.set_delay(8, "hour")
-            self._log = f"info 修仙签到 成功 {cd}"
+            cd = self.set_delay(8, "h")
+            self.log = f"info 修仙签到 成功 {cd}"

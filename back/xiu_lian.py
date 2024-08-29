@@ -15,14 +15,14 @@ class XiuLian(Module):
     def run(self, resp):
         if "悬赏令" in resp:
             self.wait = "xsl"
-            self._log = "info 普通修炼 等待悬赏"
+            self.log = "info 普通修炼 等待悬赏"
         elif "秘境" in resp:
             self.wait = "mj"
-            self._log = "info 普通修炼 等待秘境"
+            self.log = "info 普通修炼 等待秘境"
         elif "时间还没到" in resp:
             seconds = int(re.findall(r"有(\d+)秒", resp)[0])
             cd = self.set_delay(seconds, "s")
-            self._log = f"info 普通修炼 进行中 {cd}"
+            self.log = f"info 普通修炼 进行中 {cd}"
         else:
             cd = self.set_delay(1, "min")
-            self._log = f"info 普通修炼 成功 {cd}"
+            self.log = f"info 普通修炼 成功 {cd}"

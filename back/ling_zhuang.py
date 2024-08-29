@@ -15,7 +15,7 @@ class LingZhuang(Module):
     def run(self, resp):
         if resp == "":
             cd = self.set_delay(15, "min")
-            self._log = f"warn 灵庄结算 无返回 {cd}"
+            self.log = f"warn 灵庄结算 无返回 {cd}"
         else:
-            cd = self.set_delay(1, "hour")
-            self._log = f"info 灵庄结算 成功 {cd}"
+            cd = self.set_delay(1, "h")
+            self.log = f"info 灵庄结算 成功 {cd}"
