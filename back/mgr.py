@@ -19,13 +19,15 @@ class TaskMgr:
         self._task_map: Dict[str, Task] = {}
 
         # 读取本地任务信息
-        for root, _, files in os.walk("profiles"):
+        for root, _, files in os.walk("data/tasks"):
             for file in files:
                 file_path = os.path.join(root, file)
                 try:
                     with open(file_path, "r", encoding="utf-8") as rf:
                         profile = json.load(rf)
                         self.create_task(profile["task_name"], profile)
+                except json.JSONDecodeError as e:
+                    print(f"解析任务配置文件{file_path}失败 {e}")
                 except Exception as e:
                     print(f"加载任务配置文件{file_path}失败 {type(e)} {e}")
 
