@@ -23,6 +23,8 @@ class Task(Bot):
         try:
             with open("data/modules.json", "r", encoding="utf-8") as rf:
                 self._support_modules = json.load(rf)
+        except json.JSONDecodeError as e:
+            print(f"解析模块配置文件data/modules.json失败 {e}")
         except Exception as e:
             print(f"加载模块配置文件data/modules.json失败 {type(e)} {e}")
         self.modules: Dict[str, Module] = {}
@@ -43,7 +45,7 @@ class Task(Bot):
             "bot": self.get_bot_data(),
             "modules": module_data,
         }
-        with open(f"profiles/{self.task_name}.json", "w", encoding="utf-8") as fw:
+        with open(f"data/tasks/{self.task_name}.json", "w", encoding="utf-8") as fw:
             fw.write(json.dumps(data, ensure_ascii=False, indent=4))
 
     def get_brief(self):
@@ -61,9 +63,9 @@ class Task(Bot):
 
             module.record_prev()
             cmd, cmd_type = module.get_cmd_and_type()
-            if cmd_type() == "recv":
+            if cmd_type == "recv":
                 module.run(self.receive(cmd))
-            elif cmd_type() == "send":
+            elif cmd_type == "send":
                 self.send(module.progress)
                 module.run("")
 
