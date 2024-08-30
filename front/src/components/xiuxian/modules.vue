@@ -32,7 +32,7 @@
           <el-space>
             {{
               !!row.prev
-                ? moment.unix(parseInt(row.next)).format("YYYY/MM/DD HH:mm:ss")
+                ? moment.unix(parseInt(row.prev)).format("YYYY/MM/DD HH:mm:ss")
                 : "未知"
             }}
           </el-space>
