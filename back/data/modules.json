@@ -1,8 +1,9 @@
 {
     "补偿": {
         "补偿": {
-            "result": "结束,跳过阶段",
+            "default_progress": true,
             "type": "send",
+            "result": "结束,跳过阶段",
             "next_type": "delay",
             "next_duration": 12,
             "next_unit": "h"
@@ -10,6 +11,7 @@
     },
     "灵田": {
         "灵田收取": {
+            "default_progress": true,
             "type": "recv",
             "resp": {
                 "道友成功收取药材": {
@@ -36,6 +38,7 @@
     },
     "灵庄": {
         "灵庄结算": {
+            "default_progress": true,
             "type": "recv",
             "resp": {
                 "结息": {
@@ -49,6 +52,7 @@
     },
     "签到": {
         "修仙签到": {
+            "default_progress": true,
             "type": "recv",
             "resp": {
                 "签到成功": {
@@ -68,6 +72,7 @@
     },
     "悬赏令": {
         "悬赏令刷新": {
+            "default_progress": true,
             "type": "recv",
             "resp": {
                 "进行中的": {
@@ -77,10 +82,10 @@
                 "的个人悬赏令": {
                     "result": "成功,准备接取",
                     "pre": {
-                        "progress": [
+                        "progress": {
                             "func_name": "choice_task",
                             "args": { }
-                        ]
+                        }
                     }
                 },
                 "次数已用尽": {
@@ -98,6 +103,7 @@
             }
         },
         "悬赏令接取": {
+            "default_progress": false,
             "type": "recv",
             "resp": {
                 "没有可以接取的": {
@@ -111,6 +117,7 @@
             }
         },
         "悬赏令结算": {
+            "default_progress": false,
             "type": "recv",
             "resp": {
                 "悬赏令结算": {
@@ -120,12 +127,12 @@
                 "进行中的悬赏令": {
                     "result": "未完,延迟结算",
                     "pre": {
-                        "next_duration": [
+                        "next_duration": {
                             "func_name": "find_one_int",
                             "args": {
                                 "regex": "(\\d+)分钟"
                             }
-                        ]
+                        }
                     },
                     "next_type": "delay",
                     "next_unit": "min"
@@ -139,6 +146,7 @@
     },
     "双修": {
         "双修北条惠古": {
+            "default_progress": true,
             "type": "recv",
             "resp": {
                 "情投意合": {
@@ -149,20 +157,21 @@
                     "next_type": "set",
                     "next_hour": 10,
                     "next_minute": 0,
-                    "next_second": 0,
+                    "next_second": 0
                 },
                 "无法与自己": {
                     "result": "失败,跳过阶段",
                     "next_type": "set",
                     "next_hour": 10,
                     "next_minute": 0,
-                    "next_second": 0,
+                    "next_second": 0
                 }
             }
         }
     },
     "秘境": {
         "探索秘境": {
+            "default_progress": true,
             "type": "recv",
             "resp": {
                 "正在秘境中": {
@@ -178,7 +187,7 @@
                     "next_type": "set",
                     "next_hour": 8,
                     "next_minute": 0,
-                    "next_second": 0,
+                    "next_second": 0
                 },
                 "修炼": {
                     "result": "失败,等待修炼",
@@ -191,6 +200,7 @@
             }
         },
         "秘境结算": {
+            "default_progress": false,
             "type": "recv",
             "resp": {
                 "翻开一看|被打劫|空手|踢出|不敌": {
@@ -204,12 +214,12 @@
                 "进行中的": {
                     "result": "未完,延迟结算",
                     "pre": {
-                        "next_duration": [
+                        "next_duration": {
                             "func_name": "find_one_int",
                             "args": {
                                 "regex": "(\\d+)分钟"
                             }
-                        ]
+                        }
                     },
                     "next_type": "delay",
                     "next_unit": "min"
@@ -223,6 +233,7 @@
     },
     "丹药": {
         "宗门丹药领取": {
+            "default_progress": true,
             "type": "recv",
             "resp": {
                 "成功": {
@@ -230,37 +241,38 @@
                     "next_type": "set",
                     "next_hour": 14,
                     "next_minute": 0,
-                    "next_second": 0,
+                    "next_second": 0
                 },
                 "贪心": {
                     "result": "失败,跳过阶段",
                     "next_type": "set",
                     "next_hour": 14,
                     "next_minute": 0,
-                    "next_second": 0,
+                    "next_second": 0
                 }
             }
         }
     },
     "修炼": {
         "修炼": {
+            "default_progress": true,
             "type": "recv",
             "resp": {
                 "开始": {
                     "result": "成功,跳过阶段",
                     "next_type": "delay",
-                    "next_duration": 48,
-                    "next_unit": "h"
+                    "next_duration": 1,
+                    "next_unit": "min"
                 },
                 "时间还没到": {
                     "result": "未完,延迟修炼",
                     "pre": {
-                        "next_duration": [
+                        "next_duration": {
                             "func_name": "find_one_int",
                             "args": {
                                 "regex": "(\\d+)秒"
                             }
-                        ]
+                        }
                     },
                     "next_type": "delay",
                     "next_unit": "s"
@@ -278,15 +290,16 @@
     },
     "坊市": {
         "坊市查看": {
+            "default_progress": true,
             "type": "recv",
             "resp": {
                 "线下交易": {
                     "result": "成功",
                     "pre": {
-                        "progress": [
+                        "progress": {
                             "func_name": "fang_shi_pre",
                             "args": { }
-                        ]
+                        }
                     }
                 }
             }
