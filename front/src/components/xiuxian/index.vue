@@ -59,17 +59,12 @@
         </el-tag>
       </template>
     </el-table-column>
-    <el-table-column fixed="right" label="操作" min-width="80">
+    <el-table-column fixed="right" label="操作" min-width="40">
       <template #default="{ row }">
         <el-button
           plain
           :icon="Operation"
           @click="showModulesDialog(row['row-index'])"
-        />
-        <el-button
-          plain
-          :icon="FolderAdd"
-          @click="saveTask(row.name)"
         />
         <el-button
           type="danger"
@@ -170,10 +165,6 @@ function taskMgrToggle(val) {
 
 function taskToggle(val, taskName) {
   postReq(!!val ? `task/enable/${taskName}` : `task/disable/${taskName}`);
-}
-
-function saveTask(taskName) {
-  postReq(`task/save/${taskName}`);
 }
 
 function deleteTask(taskName) {
