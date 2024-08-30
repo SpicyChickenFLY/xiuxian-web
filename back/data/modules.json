@@ -21,10 +21,12 @@
                 "道友的灵田还不能收取": {
                     "result": "失败,延迟收取",
                     "pre": {
-                        "next_duration": [
-                            "find_one_float",
-                            "(\\d+\\.?\\d*)小时"
-                        ]
+                        "next_duration": {
+                            "func_name": "find_one_float",
+                            "args": {
+                                "regex": "(\\d+\\.?\\d*)小时"
+                            }
+                        }
                     },
                     "next_type": "delay",
                     "next_unit": "h"
@@ -76,7 +78,8 @@
                     "result": "成功,准备接取",
                     "pre": {
                         "progress": [
-                            "choice_task"
+                            "func_name": "choice_task",
+                            "args": { }
                         ]
                     }
                 },
@@ -118,8 +121,10 @@
                     "result": "未完,延迟结算",
                     "pre": {
                         "next_duration": [
-                            "find_one_int",
-                            "(\\d+)分钟"
+                            "func_name": "find_one_int",
+                            "args": {
+                                "regex": "(\\d+)分钟"
+                            }
                         ]
                     },
                     "next_type": "delay",
@@ -200,8 +205,10 @@
                     "result": "未完,延迟结算",
                     "pre": {
                         "next_duration": [
-                            "find_one_int",
-                            "(\\d+)分钟"
+                            "func_name": "find_one_int",
+                            "args": {
+                                "regex": "(\\d+)分钟"
+                            }
                         ]
                     },
                     "next_type": "delay",
@@ -249,8 +256,10 @@
                     "result": "未完,延迟修炼",
                     "pre": {
                         "next_duration": [
-                            "find_one_int",
-                            "(\\d+)秒"
+                            "func_name": "find_one_int",
+                            "args": {
+                                "regex": "(\\d+)秒"
+                            }
                         ]
                     },
                     "next_type": "delay",
@@ -275,7 +284,8 @@
                     "result": "成功",
                     "pre": {
                         "progress": [
-                            "fang_shi_pre"
+                            "func_name": "fang_shi_pre",
+                            "args": { }
                         ]
                     }
                 }

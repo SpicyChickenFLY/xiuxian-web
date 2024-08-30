@@ -1,11 +1,12 @@
 """自动化任务管理器"""
 
+import time
 import threading
 import os
 import json
-import pyautogui
-import time
+from typing import Dict
 
+import pyautogui
 from task import Task
 
 
@@ -15,7 +16,7 @@ class TaskMgr:
     def __init__(self) -> None:
         self._running = False
         self._thread = None
-        self._task_map = {}
+        self._task_map: Dict[str, Task] = {}
 
         # 读取本地任务信息
         for root, _, files in os.walk("profiles"):
@@ -62,17 +63,9 @@ class TaskMgr:
             self._thread.join()
         print("stopped")
 
-    def locate_task_input(self, task_id):
-        """定位任务输入框"""
-        self._task_map[task_id].locate_input()
-
-    def locate_task_output(self, task_id):
-        """定位任务输入框"""
-        self._task_map[task_id].locate_output()
-
-    def set_task_bot_location(self, task_id, bot_config):
+    def set_task_bot_location(self, task_id, bot_data):
         """设置机器人点击坐标"""
-        self._task_map[task_id].bot_config = bot_config
+        self._task_map[task_id].set_bot_data(bot_data)
         self._task_map[task_id].save()
 
     def move_cursor(self, coord):
@@ -93,7 +86,7 @@ class TaskMgr:
                 {
                     "name": name,
                     "enable": task.enable,
-                    "bot": task.bot_config,
+                    "bot": task.get_bot_data(),
                     "modules": task.get_brief(),
                 }
             )
