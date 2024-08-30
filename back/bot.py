@@ -10,17 +10,17 @@ class Bot:
     """通用消息机器人"""
 
     def __init__(self, bot_data) -> None:
-        self.i_x: 0.0
-        self.i_y: 0.0
-        self.o_x: 0.0
-        self.o_y: 0.0
-        self.__dict__.update(bot_data)
+        self.i_x=0.0
+        self.i_y=0.0
+        self.o_x=0.0
+        self.o_y=0.0
+        self.set_bot_data(bot_data)
 
     def log(self, task_name, msg):
         """日志输出"""
         # 日志发送群,便于调试
-        log_msg = f"{time.strftime('%m-%d %H:%M')} {task_name} - {msg}"
-        pyautogui.click(self.bot_config["i_x"], self.bot_config["i_y"])
+        log_msg = f"log {time.strftime('%H:%M')} {task_name} - {msg}"
+        pyautogui.click(self.i_x, self.i_y)
         pyautogui.hotkey("ctrl", "a")
         time.sleep(0.25)
         pyperclip.copy(log_msg)
@@ -34,7 +34,7 @@ class Bot:
 
     def send(self, msg):
         """仅向机器人发送指令"""
-        pyautogui.click(self.bot_config["i_x"], self.bot_config["i_y"])
+        pyautogui.click(self.i_x, self.i_y)
         pyautogui.hotkey("ctrl", "a")
         time.sleep(0.25)
         pyperclip.copy("@小小")
@@ -57,7 +57,7 @@ class Bot:
             while retry > 0:
                 time.sleep(2)
                 pyperclip.copy("")  # 清空剪贴板
-                pyautogui.click(self.bot_config["o_x"], self.bot_config["o_y"])
+                pyautogui.click(self.o_x, self.o_y)
                 pyautogui.hotkey("ctrl", "a")
                 time.sleep(0.25)
                 pyautogui.hotkey("ctrl", "c")
@@ -69,6 +69,10 @@ class Bot:
             resend -= 1
         # 重发3次,重收10次都不行,可能是服务器问题
         return ""
+
+    def set_bot_data(self, bot_data):
+        """可视化界面机器人配置返回"""
+        self.__dict__.update(bot_data)
 
     def get_bot_data(self):
         """可视化界面机器人配置返回"""
