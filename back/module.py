@@ -7,11 +7,12 @@ import copy
 
 from utils import FuncUtil
 
+
 class Module:
     """自动化功能模块基类"""
 
     def __init__(self, profile, data) -> None:
-        self.profile = profile
+        self.progress_profiles = profile["progress_profile"]
 
         self.name = ""
         self.enable = False
@@ -24,10 +25,7 @@ class Module:
         self.__dict__.update(data)
         # 给异常状态附上默认值
         if self.progress == "" or self.progress not in profile:
-            for progress, progress_profile in profile.items():
-                if progress_profile['default_progress']:
-                    self.progress = progress
-                    break
+            self.progress = profile["default_cmd"]
 
     def record_prev(self):
         """记录本次触发发生时间"""
@@ -63,14 +61,19 @@ class Module:
 
     def run(self, resp):
         """运行模块功能"""
-        run_data = copy.deepcopy(self.profile[self.progress])
-        if self.profile[self.progress]["type"] == "recv":
+        progress_profile = {}
+        for resp_regex in self.progress_profiles:
+            if len(re.findall(resp_regex, self.progress)) > 0:
+                progress_profile = self.progress_profiles[resp_regex]
+                break
+        run_data = copy.deepcopy(progress_profile)
+        if progress_profile["type"] == "recv":
             if resp == "":
                 self.log = f"{self.progress} 无返回"
                 self.set_delay(15, "min")
                 return
             # 尝试匹配回复消息
-            for resp_regex, _run_data in self.profile[self.progress]["resp"].items():
+            for resp_regex, _run_data in progress_profile["resp"].items():
                 if len(re.findall(resp_regex, resp)) > 0:
                     run_data = copy.deepcopy(_run_data)
                     break
@@ -82,8 +85,11 @@ class Module:
         # 预处理数据
         if "pre" in run_data:
             for data_key, func_info in run_data["pre"].items():
-                func_info['args']['resp'] = resp
-                run_data[data_key] = getattr(FuncUtil(), func_info["func_name"])(func_info['args'])
+                func_info["args"]["resp"] = resp
+                func_info["args"]["progress"] = self.progress
+                run_data[data_key] = getattr(FuncUtil(), func_info["func_name"])(
+                    func_info["args"]
+                )
 
         # 更新模块数据
         self.log = f"{self.progress} {run_data['result']}"
@@ -101,10 +107,12 @@ class Module:
         if "progress" in run_data:
             self.progress = run_data["progress"]
 
-    def get_cmd_and_type(self):
+    def get_cmd_type(self):
         """命令接口"""
-        cmd_type = self.profile[self.progress]["type"]
-        return self.progress, cmd_type
+        for resp_regex, progress_profile in self.progress_profiles.items():
+            if len(re.findall(resp_regex, self.progress)) > 0:
+                cmd_type = progress_profile["type"]
+                return cmd_type
 
     def get_module_base_detail(self):
         """组装任务各个模块信息"""

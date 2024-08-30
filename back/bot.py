@@ -14,7 +14,7 @@ class Bot:
         self.i_y=0.0
         self.o_x=0.0
         self.o_y=0.0
-        self.set_bot_data(bot_data)
+        self._set_bot_data(bot_data)
 
     def log(self, task_name, msg):
         """日志输出"""
@@ -70,10 +70,8 @@ class Bot:
         # 重发3次,重收10次都不行,可能是服务器问题
         return ""
 
-    def set_bot_data(self, bot_data):
-        """可视化界面机器人配置返回"""
+    def _set_bot_data(self, bot_data):
         self.__dict__.update(bot_data)
 
-    def get_bot_data(self):
-        """可视化界面机器人配置返回"""
+    def _get_bot_data(self):
         return {"i_x": self.i_x, "i_y": self.i_y, "o_x": self.o_x, "o_y": self.o_y}

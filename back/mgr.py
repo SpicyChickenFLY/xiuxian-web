@@ -68,7 +68,6 @@ class TaskMgr:
     def set_task_bot_location(self, task_id, bot_data):
         """设置机器人点击坐标"""
         self._task_map[task_id].set_bot_data(bot_data)
-        self._task_map[task_id].save()
 
     def move_cursor(self, coord):
         """移动鼠标"""

@@ -1,6 +1,7 @@
 """自动化机器人"""
 
 import time
+import os
 import json
 from typing import Dict
 
@@ -17,7 +18,7 @@ class Task(Bot):
         Bot.__init__(self, bot_data)
 
         self.task_name = name
-        self.enable = False
+        self.enable = task_data["enable"]
         self._module_wait_map: Dict[str, str] = {}
         self._support_modules: Dict[str, Module] = {}
         try:
@@ -45,8 +46,20 @@ class Task(Bot):
             "bot": self.get_bot_data(),
             "modules": module_data,
         }
-        with open(f"data/tasks/{self.task_name}.json", "w", encoding="utf-8") as fw:
+        data_dir = "data/tasks"
+        os.makedirs(f"{data_dir}", exist_ok=True)
+        with open(f"{data_dir}/{self.task_name}.json", "w", encoding="utf-8") as fw:
             fw.write(json.dumps(data, ensure_ascii=False, indent=4))
+
+    def set_bot_data(self, bot_data):
+        """可视化界面机器人配置设置"""
+        super()._set_bot_data(bot_data)
+        self.save()
+
+    def get_bot_data(self):
+        """可视化界面机器人配置返回"""
+        bot_data = super()._get_bot_data()
+        return bot_data
 
     def get_brief(self):
         """获取任务模块简要信息"""
@@ -62,9 +75,9 @@ class Task(Bot):
                 continue  # 不满足运行要求, 下一个
 
             module.record_prev()
-            cmd, cmd_type = module.get_cmd_and_type()
+            cmd_type = module.get_cmd_type()
             if cmd_type == "recv":
-                module.run(self.receive(cmd))
+                module.run(self.receive(module.progress))
             elif cmd_type == "send":
                 self.send(module.progress)
                 module.run("")
@@ -81,5 +94,6 @@ class Task(Bot):
                 self.log(self.task_name, module.log)
                 module.log = ""
 
+            self.save()
             return  # 一次循环至多执行一个模块
         time.sleep(1)  # 没有可执行模块
