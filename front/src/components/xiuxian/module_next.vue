@@ -110,7 +110,7 @@ const postReq = async (url, data = null, callback = null) => {
     });
 };
 
-setModuleNext = async (next) => {
+const setModuleNext = async (next) => {
   await postReq(`module/${props.taskName}/${props.moduleName}/setNext/${next}`);
   emit("update:visible", false);
   emit("refreshModule");
