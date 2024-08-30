@@ -22,6 +22,12 @@ class Module:
         self.log = ""
 
         self.__dict__.update(data)
+        # 给异常状态附上默认值
+        if self.progress == "" or self.progress not in profile:
+            for progress, progress_profile in profile.items():
+                if progress_profile['default_progress']:
+                    self.progress = progress
+                    break
 
     def record_prev(self):
         """记录本次触发发生时间"""
@@ -76,6 +82,7 @@ class Module:
         # 预处理数据
         if "pre" in run_data:
             for data_key, func_info in run_data["pre"].items():
+                func_info['args']['resp'] = resp
                 run_data[data_key] = getattr(FuncUtil(), func_info["func_name"])(func_info['args'])
 
         # 更新模块数据
