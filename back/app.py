@@ -124,4 +124,4 @@ def set_module_next(task_name, module_name, next_trigger):
 
 if __name__ == "__main__":
     # webbrowser.open("http://127.0.0.1:8010/")
-    app.run(host="127.0.0.1", port=8010)
+    app.run(host="0.0.0.0", port=8010)
