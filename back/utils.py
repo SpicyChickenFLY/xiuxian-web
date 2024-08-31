@@ -53,7 +53,7 @@ class FuncUtil:
             choice += 1
         if choice > len(tasks):
             choice = 1
-        return choice
+        return f"悬赏令接取{choice}"
 
     def fs_save_price(self, args):
         progress = args["progress"]
