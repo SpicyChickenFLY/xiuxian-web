@@ -3,6 +3,7 @@
 import time
 import os
 import json
+import copy
 from typing import Dict
 
 from bot import Bot
@@ -20,6 +21,7 @@ class Task(Bot):
         self.task_name = name
         self.enable = task_data["enable"] if "enable" in task_data else False
         self._module_wait_map: Dict[str, str] = {}
+        # 模块前置等待表，因为是串行化操作，并且是先检查后创建，应该不会死锁
         self._support_modules: Dict[str, Module] = {}
         try:
             with open("data/modules.json", "r", encoding="utf-8") as rf:
@@ -85,7 +87,8 @@ class Task(Bot):
             if module.wait != "":
                 self._module_wait_map[module_code] = module.wait
             else:
-                for need, needed in self._module_wait_map.items():
+                wait_map = copy.deepcopy(self._module_wait_map)
+                for need, needed in wait_map.items():
                     if needed == module_code:
                         self.modules[need].wait = ""
                         self._module_wait_map.pop(need)
