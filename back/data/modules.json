@@ -423,5 +423,60 @@
                 }
             }
         }
+    },
+    "突破": {
+        "default_cmd": "我的修仙信息",
+        "progress_profile": {
+            "我的修仙信息": {
+                "type": "recv",
+                "resp": {
+                    "境界:.*境[初|中]期.*状态: 可突破": {
+                        "result": "成功,准备突破",
+                        "progress": "突破"
+                    },
+                    "境界:..境[初|中]期.*状态: 还需.*修为可突破": {
+                        "result": "不足，延迟突破",
+                        "next_type": "delay",
+                        "next_duration": 15,
+                        "next_unit": "min"
+                    },
+                    "境界:.*境圆满": {
+                        "result": "圆满，跳过阶段",
+                        "next_type": "delay",
+                        "next_duration": 30,
+                        "next_unit": "min"
+                    }
+                }
+            },
+            "^突破&": {
+                "type": "recv",
+                "resp": {
+                    "背包有丹药：渡厄丹": {
+                        "result": "成功,准备突破",
+                        "progress": "渡厄突破"
+                    },
+                    "背包没有": {
+                        "result": "没丹，延迟突破",
+                        "next_type": "set",
+                        "next_hour": 14,
+                        "next_minute": 15,
+                        "next_second": 0
+                    }
+                }
+            },
+            "渡厄突破": {
+                "type": "recv",
+                "resp": {
+                    "恭喜": {
+                        "result": "成功,准备下次",
+                        "progress": "我的修仙信息"
+                    },
+                    "突破失败": {
+                        "result": "失败，准备突破",
+                        "progress": "突破"
+                    }
+                }
+            }
+        }
     }
 }
