@@ -18,7 +18,7 @@ class Task(Bot):
         Bot.__init__(self, bot_data)
 
         self.task_name = name
-        self.enable = task_data["enable"]
+        self.enable = task_data["enable"] if "enable" in task_data else False
         self._module_wait_map: Dict[str, str] = {}
         self._support_modules: Dict[str, Module] = {}
         try:
