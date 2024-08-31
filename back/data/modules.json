@@ -96,7 +96,7 @@
                         "result": "成功,准备接取",
                         "pre": {
                             "progress": {
-                                "func_name": "choice_task",
+                                "func_name": "xsl_choose_task",
                                 "args": {}
                             }
                         }
