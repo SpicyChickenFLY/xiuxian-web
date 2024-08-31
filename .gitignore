@@ -2,6 +2,7 @@
 node_modules
 front/dist
 back/static
+back/data/tasks/*
 
 # local env files
 .env.local
