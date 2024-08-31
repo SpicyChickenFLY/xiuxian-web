@@ -19,10 +19,10 @@ class Module:
         self.prev = 0.0
         self.next = 0.0
         self.progress = ""
-        self.wait = ""
         self.log = ""
-
         self.__dict__.update(data)
+        self.wait = "" # 等待状态每次都需要重置，避免死锁
+
         # 给异常状态附上默认值
         if self.progress == "" or self.progress not in profile:
             self.progress = profile["default_cmd"]
