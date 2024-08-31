@@ -27,13 +27,13 @@ class FuncUtil:
         # 加载奖励价值表
         reward_map = {}
         try:
-            with open("data/rewards_value_map.json", "r", encoding="utf-8") as rf:
+            with open("data/reward_value_map.json", "r", encoding="utf-8") as rf:
                 reward_map = json.load(rf)
         except json.JSONDecodeError as e:
-            print(f"解析奖励价值配置文件(data/rewards_value_map.json)失败 {e}")
+            print(f"解析奖励价值配置文件(data/reward_value_map.json)失败 {e}")
         except Exception as e:
             print(
-                f"加载奖励价值配置文件(data/rewards_value_map.json)失败 {type(e)} {e}"
+                f"加载奖励价值配置文件(data/reward_value_map.json)失败 {type(e)} {e}"
             )
 
         probailities = re.findall(r"完成几率(\d+)", resp)
