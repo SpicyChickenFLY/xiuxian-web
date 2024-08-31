@@ -78,6 +78,8 @@ class Task(Bot):
 
     def run(self):
         """自动化任务运行一个时间片"""
+        if not self.enable:
+            return
         for module_code, module in self.modules.items():
             if not module.is_runnable():
                 continue  # 不满足运行要求, 下一个
@@ -105,4 +107,5 @@ class Task(Bot):
 
             self.save()
             return  # 一次循环至多执行一个模块
-        time.sleep(1)  # 没有可执行模块
+        self.log(self.task_name, "无事可干")
+        time.sleep(60)  # 没有可执行模块
