@@ -15,7 +15,6 @@
         "default_cmd": "灵田收取",
         "progress_profile": {
             "灵田收取": {
-                "default_cmd": true,
                 "type": "recv",
                 "resp": {
                     "道友成功收取药材": {
@@ -45,7 +44,6 @@
         "default_cmd": "灵庄结算",
         "progress_profile": {
             "灵庄结算": {
-                "default_cmd": true,
                 "type": "recv",
                 "resp": {
                     "结息": {
@@ -62,7 +60,6 @@
         "default_cmd": "修仙签到",
         "progress_profile": {
             "修仙签到": {
-                "default_cmd": true,
                 "type": "recv",
                 "resp": {
                     "签到成功": {
@@ -85,7 +82,6 @@
         "default_cmd": "悬赏令刷新",
         "progress_profile": {
             "悬赏令刷新": {
-                "default_cmd": true,
                 "type": "recv",
                 "resp": {
                     "进行中的": {
@@ -162,7 +158,6 @@
         "default_cmd": "双修北条惠古",
         "progress_profile": {
             "双修北条惠古": {
-                "default_cmd": true,
                 "type": "recv",
                 "resp": {
                     "情投意合": {
@@ -190,7 +185,6 @@
         "default_cmd": "探索秘境",
         "progress_profile": {
             "探索秘境": {
-                "default_cmd": true,
                 "type": "recv",
                 "resp": {
                     "正在秘境中": {
@@ -255,7 +249,6 @@
         "default_cmd": "宗门丹药领取",
         "progress_profile": {
             "宗门丹药领取": {
-                "default_cmd": true,
                 "type": "recv",
                 "resp": {
                     "成功": {
@@ -280,7 +273,6 @@
         "default_cmd": "修炼",
         "progress_profile": {
             "修炼": {
-                "default_cmd": true,
                 "type": "recv",
                 "resp": {
                     "开始": {
@@ -318,7 +310,6 @@
         "default_cmd": "坊市查看技能1",
         "progress_profile": {
             "坊市查看": {
-                "default_cmd": true,
                 "type": "recv",
                 "resp": {
                     "线下交易": {
@@ -338,6 +329,96 @@
                             }
                         },
                         "next_type": "delay"
+                    }
+                }
+            }
+        }
+    },
+    "宗门任务": {
+        "default_cmd": "宗门任务接取",
+        "progress_profile": {
+            "宗门任务接取": {
+                "type": "recv",
+                "resp": {
+                    "今日无法再获取": {
+                        "result": "成功,跳过阶段",
+                        "next_type": "set",
+                        "next_hour": 5,
+                        "next_minute": 0,
+                        "next_second": 0
+                    },
+                    "除害": {
+                        "result": "成功,准备完成",
+                        "progress": "宗门任务完成"
+                    },
+                    "查抄|购买|还清": {
+                        "result": "不做,准备刷新",
+                        "progress": "宗门任务刷新"
+                    }
+                }
+            },
+            "宗门任务刷新": {
+                "type": "recv",
+                "resp": {
+                    "没有宗门任务": {
+                        "result": "未接,准备接取",
+                        "progress": "宗门任务接取"
+                    },
+                    "除害": {
+                        "result": "成功,准备完成",
+                        "progress": "宗门任务完成"
+                    },
+                    "查抄|购买|还清": {
+                        "result": "不做,准备刷新",
+                        "next_type": "delay",
+                        "next_duration": 120,
+                        "next_unit": "s"
+                    },
+                    "时间还没到": {
+                        "result": "未完,延迟刷新",
+                        "pre": {
+                            "next_duration": {
+                                "func_name": "find_one_int",
+                                "args": {
+                                    "regex": "(\\d+) 秒"
+                                }
+                            }
+                        },
+                        "next_type": "delay",
+                        "next_unit": "s"
+                    }
+                }
+            },
+            "宗门任务完成": {
+                "type": "recv",
+                "resp": {
+                    "宗门贡献": {
+                        "result": "完成,准备接取",
+                        "progress": "宗门任务接取"
+                    },
+                    "当前没有接取宗门任务": {
+                        "result": "未接,准备接取",
+                        "progress": "宗门任务接取"
+                    },
+                    "不扣你任务次数了": {
+                        "result": "无效,等待回血",
+                        "next_type": "delay",
+                        "next_duration": 120,
+                        "next_unit": "s",
+                        "wait": "修炼"
+                    },
+                    "冷静一下": {
+                        "result": "未完,延迟完成",
+                        "pre": {
+                            "next_duration": {
+                                "func_name": "find_one_int",
+                                "args": {
+                                    "regex": "(\\d+)秒"
+                                }
+                            }
+                        },
+                        "next_type": "delay",
+                        "next_unit": "s"
                     }
                 }
             }
