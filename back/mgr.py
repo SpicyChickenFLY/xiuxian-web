@@ -37,7 +37,10 @@ class TaskMgr:
             for _, task in self._task_map.items():
                 if not self._running:
                     return
+            try:
                 task.run()
+            except Exception as e:
+                print(f"任务运行出错 {type(e)} {e}")
             if not self._running:
                 return
 
@@ -108,11 +111,9 @@ class TaskMgr:
         if self._running:
             self.stop()
             self._task_map[task_id] = Task(task_id, task_profile)
-            self._task_map[task_id].save()
             self.start()
         else:
             self._task_map[task_id] = Task(task_id, task_profile)
-            self._task_map[task_id].save()
         return ""
 
     def delete_task(self, task_id):
@@ -120,35 +121,31 @@ class TaskMgr:
         if self._running:
             self.stop()
             self._task_map.pop(task_id)
-            os.remove("profiles/${task_id}.json")
+            os.remove(f"data/tasks/{task_id}.json")
             self.start()
         else:
             self._task_map.pop(task_id)
-            os.remove("profiles/${task_id}.json")
+            os.remove(f"data/tasks/{task_id}.json")
         return task_id
 
     def enable_task(self, task_id):
         """启用自动化任务"""
         if self._running:
             self.stop()
-            self._task_map[task_id].enable = True
-            self._task_map[task_id].save()
+            self._task_map[task_id].toggle_enable(True)
             self.start()
         else:
-            self._task_map[task_id].enable = True
-            self._task_map[task_id].save()
+            self._task_map[task_id].toggle_enable(True)
         return task_id
 
     def disable_task(self, task_id):
         """启用自动化任务"""
         if self._running:
             self.stop()
-            self._task_map[task_id].enable = False
-            self._task_map[task_id].save()
+            self._task_map[task_id].toggle_enable(False)
             self.start()
         else:
-            self._task_map[task_id].enable = False
-            self._task_map[task_id].save()
+            self._task_map[task_id].toggle_enable(False)
         return task_id
 
     def enable_module(self, task_id, module_name):

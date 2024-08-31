@@ -72,12 +72,8 @@ def save_task(name):
 
 @app.route("/task/create/<string:task_name>", methods=["POST"])
 def create_task(task_name):
-    """创建管理任务"""
-    try:
-        taskMgr.create_task(task_name, request.form)
-        return jsonify({"result": "成功"}), 200
-    except Exception as e:
-        return jsonify({"result": "失败", "msg": f"{type(e)} - {e}"}), 500
+    taskMgr.create_task(task_name, request.form)
+    return jsonify({"result": "成功"}), 200
 
 
 @app.route("/task/delete/<string:name>", methods=["POST"])

@@ -37,6 +37,8 @@ class Task(Bot):
             module_data["name"] = code
             self.modules[code] = Module(support_module, module_data)
 
+        self.save()
+
     def save(self):
         """保存类成员参数"""
         module_data = {}
@@ -69,6 +71,10 @@ class Task(Bot):
         for _, module in self.modules.items():
             module_list.append(module.get_module_base_detail())
         return module_list
+
+    def toggle_enable(self, enable):
+        self.enable = enable
+        self.save()
 
     def run(self):
         """自动化任务运行一个时间片"""
