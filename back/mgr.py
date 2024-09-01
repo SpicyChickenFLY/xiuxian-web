@@ -37,10 +37,10 @@ class TaskMgr:
             for _, task in self._task_map.items():
                 if not self._running:
                     return
-            try:
-                task.run()
-            except Exception as e:
-                print(f"任务运行出错 {type(e)} {e}")
+                try:
+                    task.run()
+                except Exception as e:
+                    print(f"任务运行出错 {type(e)} {e}")
             if not self._running:
                 return
 
