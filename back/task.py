@@ -107,5 +107,4 @@ class Task(Bot):
 
             self.save()
             return  # 一次循环至多执行一个模块
-        self.log(self.task_name, "无事可干")
-        time.sleep(60)  # 没有可执行模块
+        time.sleep(1)  # 没有可执行模块
