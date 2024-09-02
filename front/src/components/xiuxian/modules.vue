@@ -30,22 +30,14 @@
       <el-table-column label="上次触发" width="140">
         <template #default="{ row }">
           <el-space>
-            {{
-              !!row.prev
-                ? moment.unix(parseInt(row.prev)).format("YYYY/MM/DD HH:mm:ss")
-                : "未知"
-            }}
+            {{ calcDayTime(row.prev) }}
           </el-space>
         </template>
       </el-table-column>
       <el-table-column label="下次触发">
         <template #default="{ row, $index }">
           <el-space>
-            {{
-              !!row.next
-                ? moment.unix(parseInt(row.next)).format("YYYY/MM/DD HH:mm:ss")
-                : "未知"
-            }}
+            {{ calcDayTime(row.next) }}
             <el-button
               type="primary"
               size="small"
@@ -137,6 +129,24 @@ function showNextDialog(moduleIdx) {
   isNextDialogVisible.value = true;
   nextTaskName.value = taskName.value;
   nextModuleName.value = props.tableData[props.taskIdx].modules[moduleIdx].name;
+}
+
+function calcDayTime(tsStr) {
+  if (!tsStr) {
+    return "未知"
+  }
+  const ts = moment.unix(parseInt(tsStr))
+  const today = moment().startOf('day');
+  let prefix = ""
+  const time = ts.format("HH:mm:ss")
+  const diff = Math.trunc(moment(ts.diff(today, 'days')));
+  if (diff > 0) {
+    prefix = diff + "天后 "
+  }
+  if (diff < 0) {
+    prefix = (diff * -1) + "天前 "
+  }
+  return prefix + time
 }
 
 const refreshModule = async () => {
