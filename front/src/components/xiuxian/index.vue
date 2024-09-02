@@ -60,16 +60,16 @@
       </template>
     </el-table-column>
     <el-table-column fixed="right" label="操作" min-width="40">
-      <template #default="{ row }">
+      <template #default="scope">
         <el-button
           plain
           :icon="Operation"
-          @click="showModulesDialog(row['row-index'])"
+          @click="showModulesDialog(scope.$index)"
         />
         <el-button
           type="danger"
           :icon="Delete"
-          @click="deleteTask(row.name)"
+          @click="deleteTask(scope.row.name)"
         />
       </template>
     </el-table-column>
@@ -195,6 +195,7 @@ function showLocationDialog(taskName, location) {
 }
 
 function showModulesDialog(taskIdx) {
+  console.log(taskIdx)
   isModulesDialogVisible.value = true;
   modulesTaskIdx.value = taskIdx;
 }
