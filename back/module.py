@@ -62,10 +62,12 @@ class Module:
     def run(self, resp):
         """运行模块功能"""
         progress_profile = {}
-        for resp_regex in self.progress_profiles:
-            if len(re.findall(resp_regex, self.progress)) > 0:
-                progress_profile = self.progress_profiles[resp_regex]
+        for progress_regex in self.progress_profiles:
+            if len(re.findall(progress_regex, self.progress)) > 0:
+                progress_profile = self.progress_profiles[progress_regex]
                 break
+        else:
+            self.log = f"{self.progress} 获取状态配置异常"
         run_data = copy.deepcopy(progress_profile)
         if progress_profile["type"] == "recv":
             if resp == "":
