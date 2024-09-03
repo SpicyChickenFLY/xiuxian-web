@@ -6,7 +6,6 @@ import os
 import json
 from typing import Dict
 
-import pyautogui
 from task import Task
 
 
@@ -72,15 +71,8 @@ class TaskMgr:
         """设置机器人点击坐标"""
         self._task_map[task_id].set_bot_data(bot_data)
 
-    def move_cursor(self, coord):
-        """移动鼠标"""
-        pyautogui.moveTo(coord["x"], coord["y"])
-
-    def record_cursor(self):
-        """返回鼠标位置"""
-        time.sleep(8)
-        x, y = pyautogui.position()
-        return {"x": x, "y": y}
+    def get_mgr_info(self):
+        return {"is_running": self._running, "tasks": self.list_tasks()}
 
     def list_tasks(self):
         """返回自动化任务列表"""
@@ -91,7 +83,7 @@ class TaskMgr:
                     "name": name,
                     "enable": task.enable,
                     "bot": task.get_bot_data(),
-                    "modules": task.get_brief(),
+                    "modules": task.get_module_list(),
                 }
             )
         return task_list

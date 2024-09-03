@@ -51,7 +51,7 @@ const postReq = async (url, data = null, callback = null) => {
     background: "rgba(0, 0, 0, 0.7)",
   });
   axios
-    .post(`http://127.0.0.1:8010/${url}`, data)
+    .post(`/api/${url}`, data)
     .then((res) => {
       ElNotification({ title: "成功", message: "成功", type: "success" });
       if (callback !== null) {
@@ -65,7 +65,7 @@ const postReq = async (url, data = null, callback = null) => {
     });
 };
 function moveCursor(x, y) {
-  postReq(`taskMgr/moveCursor`, { x: x, y: y });
+  postReq(`moveCursor`, { x: x, y: y });
 }
 
 function recordInputCursor() {
@@ -74,14 +74,19 @@ function recordInputCursor() {
     message: "请在8秒内将鼠标移至目标位置",
     type: "warning",
   });
-  postReq(`taskMgr/recordCursor`, null, (res) => {
+  postReq(`recordCursor`, null, (res) => {
     coord.value["i_x"] = res.data["x"];
     coord.value["i_y"] = res.data["y"];
   });
 }
 
 function recordOutputCursor() {
-  postReq(`taskMgr/recordCursor`, null, (res) => {
+  ElNotification({
+    title: "注意",
+    message: "请在8秒内将鼠标移至目标位置",
+    type: "warning",
+  });
+  postReq(`recordCursor`, null, (res) => {
     coord.value["o_x"] = res.data["x"];
     coord.value["o_y"] = res.data["y"];
   });

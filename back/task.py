@@ -55,17 +55,17 @@ class Task(Bot):
         with open(f"{data_dir}/{self.task_name}.json", "w", encoding="utf-8") as fw:
             fw.write(json.dumps(data, ensure_ascii=False, indent=4))
 
-    def set_bot_data(self, bot_data):
-        """可视化界面机器人配置设置"""
-        super()._set_bot_data(bot_data)
-        self.save()
-
     def get_bot_data(self):
         """可视化界面机器人配置返回"""
         bot_data = super()._get_bot_data()
         return bot_data
 
-    def get_brief(self):
+    def set_bot_data(self, bot_data):
+        """可视化界面机器人配置设置"""
+        super()._set_bot_data(bot_data)
+        self.save()
+
+    def get_module_list(self):
         """获取任务模块简要信息"""
         module_list = []
         for _, module in self.modules.items():

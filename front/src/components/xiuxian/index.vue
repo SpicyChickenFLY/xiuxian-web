@@ -97,7 +97,6 @@ import axios from "axios";
 import { ElNotification, ElLoading } from "element-plus";
 import { Operation, Delete, FolderAdd } from "@element-plus/icons-vue";
 
-import Detail from "./detail.vue";
 import Modules from "./modules.vue";
 import Location from "./location.vue";
 
@@ -130,13 +129,13 @@ const refresh = async () => {
   await getTaskList();
 };
 const getTaskMgrStatus = async () => {
-  axios.get("http://127.0.0.1:8010/taskMgr/status").then((res) => {
+  axios.get("/api/taskMgr/status").then((res) => {
     isTaskMgrStart.value = res.data.result;
   });
 };
 
 const getTaskList = async () => {
-  axios.get("http://127.0.0.1:8010/task/list").then((res) => {
+  axios.get("/api/task/list").then((res) => {
     tableData.value = res.data;
   });
 };
@@ -148,7 +147,7 @@ const postReq = async (url, data = null) => {
     background: "rgba(0, 0, 0, 0.7)",
   });
   axios
-    .post(`http://127.0.0.1:8010/${url}`, data)
+    .post(`/api/${url}`, data)
     .then((res) => {
       ElNotification({ title: "成功", message: "成功", type: "success" });
       loading.close();

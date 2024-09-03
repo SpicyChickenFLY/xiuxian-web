@@ -102,7 +102,7 @@ const postReq = async (url, data = null, callback = null) => {
     background: "rgba(0, 0, 0, 0.7)",
   });
   axios
-    .post(`http://127.0.0.1:8010/${url}`, data)
+    .post(`/api/${url}`, data)
     .then((res) => {
       ElNotification({ title: "成功", message: "成功", type: "success" });
       if (callback !== null) {

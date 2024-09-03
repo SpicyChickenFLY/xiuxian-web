@@ -59,6 +59,24 @@ class Module:
         """判断模块是否达到触发条件"""
         return self.enable and self.wait == "" and time.time() > self.next
 
+    def _run(self, run_data):
+        # 更新模块数据
+        self.log = f"{self.progress} {run_data['result']}"
+        if "next_type" in run_data:
+            if run_data["next_type"] == "delay":
+                self.set_delay(run_data["next_duration"], run_data["next_unit"])
+            else:
+                self.set_next_period(
+                    run_data["next_hour"],
+                    run_data["next_minute"],
+                    run_data["next_second"],
+                )
+        if "wait" in run_data:
+            self.wait = run_data["wait"]
+        if "progress" in run_data:
+            self.progress = run_data["progress"]
+
+
     def run(self, resp):
         """运行模块功能"""
         progress_profile = {}
@@ -93,21 +111,7 @@ class Module:
                     func_info["args"]
                 )
 
-        # 更新模块数据
-        self.log = f"{self.progress} {run_data['result']}"
-        if "next_type" in run_data:
-            if run_data["next_type"] == "delay":
-                self.set_delay(run_data["next_duration"], run_data["next_unit"])
-            else:
-                self.set_next_period(
-                    run_data["next_hour"],
-                    run_data["next_minute"],
-                    run_data["next_second"],
-                )
-        if "wait" in run_data:
-            self.wait = run_data["wait"]
-        if "progress" in run_data:
-            self.progress = run_data["progress"]
+        self._run(run_data)
 
     def get_cmd_type(self):
         """命令接口"""
@@ -115,6 +119,7 @@ class Module:
             if len(re.findall(resp_regex, self.progress)) > 0:
                 cmd_type = progress_profile["type"]
                 return cmd_type
+        return "send"
 
     def get_module_base_detail(self):
         """组装任务各个模块信息"""
