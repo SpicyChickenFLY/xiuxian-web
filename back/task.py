@@ -39,6 +39,9 @@ class Task(Bot):
 
         self.save()
 
+    def update_task(self, task_data):
+        self.__dict__.update(task_data)
+
     def save(self):
         """保存类成员参数"""
         module_data = {}

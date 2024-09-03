@@ -1,6 +1,5 @@
 """自动化任务管理器"""
 
-import time
 import threading
 import os
 import json
@@ -13,9 +12,9 @@ class TaskMgr:
     """自动化任务管理器"""
 
     def __init__(self) -> None:
-        self._running = False
+        self.is_running = False
         self._thread = None
-        self._task_map: Dict[str, Task] = {}
+        self.tasks: Dict[str, Task] = {}
 
         # 读取本地任务信息
         for root, _, files in os.walk("data/tasks"):
@@ -33,145 +32,89 @@ class TaskMgr:
     def _run(self):
         """自动化程序启动"""
         while True:
-            for _, task in self._task_map.items():
-                if not self._running:
+            for _, task in self.tasks.items():
+                if not self.is_running:
                     return
                 try:
                     task.run()
                 except Exception as e:
                     print(f"任务运行出错 {type(e)} {e}")
-            if not self._running:
+            if not self.is_running:
                 return
 
-    def is_running(self):
-        """获取自动化任务启停状态"""
-        return self._running
-
-    def start(self):
+    def _start(self):
         """启动自动化任务"""
-        if self._running:
+        if self.is_running:
             print("already started")
             return
-        self._running = True
+        self.is_running = True
         self._thread = threading.Thread(target=self._run)
         self._thread.start()
         print("started")
 
-    def stop(self):
+    def _stop(self):
         """停止自动化任务"""
-        if not self._running:
+        if not self.is_running:
             print("already stopped")
             return
-        self._running = False
+        self.is_running = False
         if self._thread:
             self._thread.join()
         print("stopped")
 
-    def set_task_bot_location(self, task_id, bot_data):
-        """设置机器人点击坐标"""
-        self._task_map[task_id].set_bot_data(bot_data)
-
     def get_mgr_info(self):
-        return {"is_running": self._running, "tasks": self.list_tasks()}
-
-    def list_tasks(self):
-        """返回自动化任务列表"""
+        """获取管理器信息"""
         task_list = []
-        for name, task in self._task_map.items():
-            task_list.append(
-                {
-                    "name": name,
-                    "enable": task.enable,
-                    "bot": task.get_bot_data(),
-                    "modules": task.get_module_list(),
-                }
-            )
-        return task_list
+        for name, task in self.tasks.items():
+            task = {
+                "name": name,
+                "enable": task.enable,
+                "bot": task.get_bot_data(),
+                "modules": task.get_module_list(),
+            }
+            task_list.append(task)
+        return {"is_running": self.is_running, "tasks": task_list}
 
-    def save_task(self, task_id):
+    def update_mgr(self, mgr_data):
+        """更新管理器信息"""
+        if "is_running" in mgr_data:
+            if mgr_data["is_running"]:
+                self._start()
+            else:
+                self._stop()
+
+    def create_task(self, task_name, task_profile):
         """创建新的自动化任务"""
-        if self._running:
-            self.stop()
-            self._task_map[task_id].save()
-            self.start()
-        else:
-            self._task_map[task_id].save()
+        was_run = self.is_running
+        self._stop()
+        self.tasks[task_name] = Task(task_name, task_profile)
+        if was_run:
+            self._start()
         return ""
 
-    def create_task(self, task_id, task_profile):
+    def update_task(self, task_name, task_data):
+        """更新自动化任务信息"""
+        was_run = self.is_running
+        self._stop()
+        self.tasks[task_name].update_task(task_data)
+        if was_run:
+            self._start()
+
+    def delete_task(self, task_name):
         """创建新的自动化任务"""
-        if self._running:
-            self.stop()
-            self._task_map[task_id] = Task(task_id, task_profile)
-            self.start()
-        else:
-            self._task_map[task_id] = Task(task_id, task_profile)
-        return ""
+        was_run = self.is_running
+        self._stop()
+        self.tasks.pop(task_name)
+        os.remove(f"data/tasks/{task_name}.json")
+        if was_run:
+            self._start()
+        return task_name
 
-    def delete_task(self, task_id):
-        """创建新的自动化任务"""
-        if self._running:
-            self.stop()
-            self._task_map.pop(task_id)
-            os.remove(f"data/tasks/{task_id}.json")
-            self.start()
-        else:
-            self._task_map.pop(task_id)
-            os.remove(f"data/tasks/{task_id}.json")
-        return task_id
-
-    def enable_task(self, task_id):
+    def update_module(self, task_name, module_name, module_data):
         """启用自动化任务"""
-        if self._running:
-            self.stop()
-            self._task_map[task_id].toggle_enable(True)
-            self.start()
-        else:
-            self._task_map[task_id].toggle_enable(True)
-        return task_id
-
-    def disable_task(self, task_id):
-        """启用自动化任务"""
-        if self._running:
-            self.stop()
-            self._task_map[task_id].toggle_enable(False)
-            self.start()
-        else:
-            self._task_map[task_id].toggle_enable(False)
-        return task_id
-
-    def enable_module(self, task_id, module_name):
-        """启用自动化任务"""
-        if self._running:
-            self.stop()
-            self._task_map[task_id].modules[module_name].enable = True
-            self._task_map[task_id].save()
-            self.start()
-        else:
-            self._task_map[task_id].modules[module_name].enable = True
-            self._task_map[task_id].save()
-        return task_id
-
-    def disable_module(self, task_id, module_name):
-        """启用自动化任务"""
-        if self._running:
-            self.stop()
-            self._task_map[task_id].modules[module_name].enable = False
-            self._task_map[task_id].save()
-            self.start()
-        else:
-            self._task_map[task_id].modules[module_name].enable = False
-            self._task_map[task_id].save()
-        return task_id
-
-    def set_module_next(self, task_id, module_name, next_trigger):
-        """启用自动化任务"""
-        if self._running:
-            self.stop()
-            self._task_map[task_id].modules[module_name].next = float(next_trigger)
-            self._task_map[task_id].save()
-            self.start()
-        else:
-            self._task_map[task_id].modules[module_name].next = float(next_trigger)
-            self._task_map[task_id].save()
-        return task_id
+        was_run = self.is_running
+        self._stop()
+        self.tasks[task_name].modules[module_name].update_module(module_data)
+        if was_run:
+            self._start()
+        return module_name

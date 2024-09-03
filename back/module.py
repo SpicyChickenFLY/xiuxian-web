@@ -27,6 +27,9 @@ class Module:
         if self.progress == "" or self.progress not in profile:
             self.progress = profile["default_cmd"]
 
+    def update_module(self, module_data):
+        pass
+
     def record_prev(self):
         """记录本次触发发生时间"""
         self.prev = time.time()
