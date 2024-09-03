@@ -9,12 +9,11 @@ import pyperclip
 class Bot:
     """通用消息机器人"""
 
-    def __init__(self, bot_data) -> None:
+    def __init__(self) -> None:
         self.i_x=0.0
         self.i_y=0.0
         self.o_x=0.0
         self.o_y=0.0
-        self._set_bot_data(bot_data)
 
     def log(self, task_name, msg):
         """日志输出"""

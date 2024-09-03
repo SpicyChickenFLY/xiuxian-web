@@ -14,12 +14,13 @@ from module import Module
 class Task(Bot):
     """自动化任务"""
 
-    def __init__(self, name, task_data) -> None:
-        bot_data = task_data["bot"] if "bot" in task_data else {}
-        Bot.__init__(self, bot_data)
+    def __init__(self, task_name, task_data) -> None:
+        Bot.__init__(self)
 
-        self.task_name = name
+        self.task_name = task_name
         self.enable = task_data["enable"] if "enable" in task_data else False
+        self.modules: Dict[str, Module] = {}
+
         self._module_wait_map: Dict[str, str] = {}
         # 模块前置等待表，因为是串行化操作，并且是先检查后创建，应该不会死锁
         self._support_modules: Dict[str, Module] = {}
@@ -30,7 +31,6 @@ class Task(Bot):
             print(f"解析模块配置文件data/modules.json失败 {e}")
         except Exception as e:
             print(f"加载模块配置文件data/modules.json失败 {type(e)} {e}")
-        self.modules: Dict[str, Module] = {}
         module_datas = task_data["modules"] if "modules" in task_data else {}
         for code, support_module in self._support_modules.items():
             module_data = module_datas[code] if code in module_datas else {}
@@ -38,9 +38,6 @@ class Task(Bot):
             self.modules[code] = Module(support_module, module_data)
 
         self.save()
-
-    def update_task(self, task_data):
-        self.__dict__.update(task_data)
 
     def save(self):
         """保存类成员参数"""
@@ -57,6 +54,10 @@ class Task(Bot):
         os.makedirs(f"{data_dir}", exist_ok=True)
         with open(f"{data_dir}/{self.task_name}.json", "w", encoding="utf-8") as fw:
             fw.write(json.dumps(data, ensure_ascii=False, indent=4))
+
+    def update_task(self, task_data):
+        self.__dict__.update(task_data)
+        self.save()
 
     def get_bot_data(self):
         """可视化界面机器人配置返回"""
