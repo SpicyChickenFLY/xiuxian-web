@@ -2,12 +2,12 @@
   <h3>
     自动化管理
     <el-switch
-      v-model="isTaskMgrStart"
+      v-model="isMgrRunning"
       size="large"
       inline-prompt
       active-text="运行"
       inactive-text="停止"
-      @change="taskMgrToggle"
+      @change="updateMgrInfo"
     />
   </h3>
 
@@ -31,7 +31,7 @@
           inline-prompt
           :active-text="row.name"
           :inactive-text="row.name"
-          @change="(val) => taskToggle(val, row.name)"
+          @change="(val) => taskToggle(row.name, val)"
         />
       </template>
     </el-table-column>
@@ -53,7 +53,7 @@
           :key="module.name"
           :type="module.enable ? 'success' : 'danger'"
           size="large"
-          @click="setModuleEnable(!module.enable, row.name, module.name)"
+          @click="moduleToggle(row.name, module.name, !module.enable)"
         >
           {{ module.name }}
         </el-tag>
@@ -106,7 +106,7 @@ defineProps({
 
 const timer = reactive(null);
 const tableData = ref([]);
-const isTaskMgrStart = ref(false);
+const isMgrRunning = ref(false);
 const createTaskName = ref("");
 const isLocationDialogVisible = ref(false);
 const locationTask = ref("");
@@ -114,78 +114,117 @@ const locationInfo = reactive({});
 
 const isModulesDialogVisible = ref(false);
 const modulesTaskIdx = ref(0);
+
+const loadingData = {
+  lock: true,
+  text: "请等待",
+  background: "rgba(0, 0, 0, 0.7)",
+};
+
 onMounted(async () => {
   refresh();
   const timer = setInterval(() => {
-    getTaskList();
+    refresh();
   }, 5000);
   onBeforeMount(() => {
     clearInterval(timer);
   });
 });
 
-const refresh = async () => {
-  await getTaskMgrStatus();
-  await getTaskList();
-};
-const getTaskMgrStatus = async () => {
-  axios.get("/api/taskMgr/status").then((res) => {
-    isTaskMgrStart.value = res.data.result;
+const onError = async (msg, error) => {
+  ElNotification({
+    title: "失败",
+    message: `${msg} - ${error}`,
+    type: "error",
   });
 };
 
-const getTaskList = async () => {
-  axios.get("/api/task/list").then((res) => {
-    tableData.value = res.data;
-  });
+const refresh = async () => getMgrInfo();
+const getMgrInfo = async () => {
+  axios.get("/api/mgr").then((res) => {
+    tableData.value = res.data.data.tasks;
+    isMgrRunning.value = res.data.data.is_running;
+  })
+  .catch((error) => onError("获取管理器信息失败", error));
 };
 
-const postReq = async (url, data = null) => {
-  const loading = ElLoading.service({
-    lock: true,
-    text: "请等待",
-    background: "rgba(0, 0, 0, 0.7)",
-  });
+const updateMgrInfo = async (val) => {
+  const loading = ElLoading.service(loadingData);
   axios
-    .post(`/api/${url}`, data)
+    .put("/api/mgr", { is_running: !!val })
     .then((res) => {
-      ElNotification({ title: "成功", message: "成功", type: "success" });
       loading.close();
       refresh();
     })
-    .catch((error) => {
-      ElNotification({ title: "失败", message: "程序异常", type: "error" });
-    });
+    .catch((error) => onError("更新管理器状态失败", error));
 };
 
-function taskMgrToggle(val) {
-  postReq(!!val ? "taskMgr/start" : "taskMgr/stop");
-}
-
-function taskToggle(val, taskName) {
-  postReq(!!val ? `task/enable/${taskName}` : `task/disable/${taskName}`);
-}
-
-function deleteTask(taskName) {
-  postReq(`task/delete/${taskName}`);
-}
-
-function createTask() {
-  if (!!createTaskName.value) {
-    postReq(`task/create/${createTaskName.value}`);
-    createTaskName.value = "";
-  } else {
-    ElNotification({ title: "失败", message: "任务名不能为空", type: "error" });
+const createTask = async () => {
+  if (!createTaskName.value) {
+    onError("创建任务失败", "任务名不能为空");
+    return;
   }
-}
+  const loading = ElLoading.service(loadingData);
+  axios
+    .post(`/api/mgr/task/${createTaskName.value}`, {})
+    .then((res) => {
+      createTaskName.value = "";
+      loading.close();
+      refresh();
+    })
+    .catch((error) => onError("创建任务失败", error));
+};
 
-function setModuleEnable(val, taskName, moduleName) {
-  postReq(
-    !!val
-      ? `module/enable/${taskName}/${moduleName}`
-      : `module/disable/${taskName}/${moduleName}`,
-  );
-}
+const taskToggle = async (taskName, enable) =>
+  updateTask(taskName, { enable: enable });
+
+const updateTask = async (taskName, taskData) => {
+  if (!taskName) {
+    onError("更新任务失败", "任务名不能为空");
+    return;
+  }
+  const loading = ElLoading.service(loadingData);
+  axios
+    .post(`/api/mgr/task/${taskName}`, taskData)
+    .then((res) => {
+      loading.close();
+      refresh();
+    })
+    .catch((error) => onError("更新任务失败", error));
+};
+
+const deleteTask = async (taskName) => {
+  if (!taskName) {
+    onError("删除任务失败", "任务名不能为空");
+    return;
+  }
+  const loading = ElLoading.service(loadingData);
+  axios
+    .delete(`/api/mgr/task/${taskName}`, {})
+    .then((res) => {
+      loading.close();
+      refresh();
+    })
+    .catch((error) => onError("删除任务失败", error));
+};
+
+const moduleToggle = async (taskName, moduleName, enable) =>
+  updateModule(taskName, moduleName, { enable: enable });
+
+const updateModule = async (taskName, moduleName, moduleData) => {
+  if (!taskName || !moduleName) {
+    onError("更新模块失败", "任务名/模块名不能为空");
+    return;
+  }
+  const loading = ElLoading.service(loadingData);
+  axios
+    .put(`/api/mgr/task/${taskName}/module/${moduleName}`, moduleData)
+    .then((res) => {
+      loading.close();
+      refresh();
+    })
+    .catch((error) => onError("更新模块失败", error));
+};
 
 function showLocationDialog(taskName, location) {
   isLocationDialogVisible.value = true;
@@ -194,7 +233,7 @@ function showLocationDialog(taskName, location) {
 }
 
 function showModulesDialog(taskIdx) {
-  console.log(taskIdx)
+  console.log(taskIdx);
   isModulesDialogVisible.value = true;
   modulesTaskIdx.value = taskIdx;
 }

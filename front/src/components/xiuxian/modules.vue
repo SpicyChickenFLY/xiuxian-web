@@ -13,7 +13,7 @@
       :cell-style="{ padding: '0px' }"
       style="width: 100%"
     >
-      <el-table-column label="模块" width="150">
+      <el-table-column label="模块" width="120">
         <template #default="{ row }">
           <el-space>
             <el-switch
@@ -30,14 +30,14 @@
       <el-table-column label="上次触发" width="140">
         <template #default="{ row }">
           <el-space>
-            {{ calcDayTime(row.prev) }}
+            {{ calcDayTime(row.prev, "尚未触发") }}
           </el-space>
         </template>
       </el-table-column>
-      <el-table-column label="下次触发">
+      <el-table-column label="下次触发" width="180">
         <template #default="{ row, $index }">
           <el-space>
-            {{ calcDayTime(row.next) }}
+            {{ calcDayTime(row.next, "随时可以") }}
             <el-button
               type="primary"
               size="small"
@@ -53,9 +53,14 @@
           {{ !!row.progress ? row.progress : "未开始" }}
         </template>
       </el-table-column>
-      <el-table-column label="当前等待" width="70">
+      <el-table-column label="当前等待" width="120">
         <template #default="{ row }">
           {{ !!row.wait ? row.wait : "无" }}
+        </template>
+      </el-table-column>
+      <el-table-column label="执行结果">
+        <template #default="{ row }">
+          {{ !!row.log ? row.log : "无" }}
         </template>
       </el-table-column>
     </el-table>
@@ -131,9 +136,9 @@ function showNextDialog(moduleIdx) {
   nextModuleName.value = props.tableData[props.taskIdx].modules[moduleIdx].name;
 }
 
-function calcDayTime(tsStr) {
+function calcDayTime(tsStr, missStr) {
   if (!tsStr) {
-    return "未知"
+    return missStr
   }
   const ts = moment.unix(parseInt(tsStr))
   const today = moment().startOf('day');

@@ -3,7 +3,7 @@
     :model-value="props.visible"
     @update:modelValue="emit('update:visible', $event)"
     width="600px"
-    :title="`任务- ${task} 自动点击坐标`"
+    :title="`任务- ${taskName} 自动点击坐标`"
   >
     <el-form-item label="输入框横坐标" style="width: 100%">
       <el-space>
@@ -36,7 +36,7 @@ import { reactive } from "vue";
 
 const props = defineProps({
   visible: { type: Boolean, default: false },
-  task: { type: String, default: "" },
+  taskName: { type: String, default: "" },
   info: { type: Object, default: { i_x: 0.0, i_y: 0.0, o_x: 0.0, o_y: 0.0 } },
 });
 
@@ -93,7 +93,7 @@ function recordOutputCursor() {
 }
 
 const setTaskLocation = async () => {
-  await postReq(`task/setBot/${props.task}`, coord.value, () => {
+  await postReq(`/api/task/${props.taskName}`, coord.value, () => {
     emit("update:visible", false);
     emit("refresh");
   });
