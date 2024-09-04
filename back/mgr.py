@@ -22,8 +22,8 @@ class TaskMgr:
                 file_path = os.path.join(root, file)
                 try:
                     with open(file_path, "r", encoding="utf-8") as rf:
-                        profile = json.load(rf)
-                        self.create_task(profile["task_name"], profile)
+                        task_data = json.load(rf)
+                        self.create_task(task_data["task_name"], task_data)
                 except json.JSONDecodeError as e:
                     print(f"解析任务配置文件{file_path}失败 {e}")
                 except Exception as e:
@@ -65,14 +65,8 @@ class TaskMgr:
     def get_mgr_info(self):
         """获取管理器信息"""
         task_list = []
-        for name, task in self.tasks.items():
-            task = {
-                "name": name,
-                "enable": task.enable,
-                "bot": task.get_bot_data(),
-                "modules": task.get_module_list(),
-            }
-            task_list.append(task)
+        for _, task in self.tasks.items():
+            task_list.append(task.get_task_data())
         return {"is_running": self.is_running, "tasks": task_list}
 
     def update_mgr(self, mgr_data):

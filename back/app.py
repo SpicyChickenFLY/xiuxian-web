@@ -63,11 +63,11 @@ class ModuleApi(Resource):
         """更新自动化任务模块信息"""
         return taskMgr.update_module(task_name, module_name, request.json)
 
-api.add_resource(MgrApi, '/api/cursor')
+api.add_resource(CursorApi, '/api/cursor')
 api.add_resource(MgrApi, '/api/mgr')
 api.add_resource(TaskApi, '/api/mgr/task/<task_name>')
 api.add_resource(ModuleApi, '/api/mgr/task/<task_name>/module/<module_name>')
 
 if __name__ == "__main__":
-    webbrowser.open("http://127.0.0.1:8010/")
+    # webbrowser.open("http://127.0.0.1:8010/")
     app.run(host="0.0.0.0", port=8010, debug=False)

@@ -11,8 +11,8 @@ from utils import FuncUtil
 class Module:
     """自动化功能模块基类"""
 
-    def __init__(self, profile, data) -> None:
-        self.progress_profiles = profile["progress_profile"]
+    def __init__(self, module_profile, module_data) -> None:
+        self._progress_profiles = module_profile["progress_profile"]
 
         self.name = ""
         self.enable = False
@@ -20,19 +20,26 @@ class Module:
         self.next = 0.0
         self.progress = ""
         self.log = ""
-        self.__dict__.update(data)
         self.wait = "" # 等待状态每次都需要重置，避免死锁
+        self.__dict__.update(module_data)
 
         # 给异常状态附上默认值
-        if self.progress == "" or self.progress not in profile:
-            self.progress = profile["default_cmd"]
+        if self.progress == "" or self.progress not in module_profile:
+            self.progress = module_profile["default_cmd"]
+
+    def get_module_data(self):
+        """组装任务各个模块信息"""
+        return {
+            "name": self.name,
+            "enable": self.enable,
+            "prev": self.prev,
+            "next": self.next,
+            "progress": self.progress,
+            "wait": self.wait,
+        }
 
     def update_module(self, module_data):
-        pass
-
-    def record_prev(self):
-        """记录本次触发发生时间"""
-        self.prev = time.time()
+        self.__dict__.update(module_data)
 
     def set_delay(self, duration, unit):
         """设置下次触发时间为定长的延迟"""
@@ -58,10 +65,6 @@ class Module:
         """直接设置下次触发时间的时间戳"""
         self.next = timestamp
 
-    def is_runnable(self):
-        """判断模块是否达到触发条件"""
-        return self.enable and self.wait == "" and time.time() > self.next
-
     def _run(self, run_data):
         # 更新模块数据
         self.log = f"{self.progress} {run_data['result']}"
@@ -80,21 +83,24 @@ class Module:
             self.progress = run_data["progress"]
 
 
-    def run(self, resp):
+    def run(self, resp, trigger):
         """运行模块功能"""
+        self.prev = trigger
         progress_profile = {}
-        for progress_regex in self.progress_profiles:
+        for progress_regex in self._progress_profiles:
             if len(re.findall(progress_regex, self.progress)) > 0:
-                progress_profile = self.progress_profiles[progress_regex]
+                progress_profile = self._progress_profiles[progress_regex]
                 break
         else:
-            self.log = f"{self.progress} 获取状态配置异常"
+            self.log = f"获取状态配置异常({self.progress})"
+            return self.wait, self.log
+        self.wait = ""
         run_data = copy.deepcopy(progress_profile)
         if progress_profile["type"] == "recv":
             if resp == "":
                 self.log = f"{self.progress} 无返回"
                 self.set_delay(15, "min")
-                return
+                return self.wait, self.log
             # 尝试匹配回复消息
             for resp_regex, _run_data in progress_profile["resp"].items():
                 if len(re.findall(resp_regex, resp)) > 0:
@@ -103,7 +109,7 @@ class Module:
             else:
                 self.log = f"{self.progress} 返回异常{resp}"
                 self.set_delay(1, "min")
-                return
+                return self.wait, self.log
 
         # 预处理数据
         if "pre" in run_data:
@@ -115,22 +121,12 @@ class Module:
                 )
 
         self._run(run_data)
+        return self.wait, self.log
 
-    def get_cmd_type(self):
+    def get_next_cmd_and_cmd_type(self):
         """命令接口"""
-        for resp_regex, progress_profile in self.progress_profiles.items():
+        for resp_regex, progress_profile in self._progress_profiles.items():
             if len(re.findall(resp_regex, self.progress)) > 0:
                 cmd_type = progress_profile["type"]
-                return cmd_type
+                return self.progress, cmd_type
         return "send"
-
-    def get_module_base_detail(self):
-        """组装任务各个模块信息"""
-        return {
-            "name": self.name,
-            "enable": self.enable,
-            "prev": self.prev,
-            "next": self.next,
-            "progress": self.progress,
-            "wait": self.wait,
-        }

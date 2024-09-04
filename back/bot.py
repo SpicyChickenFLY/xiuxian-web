@@ -69,8 +69,8 @@ class Bot:
         # 重发3次,重收10次都不行,可能是服务器问题
         return ""
 
-    def _set_bot_data(self, bot_data):
+    def set_bot_data(self, bot_data):
         self.__dict__.update(bot_data)
 
-    def _get_bot_data(self):
+    def get_bot_data(self):
         return {"i_x": self.i_x, "i_y": self.i_y, "o_x": self.o_x, "o_y": self.o_y}
