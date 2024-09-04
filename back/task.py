@@ -18,6 +18,28 @@ class Task(Bot):
         Bot.__init__(self)
 
         self.task_name = task_name
+        self.enable = False
+        self.modules: Dict[str, Module] = {}
+
+        self.update_task(task_data)
+
+    def save(self):
+        """保存类成员参数"""
+        module_data = {}
+        for code, module in self.modules.items():
+            module_data[code] = module.get_module_base_detail()
+        data = {
+            "task_name": self.task_name,
+            "enable": self.enable,
+            "bot": self.get_bot_data(),
+            "modules": module_data,
+        }
+        data_dir = "data/tasks"
+        os.makedirs(f"{data_dir}", exist_ok=True)
+        with open(f"{data_dir}/{self.task_name}.json", "w", encoding="utf-8") as fw:
+            fw.write(json.dumps(data, ensure_ascii=False, indent=4))
+
+    def update_task(self, task_data):
         self.enable = task_data["enable"] if "enable" in task_data else False
         self.modules: Dict[str, Module] = {}
 
@@ -37,26 +59,6 @@ class Task(Bot):
             module_data["name"] = code
             self.modules[code] = Module(support_module, module_data)
 
-        self.save()
-
-    def save(self):
-        """保存类成员参数"""
-        module_data = {}
-        for code, module in self.modules.items():
-            module_data[code] = module.get_module_base_detail()
-        data = {
-            "task_name": self.task_name,
-            "enable": self.enable,
-            "bot": self.get_bot_data(),
-            "modules": module_data,
-        }
-        data_dir = "data/tasks"
-        os.makedirs(f"{data_dir}", exist_ok=True)
-        with open(f"{data_dir}/{self.task_name}.json", "w", encoding="utf-8") as fw:
-            fw.write(json.dumps(data, ensure_ascii=False, indent=4))
-
-    def update_task(self, task_data):
-        self.__dict__.update(task_data)
         self.save()
 
     def get_bot_data(self):
