@@ -23,7 +23,7 @@ class TaskMgr:
                 try:
                     with open(file_path, "r", encoding="utf-8") as rf:
                         task_data = json.load(rf)
-                        self.create_task(task_data["task_name"], task_data)
+                        self.create_task(task_data["name"], task_data)
                 except json.JSONDecodeError as e:
                     print(f"解析任务配置文件{file_path}失败 {e}")
                 except Exception as e:
@@ -112,3 +112,24 @@ class TaskMgr:
         if was_run:
             self._start()
         return module_name
+
+    def get_config(self):
+        """获取模块配置文件"""
+        _support_modules = {}
+        try:
+            with open("data/modules.json", "r", encoding="utf-8") as rf:
+                _support_modules = json.load(rf)
+        except json.JSONDecodeError as e:
+            print(f"解析模块配置文件data/modules.json失败 {e}")
+        except Exception as e:
+            print(f"加载模块配置文件data/modules.json失败 {type(e)} {e}")
+        return _support_modules
+
+    def update_config(self, config_data):
+        """更新模块配置文件"""
+        try:
+            os.makedirs("data", exist_ok=True)
+            with open("data/modules.json", "w", encoding="utf-8") as fw:
+                fw.write(json.dumps(config_data, ensure_ascii=False, indent=4))
+        except Exception as e:
+            print(f"写入模块配置文件data/modules.json失败 {type(e)} {e}")

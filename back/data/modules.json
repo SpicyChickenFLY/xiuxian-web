@@ -16,14 +16,16 @@
         "progress_profile": {
             "灵田收取": {
                 "type": "recv",
-                "resp": {
-                    "道友成功收取药材": {
+                "resp": [
+                    {
+                        "resp": "道友成功收取药材",
                         "result": "成功,跳过阶段",
                         "next_type": "delay",
                         "next_duration": 48,
                         "next_unit": "h"
                     },
-                    "道友的灵田还不能收取": {
+                    {
+                        "resp": "道友的灵田还不能收取",
                         "result": "失败,延迟收取",
                         "pre": {
                             "next_duration": {
@@ -36,7 +38,7 @@
                         "next_type": "delay",
                         "next_unit": "h"
                     }
-                }
+                ]
             }
         }
     },
@@ -45,14 +47,15 @@
         "progress_profile": {
             "灵庄结算": {
                 "type": "recv",
-                "resp": {
-                    "结息": {
+                "resp": [
+                    {
+                        "resp": "结息",
                         "result": "成功,跳过阶段",
                         "next_type": "delay",
                         "next_duration": 30,
                         "next_unit": "min"
                     }
-                }
+                ]
             }
         }
     },
@@ -61,20 +64,22 @@
         "progress_profile": {
             "修仙签到": {
                 "type": "recv",
-                "resp": {
-                    "签到成功": {
+                "resp": [
+                    {
+                        "resp": "签到成功",
                         "result": "成功,跳过阶段",
                         "next_type": "delay",
                         "next_duration": 8,
                         "next_unit": "h"
                     },
-                    "贪心": {
+                    {
+                        "resp": "贪心",
                         "result": "失败,跳过阶段",
                         "next_type": "delay",
                         "next_duration": 8,
                         "next_unit": "h"
                     }
-                }
+                ]
             }
         }
     },
@@ -83,12 +88,14 @@
         "progress_profile": {
             "悬赏令刷新": {
                 "type": "recv",
-                "resp": {
-                    "进行中的": {
+                "resp": [
+                    {
+                        "resp": "进行中的",
                         "result": "已接,准备结算",
                         "progress": "悬赏令结算"
                     },
-                    "的个人悬赏令": {
+                    {
+                        "resp": "的个人悬赏令",
                         "result": "成功,准备接取",
                         "pre": {
                             "progress": {
@@ -97,7 +104,8 @@
                             }
                         }
                     },
-                    "次数已用尽": {
+                    {
+                        "resp": "次数已用尽",
                         "result": "结束,跳过阶段",
                         "next_type": "set",
                         "next_hour": 8,
@@ -105,33 +113,38 @@
                         "next_second": 0,
                         "progress": "悬赏令刷新"
                     },
-                    "秘境": {
+                    {
+                        "resp": "秘境",
                         "result": "失败,等待秘境",
                         "wait": "秘境"
                     }
-                }
+                ]
             },
             "悬赏令接取": {
                 "type": "recv",
-                "resp": {
-                    "没有可以接取的": {
+                "resp": [
+                    {
+                        "resp": "没有可以接取的",
                         "result": "失败，准备刷新",
                         "progress": "悬赏令刷新"
                     },
-                    "成功": {
+                    {
+                        "resp": "成功",
                         "result": "完成，准备结算",
                         "progress": "悬赏令结算"
                     }
-                }
+                ]
             },
             "悬赏令结算": {
                 "type": "recv",
-                "resp": {
-                    "悬赏令结算": {
+                "resp": [
+                    {
+                        "resp": "悬赏令结算",
                         "result": "成功，准备刷新",
                         "progress": "悬赏令刷新"
                     },
-                    "进行中的悬赏令": {
+                    {
+                        "resp": "进行中的悬赏令",
                         "result": "未完,延迟结算",
                         "pre": {
                             "next_duration": {
@@ -144,11 +157,12 @@
                         "next_type": "delay",
                         "next_unit": "min"
                     },
-                    "没有查到": {
+                    {
+                        "resp": "没有查到",
                         "result": "失败，准备刷新",
                         "progress": "悬赏令刷新"
                     }
-                }
+                ]
             }
         }
     },
@@ -157,25 +171,28 @@
         "progress_profile": {
             "双修北条惠古": {
                 "type": "recv",
-                "resp": {
-                    "情投意合": {
+                "resp": [
+                    {
+                        "resp": "情投意合",
                         "result": "成功,准备双修"
                     },
-                    "到达上限": {
+                    {
+                        "resp": "到达上限",
                         "result": "结束,跳过阶段",
                         "next_type": "set",
                         "next_hour": 10,
                         "next_minute": 0,
                         "next_second": 0
                     },
-                    "无法与自己": {
+                    {
+                        "resp": "无法与自己",
                         "result": "失败,跳过阶段",
                         "next_type": "set",
                         "next_hour": 10,
                         "next_minute": 0,
                         "next_second": 0
                     }
-                }
+                ]
             }
         }
     },
@@ -184,44 +201,52 @@
         "progress_profile": {
             "探索秘境": {
                 "type": "recv",
-                "resp": {
-                    "正在秘境中": {
+                "resp": [
+                    {
+                        "resp": "正在秘境中",
                         "result": "已接,准备结算",
                         "progress": "秘境结算"
                     },
-                    "进入秘境": {
+                    {
+                        "resp": "进入秘境",
                         "result": "成功,准备结算",
                         "progress": "秘境结算"
                     },
-                    "道友已经参加过本次秘境啦": {
+                    {
+                        "resp": "已经参加过本次",
                         "result": "结束,跳过阶段",
                         "next_type": "set",
                         "next_hour": 13,
                         "next_minute": 0,
                         "next_second": 0
                     },
-                    "修炼": {
+                    {
+                        "resp": "修炼",
                         "result": "失败,等待修炼",
                         "wait": "修炼"
                     },
-                    "悬赏令": {
+                    {
+                        "resp": "悬赏令",
                         "result": "失败,等待悬赏令",
                         "wait": "悬赏令"
                     }
-                }
+                ]
             },
             "秘境结算": {
                 "type": "recv",
-                "resp": {
-                    "翻开一看|被打劫|空手|踢出|不敌|减少": {
+                "resp": [
+                    {
+                        "resp": "翻开一看|被打劫|空手|踢出|不敌|减少",
                         "result": "空军,准备探索",
                         "progress": "探索秘境"
                     },
-                    "灵石|防具|神通|辅修|功法|仙器|通天|纯阳|法器|符器|战胜": {
+                    {
+                        "resp": "灵石|防具|神通|辅修|功法|仙器|通天|纯阳|法器|符器|战胜",
                         "result": "完成,准备探索",
                         "progress": "探索秘境"
                     },
-                    "进行中的": {
+                    {
+                        "resp": "进行中的",
                         "result": "未完,延迟结算",
                         "pre": {
                             "next_duration": {
@@ -234,11 +259,12 @@
                         "next_type": "delay",
                         "next_unit": "min"
                     },
-                    "什么都没干呢|修炼|悬赏令": {
+                    {
+                        "resp": "什么都没干呢|修炼|悬赏令",
                         "result": "失败,准备探索",
                         "progress": "秘境探索"
                     }
-                }
+                ]
             }
         }
     },
@@ -247,22 +273,24 @@
         "progress_profile": {
             "宗门丹药领取": {
                 "type": "recv",
-                "resp": {
-                    "成功": {
+                "resp": [
+                    {
+                        "resp": "成功",
                         "result": "成功,跳过阶段",
                         "next_type": "set",
                         "next_hour": 14,
                         "next_minute": 0,
                         "next_second": 0
                     },
-                    "贪心": {
+                    {
+                        "resp": "贪心",
                         "result": "失败,跳过阶段",
                         "next_type": "set",
                         "next_hour": 14,
                         "next_minute": 0,
                         "next_second": 0
                     }
-                }
+                ]
             }
         }
     },
@@ -271,14 +299,16 @@
         "progress_profile": {
             "修炼": {
                 "type": "recv",
-                "resp": {
-                    "开始": {
+                "resp": [
+                    {
+                        "resp": "开始",
                         "result": "成功,跳过阶段",
                         "next_type": "delay",
                         "next_duration": 1,
                         "next_unit": "min"
                     },
-                    "时间还没到": {
+                    {
+                        "resp": "时间还没到",
                         "result": "未完,延迟修炼",
                         "pre": {
                             "next_duration": {
@@ -291,15 +321,17 @@
                         "next_type": "delay",
                         "next_unit": "s"
                     },
-                    "秘境": {
+                    {
+                        "resp": "秘境",
                         "result": "失败,等待秘境",
                         "wait": "秘境"
                     },
-                    "悬赏令": {
+                    {
+                        "resp": "悬赏令",
                         "result": "失败,等待悬赏令",
                         "wait": "悬赏令"
                     }
-                }
+                ]
             }
         }
     },
@@ -308,8 +340,9 @@
         "progress_profile": {
             "坊市查看": {
                 "type": "recv",
-                "resp": {
-                    "线下交易": {
+                "resp": [
+                    {
+                        "resp": "线下交易",
                         "result": "成功",
                         "pre": {
                             "progress": {
@@ -327,7 +360,7 @@
                         },
                         "next_type": "delay"
                     }
-                }
+                ]
             }
         }
     },
@@ -336,42 +369,49 @@
         "progress_profile": {
             "宗门任务接取": {
                 "type": "recv",
-                "resp": {
-                    "今日无法再获取": {
+                "resp": [
+                    {
+                        "resp": "今日无法再获取",
                         "result": "成功,跳过阶段",
                         "next_type": "set",
                         "next_hour": 5,
                         "next_minute": 0,
                         "next_second": 0
                     },
-                    "除害": {
+                    {
+                        "resp": "除害",
                         "result": "成功,准备完成",
                         "progress": "宗门任务完成"
                     },
-                    "查抄|购买|还清": {
+                    {
+                        "resp": "查抄|购买|还清",
                         "result": "不做,准备刷新",
                         "progress": "宗门任务刷新"
                     }
-                }
+                ]
             },
             "宗门任务刷新": {
                 "type": "recv",
-                "resp": {
-                    "没有宗门任务": {
+                "resp": [
+                    {
+                        "resp": "没有宗门任务",
                         "result": "未接,准备接取",
                         "progress": "宗门任务接取"
                     },
-                    "除害": {
+                    {
+                        "resp": "除害",
                         "result": "成功,准备完成",
                         "progress": "宗门任务完成"
                     },
-                    "查抄|购买|还清": {
+                    {
+                        "resp": "查抄|购买|还清",
                         "result": "不做,准备刷新",
                         "next_type": "delay",
                         "next_duration": 120,
                         "next_unit": "s"
                     },
-                    "时间还没到": {
+                    {
+                        "resp": "时间还没到",
                         "result": "未完,延迟刷新",
                         "pre": {
                             "next_duration": {
@@ -384,27 +424,31 @@
                         "next_type": "delay",
                         "next_unit": "s"
                     }
-                }
+                ]
             },
             "宗门任务完成": {
                 "type": "recv",
-                "resp": {
-                    "宗门贡献": {
+                "resp": [
+                    {
+                        "resp": "宗门贡献",
                         "result": "完成,准备接取",
                         "progress": "宗门任务接取"
                     },
-                    "当前没有接取宗门任务": {
+                    {
+                        "resp": "当前没有接取宗门任务",
                         "result": "未接,准备接取",
                         "progress": "宗门任务接取"
                     },
-                    "不扣你任务次数了": {
+                    {
+                        "resp": "不扣你任务次数了",
                         "result": "无效,等待回血",
                         "next_type": "delay",
                         "next_duration": 120,
                         "next_unit": "s",
                         "wait": "修炼"
                     },
-                    "冷静一下": {
+                    {
+                        "resp": "冷静一下",
                         "result": "未完,延迟完成",
                         "pre": {
                             "next_duration": {
@@ -417,7 +461,7 @@
                         "next_type": "delay",
                         "next_unit": "s"
                     }
-                }
+                ]
             }
         }
     },
@@ -426,53 +470,60 @@
         "progress_profile": {
             "我的修仙信息": {
                 "type": "recv",
-                "resp": {
-                    "境界: .*境[初|中]期[\\s\\S]*状态: 可突破": {
+                "resp": [
+                    {
+                        "resp": "境界: .*境[初|中]期[\\s\\S]*状态: 可突破",
                         "result": "成功,准备突破",
                         "progress": "突破"
                     },
-                    "境界: .*境[初|中]期[\\s\\S]*状态: 还需.*修为可突破": {
+                    {
+                        "resp": "境界: .*境[初|中]期[\\s\\S]*状态: 还需.*修为可突破",
                         "result": "不足，延迟突破",
                         "next_type": "delay",
                         "next_duration": 15,
                         "next_unit": "min"
                     },
-                    "境界: .*境圆满": {
+                    {
+                        "resp": "境界: .*境圆满",
                         "result": "圆满，跳过阶段",
                         "next_type": "delay",
                         "next_duration": 30,
                         "next_unit": "min"
                     }
-                }
+                ]
             },
             "^突破&": {
                 "type": "recv",
-                "resp": {
-                    "背包有丹药：渡厄丹": {
+                "resp": [
+                    {
+                        "resp": "背包有丹药：渡厄丹",
                         "result": "成功,准备突破",
                         "progress": "渡厄突破"
                     },
-                    "背包没有": {
+                    {
+                        "resp": "背包没有",
                         "result": "没丹，延迟突破",
                         "next_type": "set",
                         "next_hour": 14,
                         "next_minute": 15,
                         "next_second": 0
                     }
-                }
+                ]
             },
             "渡厄突破": {
                 "type": "recv",
-                "resp": {
-                    "恭喜": {
+                "resp": [
+                    {
+                        "resp": "恭喜",
                         "result": "成功,准备下次",
                         "progress": "我的修仙信息"
                     },
-                    "突破失败": {
+                    {
+                        "resp": "突破失败",
                         "result": "失败，准备突破",
                         "progress": "突破"
                     }
-                }
+                ]
             }
         }
     }

@@ -22,15 +22,15 @@ class Task():
 
     def _init_modules(self, modules_data):
         # 模块前置等待表，因为是串行化操作，并且是先检查后创建，应该不会死锁
-        self._support_modules: Dict[str, Module] = {}
+        support_modules = {}
         try:
             with open("data/modules.json", "r", encoding="utf-8") as rf:
-                self._support_modules = json.load(rf)
+                support_modules = json.load(rf)
         except json.JSONDecodeError as e:
             print(f"解析模块配置文件data/modules.json失败 {e}")
         except Exception as e:
             print(f"加载模块配置文件data/modules.json失败 {type(e)} {e}")
-        for code, support_module in self._support_modules.items():
+        for code, support_module in support_modules.items():
             module_data = modules_data[code] if code in modules_data else {}
             module_data["name"] = code
             self.modules[code] = Module(support_module, module_data)

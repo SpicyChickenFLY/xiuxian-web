@@ -102,8 +102,8 @@ class Module:
                 self.set_delay(15, "min")
                 return self.wait, self.log
             # 尝试匹配回复消息
-            for resp_regex, _run_data in progress_profile["resp"].items():
-                if len(re.findall(resp_regex, resp)) > 0:
+            for _run_data in progress_profile["resp"].items():
+                if len(re.findall(_run_data["resp"], resp)) > 0:
                     run_data = copy.deepcopy(_run_data)
                     break
             else:

@@ -1,5 +1,5 @@
 <template>
-  <h3>
+  <el-space>
     自动化管理
     <el-switch
       v-model="isMgrRunning"
@@ -9,15 +9,16 @@
       inactive-text="停止"
       @change="updateMgrInfo"
     />
-  </h3>
+    <el-button @click="showConfigDialog">模块插件管理</el-button>
+  </el-space>
 
   <el-input v-model="createTaskName" placeholder="新任务名称(建议使用用户名)">
     <template #append>
-      <el-button type="success" @click="createTask">创建自动化任务</el-button>
+      <el-button @click="createTask">创建自动化任务</el-button>
     </template>
   </el-input>
   <el-table
-    :data="tableData"
+    :data="mgrData"
     size="small"
     :row-style="{ height: '20px' }"
     :cell-style="{ padding: '0px' }"
@@ -75,10 +76,9 @@
     </el-table-column>
   </el-table>
 
-  <modules
-    v-if="isModulesDialogVisible"
-    v-model:visible="isModulesDialogVisible"
-    :taskData="tableData[moduleTaskIdx]"
+  <config
+    v-if="isConfigDialogVisible"
+    v-model:visible="isConfigDialogVisible"
     @refresh="refresh"
   />
   <location
@@ -86,6 +86,12 @@
     v-model:visible="isLocationDialogVisible"
     :taskName="locationTask"
     :info="locationInfo"
+    @refresh="refresh"
+  />
+  <modules
+    v-if="isModulesDialogVisible"
+    v-model:visible="isModulesDialogVisible"
+    :taskData="mgrData[moduleTaskIdx]"
     @refresh="refresh"
   />
 </template>
@@ -98,15 +104,18 @@ import { Operation, Delete, FolderAdd } from "@element-plus/icons-vue";
 
 import Modules from "./modules.vue";
 import Location from "./location.vue";
+import Config from "./config.vue";
 
 defineProps({
   msg: String,
 });
 
 const timer = reactive(null);
-const tableData = ref([]);
+const mgrData = ref([]);
 const isMgrRunning = ref(false);
 const createTaskName = ref("");
+
+const isConfigDialogVisible = ref(false);
 
 const isLocationDialogVisible = ref(false);
 const locationTask = ref("");
@@ -141,11 +150,13 @@ const onError = async (msg, error) => {
 
 const refresh = async () => getMgrInfo();
 const getMgrInfo = async () => {
-  axios.get("/api/mgr").then((res) => {
-    tableData.value = res.data.data.tasks;
-    isMgrRunning.value = res.data.data.is_running;
-  })
-  .catch((error) => onError("获取管理器信息失败", error));
+  axios
+    .get("/api/mgr")
+    .then((res) => {
+      mgrData.value = res.data.data.tasks;
+      isMgrRunning.value = res.data.data.is_running;
+    })
+    .catch((error) => onError("获取管理器信息失败", error));
 };
 
 const updateMgrInfo = async (val) => {
@@ -225,6 +236,10 @@ const updateModule = async (taskName, moduleName, moduleData) => {
     })
     .catch((error) => onError("更新模块失败", error));
 };
+
+function showConfigDialog(taskIdx) {
+  isConfigDialogVisible.value = true;
+}
 
 function showLocationDialog(taskName, location) {
   isLocationDialogVisible.value = true;
