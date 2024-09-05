@@ -87,34 +87,39 @@ const triggerType = ref("delay");
 const delayDuration = ref(0);
 const delayUnit = ref("second");
 const setTime = ref(moment().format("YYYY/MM/DD HH:mm:ss"));
-onMounted(async () => {});
 
-const postReq = async (url, data = null, callback = null) => {
-  const loading = ElLoading.service({
-    lock: true,
-    text: "请等待",
-    background: "rgba(0, 0, 0, 0.7)",
-  });
-  axios
-    .post(`/api/${url}`, data)
-    .then((res) => {
-      ElNotification({ title: "成功", message: "成功", type: "success" });
-      if (callback !== null) {
-        callback(res);
-      }
-      loading.close();
-      return res;
-    })
-    .catch((error) => {
-      ElNotification({ title: "失败", message: "程序异常", type: "error" });
-    });
+const loadingData = {
+  lock: true,
+  text: "请等待",
+  background: "rgba(0, 0, 0, 0.7)",
 };
 
-const setModuleNext = async (next) => {
-  await postReq(`module/${props.taskName}/${props.moduleName}/setNext/${next}`);
-  emit("update:visible", false);
-  emit("refreshModule");
-}
+const onError = async (msg, error) => {
+  ElNotification({
+    title: "失败",
+    message: `${msg} - ${error}`,
+    type: "error",
+  });
+};
+
+const setModuleNext = async (next) =>
+  updateModule(props.taskName, props.moduleName, { next: next });
+
+const updateModule = async (taskName, moduleName, moduleData) => {
+  if (!taskName || !moduleName) {
+    onError("更新模块失败", "任务名/模块名不能为空");
+    return;
+  }
+  const loading = ElLoading.service(loadingData);
+  axios
+    .put(`/api/mgr/task/${taskName}/module/${moduleName}`, moduleData)
+    .then((res) => {
+      loading.close();
+      emit("refreshModule");
+      emit("update:visible", false);
+    })
+    .catch((error) => onError("更新模块失败", error));
+};
 </script>
 
 <style scoped>

@@ -31,7 +31,7 @@
           inline-prompt
           :active-text="row.name"
           :inactive-text="row.name"
-          @change="(val) => taskToggle(row.name, val)"
+          @change="(val) => setTaskEnable(row.name, val)"
         />
       </template>
     </el-table-column>
@@ -53,7 +53,7 @@
           :key="module.name"
           :type="module.enable ? 'success' : 'danger'"
           size="large"
-          @click="moduleToggle(row.name, module.name, !module.enable)"
+          @click="setModuleEnable(row.name, module.name, !module.enable)"
         >
           {{ module.name }}
         </el-tag>
@@ -78,14 +78,13 @@
   <modules
     v-if="isModulesDialogVisible"
     v-model:visible="isModulesDialogVisible"
-    :taskIdx="modulesTaskIdx"
-    :tableData="tableData"
+    :taskData="tableData[moduleTaskIdx]"
     @refresh="refresh"
   />
   <location
     v-if="isLocationDialogVisible"
     v-model:visible="isLocationDialogVisible"
-    :task="locationTask"
+    :taskName="locationTask"
     :info="locationInfo"
     @refresh="refresh"
   />
@@ -108,12 +107,13 @@ const timer = reactive(null);
 const tableData = ref([]);
 const isMgrRunning = ref(false);
 const createTaskName = ref("");
+
 const isLocationDialogVisible = ref(false);
 const locationTask = ref("");
 const locationInfo = reactive({});
 
 const isModulesDialogVisible = ref(false);
-const modulesTaskIdx = ref(0);
+const moduleTaskIdx = ref(0);
 
 const loadingData = {
   lock: true,
@@ -175,7 +175,7 @@ const createTask = async () => {
     .catch((error) => onError("创建任务失败", error));
 };
 
-const taskToggle = async (taskName, enable) =>
+const setTaskEnable = async (taskName, enable) =>
   updateTask(taskName, { enable: enable });
 
 const updateTask = async (taskName, taskData) => {
@@ -208,7 +208,7 @@ const deleteTask = async (taskName) => {
     .catch((error) => onError("删除任务失败", error));
 };
 
-const moduleToggle = async (taskName, moduleName, enable) =>
+const setModuleEnable = async (taskName, moduleName, enable) =>
   updateModule(taskName, moduleName, { enable: enable });
 
 const updateModule = async (taskName, moduleName, moduleData) => {
@@ -233,9 +233,8 @@ function showLocationDialog(taskName, location) {
 }
 
 function showModulesDialog(taskIdx) {
-  console.log(taskIdx);
   isModulesDialogVisible.value = true;
-  modulesTaskIdx.value = taskIdx;
+  moduleTaskIdx.value = taskIdx;
 }
 </script>
 

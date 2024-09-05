@@ -7,7 +7,7 @@
     :title="`任务 - ${taskName} 的 模块列表`"
   >
     <el-table
-      :data="tableData[taskIdx].modules"
+      :data="props.taskData.modules"
       size="small"
       :row-style="{ height: '20px' }"
       :cell-style="{ padding: '0px' }"
@@ -22,30 +22,25 @@
               inline-prompt
               :active-text="row.name"
               :inactive-text="row.name"
-              @change="(val) => setModuleEnable(val, row.name)"
+              @change="(val) => setModuleEnable(taskName, row.name, val)"
             />
           </el-space>
         </template>
       </el-table-column>
       <el-table-column label="上次触发" width="140">
         <template #default="{ row }">
-          <el-space>
-            {{ calcDayTime(row.prev, "尚未触发") }}
-          </el-space>
+          {{ calcDayTime(row.prev, "尚未触发") }}
         </template>
       </el-table-column>
-      <el-table-column label="下次触发" width="180">
+      <el-table-column label="下次触发" width="140">
         <template #default="{ row, $index }">
-          <el-space>
-            {{ calcDayTime(row.next, "随时可以") }}
-            <el-button
-              type="primary"
-              size="small"
-              link
-              @click="showNextDialog($index)"
-              >设置</el-button
-            >
-          </el-space>
+          <el-button
+            type="primary"
+            size="small"
+            link
+            @click="showNextDialog($index)"
+            >{{ calcDayTime(row.next, "随时可以") }}</el-button
+          >
         </template>
       </el-table-column>
       <el-table-column label="当前状态" width="120">
@@ -84,56 +79,59 @@ import moment from "moment";
 
 const props = defineProps({
   visible: { type: Boolean, default: false },
-  taskIdx: { type: Number, default: 0 },
-  tableData: { type: Object, default: {} },
+  taskData: { type: Object, default: {} },
 });
 
 const emit = defineEmits(["update:visible", "refresh"]);
 
 const taskName = computed(() => {
-  return props.tableData[props.taskIdx].name;
+  return props.taskData.name;
 });
 
 const isNextDialogVisible = ref(false);
 const nextTaskName = ref("");
 const nextModuleName = ref("");
 
-onMounted(async () => {});
-
-const postReq = async (url, data = null, callback = null) => {
-  const loading = ElLoading.service({
-    lock: true,
-    text: "请等待",
-    background: "rgba(0, 0, 0, 0.7)",
-  });
-  axios
-    .post(`/api/${url}`, data)
-    .then((res) => {
-      ElNotification({ title: "成功", message: "成功", type: "success" });
-      if (callback !== null) {
-        callback(res);
-      }
-      loading.close();
-      emit("refresh");
-      return res;
-    })
-    .catch((error) => {
-      ElNotification({ title: "失败", message: "程序异常", type: "error" });
-    });
+const loadingData = {
+  lock: true,
+  text: "请等待",
+  background: "rgba(0, 0, 0, 0.7)",
 };
 
-function setModuleEnable(val, module) {
-  postReq(
-    !!val
-      ? `module/enable/${taskName.value}/${module}`
-      : `module/disable/${taskName.value}/${module}`,
-  );
-}
+const onError = async (msg, error) => {
+  ElNotification({
+    title: "失败",
+    message: `${msg} - ${error}`,
+    type: "error",
+  });
+};
+
+const refreshModule = async () => {
+  emit("refresh");
+};
+
+const setModuleEnable = async (taskName, moduleName, enable) =>
+  updateModule(taskName, moduleName, { enable: enable });
+
+const updateModule = async (taskName, moduleName, moduleData) => {
+  if (!taskName || !moduleName) {
+    onError("更新模块失败", "任务名/模块名不能为空");
+    return;
+  }
+  const loading = ElLoading.service(loadingData);
+  axios
+    .put(`/api/mgr/task/${taskName}/module/${moduleName}`, moduleData)
+    .then((res) => {
+      loading.close();
+      refreshModule();
+    })
+    .catch((error) => onError("更新模块失败", error));
+};
 
 function showNextDialog(moduleIdx) {
   isNextDialogVisible.value = true;
   nextTaskName.value = taskName.value;
-  nextModuleName.value = props.tableData[props.taskIdx].modules[moduleIdx].name;
+  nextModuleName.value = props.taskData.modules[moduleIdx].name;
 }
 
 function calcDayTime(tsStr, missStr) {
@@ -153,10 +151,6 @@ function calcDayTime(tsStr, missStr) {
   }
   return prefix + time
 }
-
-const refreshModule = async () => {
-  emit("refresh");
-};
 </script>
 
 <style scoped>
