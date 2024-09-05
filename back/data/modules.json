@@ -112,7 +112,6 @@
                 }
             },
             "悬赏令接取": {
-                "default_cmd": false,
                 "type": "recv",
                 "resp": {
                     "没有可以接取的": {
@@ -126,7 +125,6 @@
                 }
             },
             "悬赏令结算": {
-                "default_cmd": false,
                 "type": "recv",
                 "resp": {
                     "悬赏令结算": {
@@ -213,7 +211,6 @@
                 }
             },
             "秘境结算": {
-                "default_cmd": false,
                 "type": "recv",
                 "resp": {
                     "翻开一看|被打劫|空手|踢出|不敌|减少": {
