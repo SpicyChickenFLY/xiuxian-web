@@ -196,7 +196,7 @@ const updateTask = async (taskName, taskData) => {
   }
   const loading = ElLoading.service(loadingData);
   axios
-    .post(`/api/mgr/task/${taskName}`, taskData)
+    .put(`/api/mgr/task/${taskName}`, taskData)
     .then((res) => {
       loading.close();
       refresh();
