@@ -45,9 +45,9 @@ class Task():
 
     def get_task_data(self):
         """获取任务信息"""
-        module_data = {}
-        for code, module in self.modules.items():
-            module_data[code] = module.get_module_data()
+        module_data = []
+        for _, module in self.modules.items():
+            module_data.append(module.get_module_data())
         return {
             "name": self.task_name,
             "enable": self.enable,
