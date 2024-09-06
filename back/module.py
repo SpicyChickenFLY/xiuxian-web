@@ -15,7 +15,7 @@ class Module:
         self._progress_profiles = module_profile["progress_profile"]
 
         self.name = ""
-        self.enable = False
+        self.enable = True
         self.prev = 0.0
         self.next = 0.0
         self.progress = ""
@@ -36,9 +36,11 @@ class Module:
             "next": self.next,
             "progress": self.progress,
             "wait": self.wait,
+            "log": self.log,
         }
 
     def update_module(self, module_data):
+        """更新模块信息"""
         self.__dict__.update(module_data)
 
     def set_delay(self, duration, unit):
@@ -129,4 +131,5 @@ class Module:
             if len(re.findall(resp_regex, self.progress)) > 0:
                 cmd_type = progress_profile["type"]
                 return self.progress, cmd_type
-        return "send"
+        print(f"异常返回{self.progress}")
+        return self.progress, "send"
