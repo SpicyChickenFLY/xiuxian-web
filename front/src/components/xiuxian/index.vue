@@ -67,11 +67,11 @@
           :icon="Operation"
           @click="showModulesDialog(scope.$index)"
         />
-        <el-button
-          type="danger"
-          :icon="Delete"
-          @click="deleteTask(scope.row.name)"
-        />
+        <!-- <el-button -->
+        <!--   type="danger" -->
+        <!--   :icon="Delete" -->
+        <!--   @click="deleteTask(scope.row.name)" -->
+        <!-- /> -->
       </template>
     </el-table-column>
   </el-table>
