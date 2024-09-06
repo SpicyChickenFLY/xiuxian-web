@@ -13,7 +13,7 @@
       :cell-style="{ padding: '0px' }"
       style="width: 100%"
     >
-      <el-table-column label="模块" width="120">
+      <el-table-column label="模块" width="100">
         <template #default="{ row }">
           <el-space>
             <el-switch
@@ -27,12 +27,12 @@
           </el-space>
         </template>
       </el-table-column>
-      <el-table-column label="上次触发" width="140">
+      <el-table-column label="上次触发" width="100">
         <template #default="{ row }">
           {{ calcDayTime(row.prev, "尚未触发") }}
         </template>
       </el-table-column>
-      <el-table-column label="下次触发" width="140">
+      <el-table-column label="下次触发" width="100">
         <template #default="{ row, $index }">
           <el-button
             type="primary"
@@ -43,17 +43,17 @@
           >
         </template>
       </el-table-column>
-      <el-table-column label="当前状态" width="120">
+      <el-table-column label="当前状态" width="100" show-overflow-tooltip>
         <template #default="{ row }">
           {{ !!row.progress ? row.progress : "未开始" }}
         </template>
       </el-table-column>
-      <el-table-column label="当前等待" width="120">
+      <el-table-column label="当前等待" width="80" show-overflow-tooltip>
         <template #default="{ row }">
           {{ !!row.wait ? row.wait : "无" }}
         </template>
       </el-table-column>
-      <el-table-column label="执行结果">
+      <el-table-column label="执行结果" show-overflow-tooltip>
         <template #default="{ row }">
           {{ !!row.log ? row.log : "无" }}
         </template>
@@ -136,20 +136,20 @@ function showNextDialog(moduleIdx) {
 
 function calcDayTime(tsStr, missStr) {
   if (!tsStr) {
-    return missStr
+    return missStr;
   }
-  const ts = moment.unix(parseInt(tsStr))
-  const today = moment().startOf('day');
-  let prefix = ""
-  const time = ts.format("HH:mm:ss")
-  const diff = Math.trunc(moment(ts.diff(today, 'days')));
+  const ts = moment.unix(parseInt(tsStr));
+  const today = moment().startOf("day");
+  let prefix = "";
+  const time = ts.format("HH:mm:ss");
+  const diff = Math.trunc(moment(ts.diff(today, "days")));
   if (diff > 0) {
-    prefix = diff + "天后 "
+    prefix = diff + "天后 ";
   }
   if (diff < 0) {
-    prefix = (diff * -1) + "天前 "
+    prefix = diff * -1 + "天前 ";
   }
-  return prefix + time
+  return prefix + time;
 }
 </script>
 
