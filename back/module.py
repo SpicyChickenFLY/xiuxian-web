@@ -95,6 +95,7 @@ class Module:
                 break
         else:
             self.log = f"获取状态配置异常({self.progress})"
+            self.set_delay(15, "min")
             return self.wait, self.log
         self.wait = ""
         run_data = copy.deepcopy(progress_profile)
