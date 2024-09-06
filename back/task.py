@@ -32,7 +32,7 @@ class Task():
             print(f"加载模块配置文件data/modules.json失败 {type(e)} {e}")
         # 根据配置创建模块
         for code, support_module in support_modules.items():
-            self.modules[code] = Module(support_module, {})
+            self.modules[code] = Module(code, support_module, {})
         # 填充模块数据
         for module_data in modules_data:
             if module_data['name'] in self.modules:

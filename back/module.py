@@ -11,10 +11,10 @@ from utils import FuncUtil
 class Module:
     """自动化功能模块基类"""
 
-    def __init__(self, module_profile, module_data) -> None:
+    def __init__(self, module_name, module_profile, module_data) -> None:
         self._progress_profiles = module_profile["progress_profile"]
 
-        self.name = ""
+        self.name = module_name
         self.enable = True
         self.prev = 0.0
         self.next = 0.0
