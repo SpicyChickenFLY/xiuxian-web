@@ -84,9 +84,15 @@ class Task():
                 continue  # 不满足运行要求, 下一个
 
             next_cmd, cmd_type = module.get_next_cmd_and_cmd_type()
-            resp = self.bot.receive(next_cmd) if cmd_type == 'recv' else ""
-            if cmd_type == "send":
+            resp = ""
+            if cmd_type == 'recv':
+                resp = self.bot.receive(next_cmd)
+            elif cmd_type == "send":
                 self.bot.send(next_cmd)
+            elif cmd_type == 'listen':
+                resp = self.bot.listen()
+            else:
+                pass
             wait, log = module.run(resp, now)
             if wait != "":
                 module.set_next_timestamp(self.modules[wait].next - 5)

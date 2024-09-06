@@ -52,20 +52,28 @@ class Bot:
         resend = 1
         while resend > 0:
             self.send(msg)
-            retry = 10
-            while retry > 0:
-                time.sleep(2)
-                pyperclip.copy("")  # 清空剪贴板
-                pyautogui.click(self.o_x, self.o_y)
-                pyautogui.hotkey("ctrl", "a")
-                time.sleep(0.25)
-                pyautogui.hotkey("ctrl", "c")
-                time.sleep(0.25)
-                resp = pyperclip.paste()
-                if resp != "":
-                    return resp
-                retry -= 1
+            resp = self.listen()
+            if resp != "":
+                return resp
             resend -= 1
+        # 重发3次,重收10次都不行,可能是服务器问题
+        return ""
+
+    def listen(self):
+        """向机器人发送指令并等待回应"""
+        retry = 10
+        while retry > 0:
+            time.sleep(2)
+            pyperclip.copy("")  # 清空剪贴板
+            pyautogui.click(self.o_x, self.o_y)
+            pyautogui.hotkey("ctrl", "a")
+            time.sleep(0.25)
+            pyautogui.hotkey("ctrl", "c")
+            time.sleep(0.25)
+            resp = pyperclip.paste()
+            if resp != "":
+                return resp
+            retry -= 1
         # 重发3次,重收10次都不行,可能是服务器问题
         return ""
 
