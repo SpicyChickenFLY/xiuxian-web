@@ -1,9 +1,12 @@
 .DS_Store
 node_modules
 front/dist
+back/build
+back/dist
 back/static
 back/data/tasks/*
 back/data/prices/*
+app.spec
 
 # local env files
 .env.local
