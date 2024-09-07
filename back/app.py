@@ -5,6 +5,7 @@ import time
 from flask import Flask, render_template, request
 from flask_cors import CORS
 from flask_restful import Api, Resource
+import mimetypes
 
 import pyautogui
 from mgr import TaskMgr
@@ -12,6 +13,9 @@ from mgr import TaskMgr
 app = Flask(__name__, static_folder="./static/assets/", template_folder="./static/")
 CORS(app)
 api = Api(app)
+
+mimetypes.add_type("application/javascript", ".js")
+mimetypes.add_type("text/css", ".css")
 
 taskMgr = TaskMgr()
 
