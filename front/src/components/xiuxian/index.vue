@@ -5,76 +5,135 @@
       v-model="isMgrRunning"
       size="large"
       inline-prompt
-      active-text="运行"
-      inactive-text="停止"
+      active-text="自动化任务运行中"
+      inactive-text="自动化任务停止"
       @change="updateMgrInfo"
     />
     <el-button @click="showConfigDialog">模块插件管理</el-button>
   </el-space>
 
-  <el-input v-model="createTaskName" placeholder="新任务名称(建议使用用户名)">
-    <template #append>
-      <el-button @click="createTask">创建自动化任务</el-button>
-    </template>
-  </el-input>
-  <el-table
-    :data="mgrData"
-    size="small"
-    :row-style="{ height: '20px' }"
-    :cell-style="{ padding: '0px' }"
-    style="width: 100%"
-  >
-    <el-table-column label="状态" width="100">
-      <template #default="{ row }">
-        <el-switch
-          v-model="row.enable"
-          size="large"
-          inline-prompt
-          :active-text="row.name"
-          :inactive-text="row.name"
-          @change="(val) => setTaskEnable(row.name, val)"
-        />
-      </template>
-    </el-table-column>
-    <el-table-column label="位置" width="160">
-      <template #default="{ row }">
-        <div v-if="!!row.bot">
-          <el-tag size="large" @click="showLocationDialog(row.name, row.bot)">
-            输入框({{ row.bot.i_x }}, {{ row.bot.i_y }})
-            <br />
-            消息框({{ row.bot.o_x }}, {{ row.bot.o_y }})</el-tag
-          >
-        </div>
-      </template>
-    </el-table-column>
-    <el-table-column label="插件情况" min-width="180">
-      <template #default="{ row }">
-        <el-tag
-          v-for="module of row.modules"
-          :key="module.name"
-          :type="module.enable ? 'success' : 'danger'"
-          size="large"
-          @click="setModuleEnable(row.name, module.name, !module.enable)"
+  <el-tabs type="border-card">
+    <el-tab-pane label="任务">
+      <el-input
+        v-model="createTaskName"
+        placeholder="新任务名称(建议使用用户名)"
+      >
+        <template #append>
+          <el-button @click="createTask">创建自动化任务</el-button>
+        </template>
+      </el-input>
+      <el-collapse
+        v-model="activeProgress"
+        accordion
+      >
+        <el-collapse-item
+          v-for="task in mgrData"
+          :key="task.name"
         >
-          {{ module.name }}
-        </el-tag>
-      </template>
-    </el-table-column>
-    <el-table-column fixed="right" label="操作" min-width="40">
-      <template #default="scope">
-        <el-button
-          plain
-          :icon="Operation"
-          @click="showModulesDialog(scope.$index)"
-        />
-        <!-- <el-button -->
-        <!--   type="danger" -->
-        <!--   :icon="Delete" -->
-        <!--   @click="deleteTask(scope.row.name)" -->
-        <!-- /> -->
-      </template>
-    </el-table-column>
-  </el-table>
+          <template #title>
+            <el-space>
+              <el-switch
+                v-model="task.enable"
+                size="large"
+                inline-prompt
+                :active-text="task.name"
+                :inactive-text="task.name"
+                @change="(val) => setTaskEnable(task.name, val)"
+              />
+              <el-tag
+                size="large"
+                @click="showLocationDialog(task.name, task.bot)"
+              >
+                输入框({{ task.bot.i_x }}, {{ task.bot.i_y }})
+                <br />
+                消息框({{ task.bot.o_x }}, {{ task.bot.o_y }})
+              </el-tag>
+              <span>
+                启用模块{{ task.modules.filter(obj => obj.enable).length }}
+                /
+                {{ task.modules.length }}
+              </span>
+              <span>
+                <!-- 可触发模块{{ task.modules.filter(obj => obj.enable && obj.next).length }} -->
+              </span>
+            </el-space>
+          </template>
+          <el-table
+            :data="task.modules"
+            size="small"
+            :row-style="{ height: '20px' }"
+            :cell-style="{ padding: '0px' }"
+            style="width: 100%"
+          >
+            <el-table-column
+              label="模块"
+              width="100"
+            >
+              <template #default="{ row }">
+                <el-tag
+                  :type="row.enable ? 'success' : 'danger'"
+                  size="large"
+                  @click="setModuleEnable(task.name, row.name, !row.enable)"
+                >
+                  {{ row.name }}
+                </el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="上次触发"
+              width="100"
+            >
+              <template #default="{ row }">
+                {{ calcDayTime(row.prev, "尚未触发") }}
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="下次触发"
+              width="100"
+            >
+              <template #default="{ row, $index }">
+                <el-button
+                  type="primary"
+                  size="small"
+                  link
+                  @click="showNextDialog($index)"
+                >{{ calcDayTime(row.next, "随时可以") }}</el-button>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="当前状态"
+              width="100"
+              show-overflow-tooltip
+            >
+              <template #default="{ row }">
+                {{ !!row.progress ? row.progress : "未开始" }}
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="当前等待"
+              width="80"
+              show-overflow-tooltip
+            >
+              <template #default="{ row }">
+                {{ !!row.wait ? row.wait : "无" }}
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="执行结果"
+              show-overflow-tooltip
+            >
+              <template #default="{ row }">
+                {{ !!row.log ? row.log : "无" }}
+              </template>
+            </el-table-column>
+          </el-table>
+
+        </el-collapse-item>
+      </el-collapse>
+    </el-tab-pane>
+    <el-tab-pane label="模块">模块</el-tab-pane>
+    <el-tab-pane label="方法">方法</el-tab-pane>
+  </el-tabs>
 
   <config
     v-if="isConfigDialogVisible"
@@ -88,12 +147,6 @@
     :info="locationInfo"
     @refresh="refresh"
   />
-  <modules
-    v-if="isModulesDialogVisible"
-    v-model:visible="isModulesDialogVisible"
-    :taskData="mgrData[moduleTaskIdx]"
-    @refresh="refresh"
-  />
 </template>
 
 <script setup>
@@ -101,14 +154,17 @@ import { defineProps, ref, reactive, onMounted, onBeforeMount } from "vue";
 import axios from "axios";
 import { ElNotification, ElLoading } from "element-plus";
 import { Operation, Delete, FolderAdd } from "@element-plus/icons-vue";
+import Next from "./module_next.vue";
+import moment from "moment";
 
-import Modules from "./modules.vue";
 import Location from "./location.vue";
 import Config from "./config.vue";
 
 defineProps({
   msg: String,
 });
+
+const activeProgress = ref("");
 
 const timer = reactive(null);
 const mgrData = ref([]);
@@ -237,19 +293,37 @@ const updateModule = async (taskName, moduleName, moduleData) => {
     .catch((error) => onError("更新模块失败", error));
 };
 
-function showConfigDialog(taskIdx) {
+function showConfigDialog (taskIdx) {
   isConfigDialogVisible.value = true;
 }
 
-function showLocationDialog(taskName, location) {
+function showLocationDialog (taskName, location) {
   isLocationDialogVisible.value = true;
   locationTask.value = taskName;
   locationInfo.value = location;
 }
 
-function showModulesDialog(taskIdx) {
+function showModulesDialog (taskIdx) {
   isModulesDialogVisible.value = true;
   moduleTaskIdx.value = taskIdx;
+}
+
+function calcDayTime (tsStr, missStr) {
+  if (!tsStr) {
+    return missStr;
+  }
+  const ts = moment.unix(parseInt(tsStr));
+  const today = moment().startOf("day");
+  let prefix = "";
+  const time = ts.format("HH:mm:ss");
+  const diff = Math.trunc(moment(ts.diff(today, "days")));
+  if (diff > 0) {
+    prefix = diff + "天后 ";
+  }
+  if (diff < 0) {
+    prefix = diff * -1 + "天前 ";
+  }
+  return prefix + time;
 }
 </script>
 
