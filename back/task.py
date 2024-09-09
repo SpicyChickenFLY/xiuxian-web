@@ -95,7 +95,10 @@ class Task():
                 pass
             wait, log = module.run(resp, now)
             if wait != "":
-                module.set_next_timestamp(self.modules[wait].next - 5)
+                if self.modules[wait].enable:
+                    module.set_next_timestamp(self.modules[wait].next - 5)
+                else:
+                    module.set_delay('5', 'min')
             if log != "":
                 self.bot.log(self.task_name, log)
 
