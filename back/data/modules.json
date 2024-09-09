@@ -346,7 +346,7 @@
                         "result": "成功",
                         "pre": {
                             "progress": {
-                                "func_name": "fs_save_price",
+                                "func_name": "fs_progress_and_save_price",
                                 "args": {}
                             },
                             "next_duration": {

@@ -80,7 +80,7 @@ class ModuleApi(Resource):
         return taskMgr.update_module(task_name, module_name, request.json)
 
 
-class ConfigApi(Resource):
+class PluginApi(Resource):
     """模块API"""
 
     def get(self):
@@ -91,12 +91,36 @@ class ConfigApi(Resource):
         """更新自动化任务模块信息"""
         return taskMgr.update_config(request.json)
 
+class FuncApi(Resource):
+    """方法API"""
+
+    def get(self):
+        """获取自定义方法信息"""
+        return taskMgr.get_funcs()
+
+    def put(self):
+        """更新自定义方法信息"""
+        return taskMgr.update_config(request.json)
+
+class MiscApi(Resource):
+    """方法API"""
+
+    def get(self):
+        """获取自定义方法信息"""
+        return taskMgr.get_misc()
+
+    def put(self):
+        """更新自定义方法信息"""
+        return taskMgr.update_config(request.json)
+
 
 api.add_resource(CursorApi, "/api/cursor")
 api.add_resource(MgrApi, "/api/mgr")
 api.add_resource(TaskApi, "/api/mgr/task/<task_name>")
 api.add_resource(ModuleApi, "/api/mgr/task/<task_name>/module/<module_name>")
-api.add_resource(ConfigApi, "/api/mgr/config")
+api.add_resource(PluginApi, "/api/mgr/plugin")
+api.add_resource(FuncApi, "/api/mgr/func")
+api.add_resource(MiscApi, "/api/mgr/misc")
 
 if __name__ == "__main__":
     # webbrowser.open("http://127.0.0.1:8010/")

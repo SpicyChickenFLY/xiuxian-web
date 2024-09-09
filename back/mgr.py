@@ -133,3 +133,33 @@ class TaskMgr:
                 fw.write(json.dumps(config_data, ensure_ascii=False, indent=4))
         except Exception as e:
             print(f"写入模块配置文件data/modules.json失败 {type(e)} {e}")
+
+    def get_funcs(self):
+        # 读取本地任务信息
+        funcs = {}
+        for root, _, files in os.walk("data/func"):
+            for file in files:
+                file_path = os.path.join(root, file)
+                try:
+                    with open(file_path, "r", encoding="utf-8") as rf:
+                        funcs[file] = rf.read()
+                except json.JSONDecodeError as e:
+                    print(f"解析自定义方法文件{file_path}失败 {e}")
+                except Exception as e:
+                    print(f"加载自定义方法文件{file_path}失败 {type(e)} {e}")
+        return funcs
+
+    def get_misc(self):
+        # 读取本地任务信息
+        funcs = {}
+        for root, _, files in os.walk("data/misc"):
+            for file in files:
+                file_path = os.path.join(root, file)
+                try:
+                    with open(file_path, "r", encoding="utf-8") as rf:
+                        funcs[file] = json.load(rf)
+                except json.JSONDecodeError as e:
+                    print(f"解析自定义数据文件{file_path}失败 {e}")
+                except Exception as e:
+                    print(f"加载自定义数据文件{file_path}失败 {type(e)} {e}")
+        return funcs

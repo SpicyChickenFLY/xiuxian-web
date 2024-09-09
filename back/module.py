@@ -4,9 +4,7 @@ import time
 import datetime
 import re
 import copy
-
-from utils import FuncUtil
-
+import importlib
 
 class Module:
     """自动化功能模块基类"""
@@ -119,10 +117,9 @@ class Module:
             for data_key, func_info in run_data["pre"].items():
                 func_info["args"]["resp"] = resp
                 func_info["args"]["progress"] = self.progress
-                run_data[data_key] = getattr(FuncUtil(), func_info["func_name"])(
-                    func_info["args"]
-                )
-
+                module = importlib.import_module(f'data.func.{func_info["func_name"]}')
+                func = getattr(module, func_info['func_name'])
+                run_data[data_key] = func(func_info['args'])
         self._run(run_data)
         return self.wait, self.log
 
