@@ -1,0 +1,72 @@
+{
+    "default_cmd": "探索秘境",
+    "progress_profile": {
+        "探索秘境": {
+            "type": "recv",
+            "resp": [
+                {
+                    "resp": "正在秘境中",
+                    "result": "已接,准备结算",
+                    "progress": "秘境结算"
+                },
+                {
+                    "resp": "进入秘境",
+                    "result": "成功,准备结算",
+                    "progress": "秘境结算"
+                },
+                {
+                    "resp": "已经参加过本次",
+                    "result": "结束,跳过阶段",
+                    "next_type": "set",
+                    "next_hour": 13,
+                    "next_minute": 0,
+                    "next_second": 0
+                },
+                {
+                    "resp": "修炼",
+                    "result": "失败,等待修炼",
+                    "wait": "修炼"
+                },
+                {
+                    "resp": "悬赏令",
+                    "result": "失败,等待悬赏令",
+                    "wait": "悬赏令"
+                }
+            ]
+        },
+        "秘境结算": {
+            "type": "recv",
+            "resp": [
+                {
+                    "resp": "翻开一看|被打劫|空手|踢出|不敌|减少",
+                    "result": "空军,准备探索",
+                    "progress": "探索秘境"
+                },
+                {
+                    "resp": "灵石|防具|神通|辅修|功法|仙器|通天|纯阳|法器|符器|战胜",
+                    "result": "完成,准备探索",
+                    "progress": "探索秘境"
+                },
+                {
+                    "resp": "进行中的",
+                    "result": "未完,延迟结算",
+                    "pre": {
+                        "next_duration": {
+                            "func_name": "find_one_int",
+                            "args": {
+                                "regex": "(\\d+)分钟"
+                            }
+                        }
+                    },
+                    "next_type": "delay",
+                    "next_unit": "min"
+                },
+                {
+                    "resp": "什么都没干呢|修炼|悬赏令",
+                    "result": "失败,准备探索",
+                    "progress": "探索秘境"
+                }
+            ]
+        }
+    }
+}

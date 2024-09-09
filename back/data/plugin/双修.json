@@ -1,0 +1,30 @@
+{
+    "default_cmd": "双修北条惠古",
+    "progress_profile": {
+        "双修北条惠古": {
+            "type": "recv",
+            "resp": [
+                {
+                    "resp": "情投意合",
+                    "result": "成功,准备双修"
+                },
+                {
+                    "resp": "到达上限",
+                    "result": "结束,跳过阶段",
+                    "next_type": "set",
+                    "next_hour": 10,
+                    "next_minute": 0,
+                    "next_second": 0
+                },
+                {
+                    "resp": "无法与自己",
+                    "result": "失败,跳过阶段",
+                    "next_type": "set",
+                    "next_hour": 10,
+                    "next_minute": 0,
+                    "next_second": 0
+                }
+            ]
+        }
+    }
+}

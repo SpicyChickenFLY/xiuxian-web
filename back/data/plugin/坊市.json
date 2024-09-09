@@ -1,0 +1,29 @@
+{
+    "default_cmd": "坊市查看技能1",
+    "progress_profile": {
+        "坊市查看": {
+            "type": "recv",
+            "resp": [
+                {
+                    "resp": "线下交易",
+                    "result": "成功",
+                    "pre": {
+                        "progress": {
+                            "func_name": "fs_progress_and_save_price",
+                            "args": {}
+                        },
+                        "next_duration": {
+                            "func_name": "fs_next_duration",
+                            "args": {}
+                        },
+                        "next_unit": {
+                            "func_name": "fs_next_unit",
+                            "args": {}
+                        }
+                    },
+                    "next_type": "delay"
+                }
+            ]
+        }
+    }
+}

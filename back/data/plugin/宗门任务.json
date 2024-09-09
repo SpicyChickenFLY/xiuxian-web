@@ -1,0 +1,101 @@
+{
+    "default_cmd": "宗门任务接取",
+    "progress_profile": {
+        "宗门任务接取": {
+            "type": "recv",
+            "resp": [
+                {
+                    "resp": "今日无法再获取",
+                    "result": "成功,跳过阶段",
+                    "next_type": "set",
+                    "next_hour": 5,
+                    "next_minute": 0,
+                    "next_second": 0
+                },
+                {
+                    "resp": "除害",
+                    "result": "成功,准备完成",
+                    "progress": "宗门任务完成"
+                },
+                {
+                    "resp": "查抄|购买|还清",
+                    "result": "不做,准备刷新",
+                    "progress": "宗门任务刷新"
+                }
+            ]
+        },
+        "宗门任务刷新": {
+            "type": "recv",
+            "resp": [
+                {
+                    "resp": "没有宗门任务",
+                    "result": "未接,准备接取",
+                    "progress": "宗门任务接取"
+                },
+                {
+                    "resp": "除害",
+                    "result": "成功,准备完成",
+                    "progress": "宗门任务完成"
+                },
+                {
+                    "resp": "查抄|购买|还清",
+                    "result": "不做,准备刷新",
+                    "next_type": "delay",
+                    "next_duration": 120,
+                    "next_unit": "s"
+                },
+                {
+                    "resp": "时间还没到",
+                    "result": "未完,延迟刷新",
+                    "pre": {
+                        "next_duration": {
+                            "func_name": "find_one_int",
+                            "args": {
+                                "regex": "(\\d+) 秒"
+                            }
+                        }
+                    },
+                    "next_type": "delay",
+                    "next_unit": "s"
+                }
+            ]
+        },
+        "宗门任务完成": {
+            "type": "recv",
+            "resp": [
+                {
+                    "resp": "宗门贡献",
+                    "result": "完成,准备接取",
+                    "progress": "宗门任务接取"
+                },
+                {
+                    "resp": "当前没有接取宗门任务",
+                    "result": "未接,准备接取",
+                    "progress": "宗门任务接取"
+                },
+                {
+                    "resp": "不扣你任务次数了",
+                    "result": "无效,等待回血",
+                    "next_type": "delay",
+                    "next_duration": 120,
+                    "next_unit": "s",
+                    "wait": "修炼"
+                },
+                {
+                    "resp": "冷静一下",
+                    "result": "未完,延迟完成",
+                    "pre": {
+                        "next_duration": {
+                            "func_name": "find_one_int",
+                            "args": {
+                                "regex": "(\\d+)秒"
+                            }
+                        }
+                    },
+                    "next_type": "delay",
+                    "next_unit": "s"
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,17 @@
+{
+    "default_cmd": "灵庄结算",
+    "progress_profile": {
+        "灵庄结算": {
+            "type": "recv",
+            "resp": [
+                {
+                    "resp": "结息",
+                    "result": "成功,跳过阶段",
+                    "next_type": "delay",
+                    "next_duration": 30,
+                    "next_unit": "min"
+                }
+            ]
+        }
+    }
+}

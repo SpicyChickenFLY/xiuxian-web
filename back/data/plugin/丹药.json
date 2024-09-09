@@ -1,0 +1,26 @@
+{
+    "default_cmd": "宗门丹药领取",
+    "progress_profile": {
+        "宗门丹药领取": {
+            "type": "recv",
+            "resp": [
+                {
+                    "resp": "成功",
+                    "result": "成功,跳过阶段",
+                    "next_type": "set",
+                    "next_hour": 14,
+                    "next_minute": 0,
+                    "next_second": 0
+                },
+                {
+                    "resp": "贪心",
+                    "result": "失败,跳过阶段",
+                    "next_type": "set",
+                    "next_hour": 14,
+                    "next_minute": 0,
+                    "next_second": 0
+                }
+            ]
+        }
+    }
+}

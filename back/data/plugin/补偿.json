@@ -1,0 +1,12 @@
+{
+    "default_cmd": "补偿",
+    "progress_profile": {
+        "补偿": {
+            "type": "send",
+            "result": "结束,跳过阶段",
+            "next_type": "delay",
+            "next_duration": 12,
+            "next_unit": "h"
+        }
+    }
+}

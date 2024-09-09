@@ -1,0 +1,83 @@
+{
+    "default_cmd": "悬赏令刷新",
+    "progress_profile": {
+        "悬赏令刷新": {
+            "type": "recv",
+            "resp": [
+                {
+                    "resp": "进行中的",
+                    "result": "已接,准备结算",
+                    "progress": "悬赏令结算"
+                },
+                {
+                    "resp": "的个人悬赏令",
+                    "result": "成功,准备接取",
+                    "pre": {
+                        "progress": {
+                            "func_name": "xsl_choose_task",
+                            "args": {}
+                        }
+                    }
+                },
+                {
+                    "resp": "次数已用尽",
+                    "result": "结束,跳过阶段",
+                    "next_type": "set",
+                    "next_hour": 8,
+                    "next_minute": 0,
+                    "next_second": 0,
+                    "progress": "悬赏令刷新"
+                },
+                {
+                    "resp": "秘境",
+                    "result": "失败,等待秘境",
+                    "wait": "秘境"
+                }
+            ]
+        },
+        "悬赏令接取": {
+            "type": "recv",
+            "resp": [
+                {
+                    "resp": "没有可以接取的",
+                    "result": "失败，准备刷新",
+                    "progress": "悬赏令刷新"
+                },
+                {
+                    "resp": "成功",
+                    "result": "完成，准备结算",
+                    "progress": "悬赏令结算"
+                }
+            ]
+        },
+        "悬赏令结算": {
+            "type": "recv",
+            "resp": [
+                {
+                    "resp": "悬赏令结算",
+                    "result": "成功，准备刷新",
+                    "progress": "悬赏令刷新"
+                },
+                {
+                    "resp": "进行中的悬赏令",
+                    "result": "未完,延迟结算",
+                    "pre": {
+                        "next_duration": {
+                            "func_name": "find_one_int",
+                            "args": {
+                                "regex": "(\\d+)分钟"
+                            }
+                        }
+                    },
+                    "next_type": "delay",
+                    "next_unit": "min"
+                },
+                {
+                    "resp": "没有查到",
+                    "result": "失败，准备刷新",
+                    "progress": "悬赏令刷新"
+                }
+            ]
+        }
+    }
+}

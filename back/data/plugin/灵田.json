@@ -1,0 +1,31 @@
+{
+    "default_cmd": "灵田收取",
+    "progress_profile": {
+        "灵田收取": {
+            "type": "recv",
+            "resp": [
+                {
+                    "resp": "道友成功收取药材",
+                    "result": "成功,跳过阶段",
+                    "next_type": "delay",
+                    "next_duration": 48,
+                    "next_unit": "h"
+                },
+                {
+                    "resp": "道友的灵田还不能收取",
+                    "result": "失败,延迟收取",
+                    "pre": {
+                        "next_duration": {
+                            "func_name": "find_one_float",
+                            "args": {
+                                "regex": "(\\d+\\.?\\d*)小时"
+                            }
+                        }
+                    },
+                    "next_type": "delay",
+                    "next_unit": "h"
+                }
+            ]
+        }
+    }
+}
