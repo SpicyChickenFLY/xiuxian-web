@@ -24,7 +24,7 @@ import Plugin from "./plugin.vue";
 import Func from "./func.vue";
 import Misc from "./misc.vue";
 
-const activeTab = ref("方法");
+const activeTab = ref("任务");
 
 const isConfigDialogVisible = ref(false);
 
