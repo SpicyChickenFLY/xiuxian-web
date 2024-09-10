@@ -1,11 +1,11 @@
 """自动化任务管理配置服务"""
 
-import webbrowser
+#import webbrowser
 import time
+import mimetypes
 from flask import Flask, render_template, request
 from flask_cors import CORS
 from flask_restful import Api, Resource
-import mimetypes
 
 import pyautogui
 from mgr import TaskMgr
@@ -80,48 +80,70 @@ class ModuleApi(Resource):
         return taskMgr.update_module(task_name, module_name, request.json)
 
 
-class PluginApi(Resource):
-    """模块API"""
+class PluginListApi(Resource):
+    """插件列表API"""
 
     def get(self):
-        """更新自动化任务模块信息"""
-        return taskMgr.get_config()
+        """获取插件信息"""
+        return taskMgr.get_plugins()
 
-    def put(self):
-        """更新自动化任务模块信息"""
-        return taskMgr.update_config(request.json)
 
-class FuncApi(Resource):
-    """方法API"""
+class PluginApi(Resource):
+    """插件API"""
+
+    # def post(self, plugin_name):
+    #     """新建插件"""
+    #     return taskMgr.create_plugin(plugin_name, request.json)
+
+    def put(self, plugin_name):
+        """更新插件信息"""
+        return taskMgr.update_plugin(plugin_name, request.json)
+
+
+class FuncListApi(Resource):
+    """方法列表API"""
 
     def get(self):
         """获取自定义方法信息"""
         return taskMgr.get_funcs()
 
-    def put(self):
-        """更新自定义方法信息"""
-        return taskMgr.update_config(request.json)
 
-class MiscApi(Resource):
+class FuncApi(Resource):
     """方法API"""
+
+    def put(self, func_name):
+        """更新自定义方法信息"""
+        return taskMgr.update_func(func_name, request.json)
+
+
+class MiscListApi(Resource):
+    """数据列表API"""
 
     def get(self):
         """获取自定义方法信息"""
-        return taskMgr.get_misc()
+        return taskMgr.get_miscs()
 
-    def put(self):
+
+class MiscApi(Resource):
+    """数据API"""
+
+    def put(self, misc_name):
         """更新自定义方法信息"""
-        return taskMgr.update_config(request.json)
+        return taskMgr.update_misc(misc_name, request.json)
 
 
 api.add_resource(CursorApi, "/api/cursor")
 api.add_resource(MgrApi, "/api/mgr")
 api.add_resource(TaskApi, "/api/mgr/task/<task_name>")
 api.add_resource(ModuleApi, "/api/mgr/task/<task_name>/module/<module_name>")
-api.add_resource(PluginApi, "/api/mgr/plugin")
-api.add_resource(FuncApi, "/api/mgr/func")
-api.add_resource(MiscApi, "/api/mgr/misc")
+api.add_resource(PluginListApi, "/api/mgr/plugin")
+api.add_resource(PluginApi, "/api/mgr/plugin/<plugin_name>")
+api.add_resource(FuncListApi, "/api/mgr/func")
+api.add_resource(FuncApi, "/api/mgr/func/<func_name>")
+api.add_resource(MiscListApi, "/api/mgr/misc")
+api.add_resource(MiscApi, "/api/mgr/misc/<misc_name>")
 
 if __name__ == "__main__":
     # webbrowser.open("http://127.0.0.1:8010/")
+
     app.run(host="0.0.0.0", port=8010, debug=False)

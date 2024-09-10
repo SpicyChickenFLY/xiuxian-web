@@ -14,20 +14,32 @@ class TaskMgr:
     def __init__(self) -> None:
         self.is_running = False
         self._thread = None
-        self.tasks: Dict[str, Task] = {}
+        self.path = {
+            'task': 'task',
+            'plugin': 'plugin',
+            'func': 'func',
+            'misc': 'misc'
+        }
 
+        for _, path in self.path.items():
+            os.makedirs(path, exist_ok=True)
+
+        self.tasks: Dict[str, Task] = {}
         # 读取本地任务信息
-        for root, _, files in os.walk("data/tasks"):
+        tasks_data = []
+        for root, _, files in os.walk(self.path['task']):
             for file in files:
                 file_path = os.path.join(root, file)
                 try:
                     with open(file_path, "r", encoding="utf-8") as rf:
                         task_data = json.load(rf)
-                        self.create_task(task_data["name"], task_data)
+                        tasks_data.append(task_data)
                 except json.JSONDecodeError as e:
                     print(f"解析任务配置文件{file_path}失败 {e}")
                 except Exception as e:
                     print(f"加载任务配置文件{file_path}失败 {type(e)} {e}")
+        for task_data in tasks_data:
+            self.create_task(task_data["name"], task_data)
 
     def _run(self):
         """自动化程序启动"""
@@ -77,11 +89,13 @@ class TaskMgr:
             else:
                 self._stop()
 
-    def create_task(self, task_name, task_profile):
+    def create_task(self, task_name, task_data):
         """创建新的自动化任务"""
         was_run = self.is_running
         self._stop()
-        self.tasks[task_name] = Task(task_name, task_profile)
+        # 每次创建任务前需要重新加载最新的插件配置
+        plugins = self.get_plugins()
+        self.tasks[task_name] = Task(task_name, task_data, plugins, self.path)
         if was_run:
             self._start()
         return ""
@@ -99,7 +113,7 @@ class TaskMgr:
         was_run = self.is_running
         self._stop()
         self.tasks.pop(task_name)
-        os.remove(f"data/tasks/{task_name}.json")
+        os.remove(f"task/{task_name}.json")
         if was_run:
             self._start()
         return task_name
@@ -113,55 +127,74 @@ class TaskMgr:
             self._start()
         return module_name
 
-    def get_config(self):
+    def get_plugins(self):
         """获取模块配置文件"""
-        _support_modules = {}
-        try:
-            with open("data/modules.json", "r", encoding="utf-8") as rf:
-                _support_modules = json.load(rf)
-        except json.JSONDecodeError as e:
-            print(f"解析模块配置文件data/modules.json失败 {e}")
-        except Exception as e:
-            print(f"加载模块配置文件data/modules.json失败 {type(e)} {e}")
-        return _support_modules
+        plugins_data = {}
+        for root, _, files in os.walk(self.path['plugin']):
+            for file in files:
+                file_path = os.path.join(root, file)
+                try:
+                    with open(file_path, "r", encoding="utf-8") as rf:
+                        plugin_name = os.path.splitext(file)[0]
+                        plugin_data = json.load(rf)
+                        plugins_data[plugin_name] = plugin_data
+                except json.JSONDecodeError as e:
+                    print(f"解析插件配置文件{file_path}JSON数据失败 {e}")
+                except Exception as e:
+                    print(f"加载插件配置文件{file_path}失败 {type(e)} {e}")
+        return plugins_data
 
-    def update_config(self, config_data):
+    def update_plugin(self, plugin_name, plugin_data):
         """更新模块配置文件"""
+        file_path = f"{self.path['plugin']}/{plugin_name}.json"
         try:
-            os.makedirs("data", exist_ok=True)
-            with open("data/modules.json", "w", encoding="utf-8") as fw:
-                fw.write(json.dumps(config_data, ensure_ascii=False, indent=4))
+            with open(file_path, "w", encoding="utf-8") as fw:
+                fw.write(json.dumps(plugin_data, ensure_ascii=False, indent=4))
         except Exception as e:
-            print(f"写入模块配置文件data/modules.json失败 {type(e)} {e}")
+            print(f"写入插件配置文件{file_path}失败 {type(e)} {e}")
 
     def get_funcs(self):
-        # 读取本地任务信息
+        """获取自定义方法列表"""
         funcs = {}
-        for root, _, files in os.walk("data/func"):
-            if root == "data/func/__pycache__":
+        for root, _, files in os.walk(self.path['func']):
+            if root == "func/__pycache__":
                 continue
             for file in files:
                 file_path = os.path.join(root, file)
                 try:
                     with open(file_path, "r", encoding="utf-8") as rf:
                         funcs[file] = rf.read()
-                except json.JSONDecodeError as e:
-                    print(f"解析自定义方法文件{file_path}失败 {e}")
                 except Exception as e:
                     print(f"加载自定义方法文件{file_path}失败 {type(e)} {e}")
         return funcs
 
-    def get_misc(self):
-        # 读取本地任务信息
+    def update_func(self, func_name, func_data):
+        """更新自定义方法列表"""
+        file_path = f"{self.path['func']}/{func_name}.json"
+        try:
+            with open(file_path, "w", encoding="utf-8") as fw:
+                fw.write(func_data)
+        except Exception as e:
+            print(f"写入模块配置文件{file_path}失败 {type(e)} {e}")
+
+    def get_miscs(self):
+        """获取自定义数据列表"""
         funcs = {}
-        for root, _, files in os.walk("data/misc"):
+        for root, _, files in os.walk(self.path['misc']):
             for file in files:
                 file_path = os.path.join(root, file)
                 try:
                     with open(file_path, "r", encoding="utf-8") as rf:
                         funcs[file] = json.load(rf)
-                except json.JSONDecodeError as e:
-                    print(f"解析自定义数据文件{file_path}失败 {e}")
                 except Exception as e:
                     print(f"加载自定义数据文件{file_path}失败 {type(e)} {e}")
         return funcs
+
+    def update_misc(self, misc_name, misc_data):
+        """更新自定义数据列表"""
+        file_path = f"{self.path['misc']}/{misc_name}.json"
+        try:
+            with open(file_path, "w", encoding="utf-8") as fw:
+                fw.write(misc_data)
+        except Exception as e:
+            print(f"写入模块配置文件{file_path}失败 {type(e)} {e}")

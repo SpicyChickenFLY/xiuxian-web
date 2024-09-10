@@ -9,8 +9,8 @@ import importlib
 class Module:
     """自动化功能模块基类"""
 
-    def __init__(self, module_name, module_profile, module_data) -> None:
-        self._progress_profiles = module_profile["progress_profile"]
+    def __init__(self, module_name, plugin, module_data) -> None:
+        self._progress_profiles = plugin["progress_profile"]
 
         self.name = module_name
         self.enable = True
@@ -22,8 +22,8 @@ class Module:
         self.__dict__.update(module_data)
 
         # 给异常状态附上默认值
-        if self.progress == "" or self.progress not in module_profile:
-            self.progress = module_profile["default_cmd"]
+        if self.progress == "" or self.progress not in plugin:
+            self.progress = plugin["default_cmd"]
 
     def get_module_data(self):
         """组装任务各个模块信息"""
@@ -117,7 +117,7 @@ class Module:
             for data_key, func_info in run_data["pre"].items():
                 func_info["args"]["resp"] = resp
                 func_info["args"]["progress"] = self.progress
-                module = importlib.import_module(f'data.func.{func_info["func_name"]}')
+                module = importlib.import_module(f'func.{func_info["func_name"]}')
                 func = getattr(module, func_info['func_name'])
                 run_data[data_key] = func(func_info['args'])
         self._run(run_data)

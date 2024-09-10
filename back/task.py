@@ -11,38 +11,32 @@ from module import Module
 class Task():
     """自动化任务"""
 
-    def __init__(self, task_name, task_data) -> None:
+    def __init__(self, task_name, task_data, plugins, path) -> None:
         self.bot = Bot()
 
+        self.path = path
         self.task_name = task_name
         self.enable =  False
         self.modules: Dict[str, Module] = {}
-        self._init_modules(task_data["modules"] if "modules" in task_data else {})
+        modules = task_data["modules"] if "modules" in task_data else {}
+        self._init_modules(plugins, modules)
         self.update_task(task_data)
 
-    def _init_modules(self, modules_data):
-        # 支持模块插件配置
-        support_modules = {}
-        try:
-            with open("data/modules.json", "r", encoding="utf-8") as rf:
-                support_modules = json.load(rf)
-        except json.JSONDecodeError as e:
-            print(f"解析模块配置文件data/modules.json失败 {e}")
-        except Exception as e:
-            print(f"加载模块配置文件data/modules.json失败 {type(e)} {e}")
-        # 根据配置创建模块
-        for code, support_module in support_modules.items():
-            self.modules[code] = Module(code, support_module, {})
-        # 填充模块数据
+    def _init_modules(self, plugins, modules_data):
+        # 根据插件配置创建任务模块
+        for code, plugin_data in plugins.items():
+            self.modules[code] = Module(code, plugin_data, {})
+
+        # 根据任务配置填充模块数据
         for module_data in modules_data:
-            if module_data['name'] in self.modules:
-                self.modules[module_data['name']].update_module(module_data)
+            module_name = module_data['name']
+            if module_name in self.modules:
+                self.modules[module_name].update_module(module_data)
 
     def save(self):
         """保存任务信息到本地"""
-        data_dir = "data/tasks"
-        os.makedirs(f"{data_dir}", exist_ok=True)
-        with open(f"{data_dir}/{self.task_name}.json", "w", encoding="utf-8") as fw:
+        file_path = self.path['task']
+        with open(f"{file_path}/{self.task_name}.json", "w", encoding="utf-8") as fw:
             fw.write(json.dumps(self.get_task_data(), ensure_ascii=False, indent=4))
 
     def get_task_data(self):
