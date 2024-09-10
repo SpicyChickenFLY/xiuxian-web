@@ -48,12 +48,11 @@
             <span>
               支持插件{{ task.modules.length }}
               /
-              启用模块{{ task.modules.filter((obj) => obj.enable).length }}
+              已启用{{ task.modules.filter((obj) => obj.enable).length }}
               /
-              就绪待触发模块
+              就绪待触发{{ task.modules.filter((obj) => obj.enable && obj.next < moment().unix()).length }}
             </span>
             <span>
-              <!-- 可触发模块{{ task.modules.filter(obj => obj.enable && obj.next).length }} -->
             </span>
           </el-space>
         </template>
@@ -71,7 +70,7 @@
                 size="small"
                 @click="setModuleEnable(task.name, row.name, !row.enable)"
               >
-                {{ row.name }}
+                <a>{{ row.name }}</a>
               </el-tag>
             </template>
           </el-table-column>
@@ -290,7 +289,7 @@ function calcDayTime(tsStr, missStr) {
   const today = moment().startOf("day");
   let prefix = "";
   const time = ts.format("HH:mm:ss");
-  const diff = Math.trunc(moment(ts.diff(today, "days")));
+  const diff = Math.trunc(moment(ts.startOf("day").diff(today, "days")));
   if (diff > 0) {
     prefix = diff + "天后 ";
   }
@@ -302,10 +301,6 @@ function calcDayTime(tsStr, missStr) {
 </script>
 
 <style scoped>
-a {
-  color: #42b983;
-}
-
 .el-switch {
   --el-switch-on-color: #95d475;
   --el-switch-off-color: #f89898;
