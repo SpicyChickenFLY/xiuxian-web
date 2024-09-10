@@ -19,7 +19,7 @@
               <el-tag>{{ progress_profile.type }}</el-tag>
             </el-space>
           </template>
-          <el-table :data="progress_profile.resp">
+          <el-table :data="progress_profile.resp" size="small">
             <el-table-column
               v-for="col in colHeaders"
               :key="col.name"
