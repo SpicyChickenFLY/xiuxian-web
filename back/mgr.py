@@ -138,6 +138,8 @@ class TaskMgr:
         # 读取本地任务信息
         funcs = {}
         for root, _, files in os.walk("data/func"):
+            if root == "data/func/__pycache__":
+                continue
             for file in files:
                 file_path = os.path.join(root, file)
                 try:
