@@ -1,12 +1,13 @@
 <template>
-  <el-tabs tab-position="left">
+  <!-- <el-tabs tab-position="left"> -->
+  <el-tabs>
     <el-tab-pane
       v-for="(config, code) in configData.value"
       :key="code"
       :label="code"
       :name="code"
     >
-      {{ config.default_cmd }}
+      默认状态/命令 - {{ config.default_cmd }}
       <el-collapse v-model="activeProgress" accordion>
         <el-collapse-item
           v-for="(progress_profile, progress) in config.progress_profile"
