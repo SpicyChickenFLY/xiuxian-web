@@ -35,7 +35,7 @@
                     <br />
                     {{ row.pre[col.name].args }}
                   </template>
-                  <el-tag type="info">方法</el-tag>
+                  <el-tag type="info" size="small">方法</el-tag>
                 </el-tooltip>
                 <span v-else>/</span>
               </template>
@@ -77,12 +77,12 @@ const colHeaders = [
   { label: "回复匹配", name: "resp" },
   { label: "处理结果", name: "result" },
   { label: "等待前置", name: "wait" },
-  { label: "触发类型", name: "next_type", width: "60" },
-  { label: "延迟量", name: "next_duration", width: "60" },
-  { label: "延迟单位", name: "next_unit", width: "60" },
-  { label: "时", name: "next_hour", width: "40" },
-  { label: "分", name: "next_minute", width: "40" },
-  { label: "秒", name: "next_second", width: "40" },
+  { label: "触发类型", name: "next_type", width: "50" },
+  { label: "延迟量", name: "next_duration", width: "50" },
+  { label: "延迟单位", name: "next_unit", width: "50" },
+  { label: "时", name: "next_hour", width: "30" },
+  { label: "分", name: "next_minute", width: "30" },
+  { label: "秒", name: "next_second", width: "30" },
   { label: "后续命令", name: "progress" },
 ];
 
