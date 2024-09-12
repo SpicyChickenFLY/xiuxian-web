@@ -4,7 +4,7 @@ front/dist
 back/build
 back/dist
 back/static
-back/data/tasks/*
+back/task/*
 back/data/prices/*
 app.spec
 
