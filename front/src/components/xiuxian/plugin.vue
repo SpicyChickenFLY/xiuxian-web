@@ -7,7 +7,6 @@
       :label="code"
       :name="code"
     >
-      默认状态/命令 - {{ config.default_cmd }}
       <el-collapse v-model="activeProgress" accordion>
         <el-collapse-item
           v-for="(progress_profile, progress) in config.progress_profile"
@@ -16,8 +15,11 @@
         >
           <template #title>
             <el-space>
+             <el-tag>{{ progress_profile.type }}</el-tag>
              <span>{{ progress }}</span>
-              <el-tag>{{ progress_profile.type }}</el-tag>
+             <el-tag v-if="new RegExp(progress).test(config.default_cmd)" type="info">
+                默认状态 ({{ config.default_cmd }})
+             </el-tag>
             </el-space>
           </template>
           <el-table :data="progress_profile.resp" size="small">
