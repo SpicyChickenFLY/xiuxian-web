@@ -1,53 +1,85 @@
 <template>
-  <!-- <el-tabs tab-position="left"> -->
-  <el-tabs type="card">
-    <el-tab-pane
-      v-for="(config, code) in configData.value"
-      :key="code"
-      :label="code"
-      :name="code"
-    >
-      <el-collapse v-model="activeProgress" accordion>
-        <el-collapse-item
-          v-for="(progress_profile, progress) in config.progress_profile"
-          :key="progress"
-          :title="progress + progress_profile.type"
-        >
-          <template #title>
-            <el-space>
-             <el-tag>{{ progress_profile.type }}</el-tag>
-             <span>{{ progress }}</span>
-             <el-tag v-if="new RegExp(progress).test(config.default_cmd)" type="info">
-                默认状态 ({{ config.default_cmd }})
-             </el-tag>
-            </el-space>
+  <div>
+    <el-row>
+      <el-col :span="8">
+        <el-switch
+          v-model="isMgrRunning"
+          size="large"
+          inline-prompt
+          active-text="自动化管理运行中"
+          inactive-text="自动化管理停止"
+          @change="updateMgrInfo"
+        />
+      </el-col>
+      <el-col :span="16">
+        <el-input v-model="createPluginName" placeholder="新插件名称">
+          <template #append>
+            <el-button @click="createPlugin">创建新插件</el-button>
           </template>
-          <el-table :data="progress_profile.resp" size="small">
-            <el-table-column
-              v-for="col in colHeaders"
-              :key="col.name"
-              :label="col.label"
-              :width="col.width"
-              show-overflow-tooltip
-            >
-              <template #default="{ row }">
-                <span v-if="col.name in row">{{ row[col.name] }}</span>
-                <el-tooltip v-else-if="'pre' in row && col.name in row['pre']">
-                  <template #content>
-                    {{ row.pre[col.name].func_name }}
-                    <br />
-                    {{ row.pre[col.name].args }}
-                  </template>
-                  <el-tag type="info" size="small">方法</el-tag>
-                </el-tooltip>
-                <span v-else>/</span>
-              </template>
-            </el-table-column>
-          </el-table>
-        </el-collapse-item>
-      </el-collapse>
-    </el-tab-pane>
-  </el-tabs>
+        </el-input>
+      </el-col>
+    </el-row>
+    <el-tabs type="card">
+      <el-tab-pane
+        v-for="(pluginData, pluginCode) in pluginListData.value"
+        :key="pluginCode"
+        :label="pluginCode"
+        :name="pluginCode"
+      >
+        <el-collapse v-model="activeProgress" accordion>
+          <el-collapse-item
+            v-for="(progress_profile, progress) in pluginData.progress_profile"
+            :key="progress"
+            :title="progress + progress_profile.type"
+          >
+            <template #title>
+              <el-space>
+                <el-tag>{{ progress_profile.type }}</el-tag>
+                <span>{{ progress }}</span>
+                <el-tag
+                  v-if="new RegExp(progress).test(pluginData.default_cmd)"
+                  type="info"
+                >
+                  默认状态 ({{ pluginData.default_cmd }})
+                </el-tag>
+              </el-space>
+            </template>
+            <el-table :data="progress_profile.resp" size="small">
+              <el-table-column
+                v-for="col in colHeaders"
+                :key="col.name"
+                :label="col.label"
+                :width="col.width"
+                show-overflow-tooltip
+              >
+                <template #default="{ row }">
+                  <el-button
+                    v-if="col.name in row"
+                    size="small"
+                    @click="updateProgress(pluginCode, progress)"
+                    link
+                  >
+                   {{ row[col.name] }}
+                  </el-button>
+                  <el-tooltip
+                    v-else-if="'pre' in row && col.name in row['pre']"
+                  >
+                    <template #content>
+                      {{ row.pre[col.name].func_name }}
+                      <br />
+                      {{ row.pre[col.name].args }}
+                    </template>
+                    <el-tag type="info" size="small">方法</el-tag>
+                  </el-tooltip>
+                  <span v-else>/</span>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-collapse-item>
+        </el-collapse>
+      </el-tab-pane>
+    </el-tabs>
+  </div>
 </template>
 
 <script setup>
@@ -63,8 +95,9 @@ const props = defineProps({
 
 const emit = defineEmits(["update:visible"]);
 
+const createPluginName = ref("");
 const activeProgress = ref("");
-const configData = reactive({});
+const pluginListData = reactive({});
 
 const loadingData = {
   lock: true,
@@ -73,7 +106,7 @@ const loadingData = {
 };
 
 onMounted(async () => {
-  refreshConfig();
+  refreshPlugin();
 });
 
 const colHeaders = [
@@ -97,20 +130,37 @@ const onError = async (msg, error) => {
   });
 };
 
-const refreshConfig = async () => {
-  getConfigs();
+const refreshPlugin = async () => {
+  getPluginList();
 };
 
-const getConfigs = async () => {
+const getPluginList = async () => {
   const loading = ElLoading.service(loadingData);
   axios
     .get(`/api/mgr/plugin`)
     .then((res) => {
-      configData.value = res.data;
+      pluginListData.value = res.data;
       loading.close();
     })
     .catch((error) => onError("更新模块失败", error));
 };
+
+const createPlugin = async () => {
+  if (!createPluginName.value) {
+    onError("创建任务失败", "任务名不能为空");
+    return;
+  }
+  const loading = ElLoading.service(loadingData);
+  axios
+    .post(`/api/mgr/task/${createPluginName.value}`, {})
+    .then((res) => {
+      createPluginName.value = "";
+      loading.close();
+      refresh();
+    })
+    .catch((error) => onError("创建任务失败", error));
+};
+
 </script>
 
 <style scoped>
