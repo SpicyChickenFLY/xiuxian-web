@@ -3,7 +3,7 @@
     width="90%"
     :model-value="props.visible"
     @update:modelValue="emit('update:visible', $event)"
-    :title="`${taskName} 的 ${moduleName}模块 下次触发时间`"
+    :title="`${taskName} 的 ${moduleName}模块 当前状态`"
   >
     <el-radio-group
       v-model="triggerType"
@@ -11,60 +11,17 @@
       style="margin-bottom: 20px"
     >
       <el-radio-button label="延迟触发" value="delay" />
-      <el-radio-button label="指定触发" value="set" />
     </el-radio-group>
 
-    <div v-if="triggerType === 'delay'">
-      <el-input v-model="delayDuration" size="large">
-        <template #prepend> 当前时间延迟 </template>
-        <template #append>
-          <el-select
-            v-model="delayUnit"
-            placeholder="单位"
-            style="width: 100px"
-            size="large"
-          >
-            <el-option label="秒" value="second" />
-            <el-option label="分钟" value="minute" />
-            <el-option label="小时" value="hour" />
-            <el-option label="天" value="day" />
-          </el-select>
-        </template>
-      </el-input>
-
+    <div style="width: 100%">
       <el-button
         type="primary"
         size="large"
         style="margin-top: 20px"
-        @click="setModuleNext(moment().add(delayDuration, delayUnit).unix())"
-        >设置下次触发时间为
-        {{
-          moment().add(delayDuration, delayUnit).format("YYYY/MM/DD HH:mm:ss")
-        }}</el-button
+        @click="setModuleNext(moment(setTime).unix())"
+        >设置模块新的状态
+        {{ moment(setTime).format("YYYY/MM/DD HH:mm:ss") }}</el-button
       >
-    </div>
-    <div v-else>
-      <el-space>
-        <span> 设置下次触发时间</span>
-        <el-date-picker
-          v-model="setTime"
-          type="datetime"
-          format="YYYY/MM/DD hh:mm:ss"
-          value-format="x"
-          size="large"
-          style="width: 100%"
-        />
-      </el-space>
-      <div style="width: 100%">
-        <el-button
-          type="primary"
-          size="large"
-          style="margin-top: 20px"
-          @click="setModuleNext(moment(setTime).unix())"
-          >设置下次触发时间为
-          {{ moment(setTime).format("YYYY/MM/DD HH:mm:ss") }}</el-button
-        >
-      </div>
     </div>
   </el-dialog>
 </template>

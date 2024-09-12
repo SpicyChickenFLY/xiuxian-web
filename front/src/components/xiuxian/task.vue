@@ -22,7 +22,7 @@
         </el-input>
       </el-col>
     </el-row>
-    <el-collapse v-model="activeProgress" accordion>
+    <el-collapse v-model="activeTask" accordion>
       <el-collapse-item v-for="task in mgrData" :key="task.name">
         <template #title>
           <el-space>
@@ -46,11 +46,11 @@
               消息框({{ task.bot.o_x }}, {{ task.bot.o_y }})
             </el-button>
             <span>
-              支持插件{{ task.modules.length }}
+              支持插件 {{ task.modules.length }}
               /
-              已启用{{ task.modules.filter((obj) => obj.enable).length }}
+              已启用 {{ task.modules.filter((obj) => obj.enable).length }}
               /
-              就绪待触发{{ task.modules.filter((obj) => obj.enable && obj.next < moment().unix()).length }}
+              待触发 {{ task.modules.filter((obj) => obj.enable && obj.next < moment().unix()).length }}
             </span>
             <span>
             </span>
@@ -82,22 +82,25 @@
           <el-table-column label="下次触发" width="100">
             <template #default="{ row }">
               <el-button
-                type="primary"
+                :type="!!row.next && row.next > moment().unix() ? 'info': 'warning'"
                 size="small"
                 link
                 @click="showNextDialog(task.name, row.name)"
-                >{{ calcDayTime(row.next, "随时可以") }}</el-button
               >
+                {{ calcDayTime(row.next, "随时可以") }}
+              </el-button>
             </template>
           </el-table-column>
           <el-table-column label="当前状态" width="100" show-overflow-tooltip>
             <template #default="{ row }">
-              {{ !!row.progress ? row.progress : "未开始" }}
-            </template>
-          </el-table-column>
-          <el-table-column label="当前等待" width="80" show-overflow-tooltip>
-            <template #default="{ row }">
-              {{ !!row.wait ? row.wait : "无" }}
+              <el-button
+                type="primary"
+                size="small"
+                link
+                @click="showProgressDialog(task.name, row.name)"
+              >
+                {{ !!row.progress ? row.progress : "未开始" }}
+              </el-button>
             </template>
           </el-table-column>
           <el-table-column label="执行结果" show-overflow-tooltip>
@@ -112,16 +115,23 @@
     <location
       v-if="isLocationDialogVisible"
       v-model:visible="isLocationDialogVisible"
-      :taskName="locationTask"
+      :taskName="updateTaskName"
       :info="locationInfo"
       @refresh="refresh"
     />
 
-    <next
+    <module-progress
+      v-if="isProgressDialogVisible"
+      v-model:visible="isProgressDialogVisible"
+      :taskName="updateTaskName"
+      :moduleName="updateModuleName"
+      @refresh="refresh"
+    />
+    <module-next
       v-if="isNextDialogVisible"
       v-model:visible="isNextDialogVisible"
-      :taskName="nextTask"
-      :moduleName="nextModule"
+      :taskName="updateTaskName"
+      :moduleName="updateModuleName"
       @refresh="refresh"
     />
   </div>
@@ -141,22 +151,23 @@ import moment from "moment";
 import { ElNotification, ElLoading } from "element-plus";
 
 import Location from "./location.vue";
-import Next from "./next.vue";
-
-const isLocationDialogVisible = ref(false);
-const locationTask = ref("");
-const locationInfo = reactive({});
-
-const isNextDialogVisible = ref(false);
-const nextTask = ref("");
-const nextModule = ref("");
-
-const activeProgress = ref("");
+import ModuleNext from "./module_next.vue";
+import ModuleProgress from "./module_progress.vue";
+const activeTask = ref("");
 const createTaskName = ref("");
 
 const timer = reactive(null);
 const mgrData = ref([]);
 const isMgrRunning = ref(false);
+
+const isLocationDialogVisible = ref(false);
+const isNextDialogVisible = ref(false);
+const isProgressDialogVisible = ref(false);
+
+const updateTaskName = ref("");
+const updateModuleName = ref("");
+const locationInfo = reactive({});
+
 
 const loadingData = {
   lock: true,
@@ -271,14 +282,20 @@ const updateModule = async (taskName, moduleName, moduleData) => {
 
 function showLocationDialog (taskName, location) {
   isLocationDialogVisible.value = true;
-  locationTask.value = taskName;
+  updateTaskName.value = taskName;
   locationInfo.value = location;
 }
 
 function showNextDialog (taskName, moduleName) {
   isNextDialogVisible.value = true;
-  nextTask.value = taskName;
-  nextModule.value = moduleName;
+  updateTaskName.value = taskName;
+  updateModuleName.value = moduleName;
+}
+
+function showProgressDialog (taskName, moduleName) {
+  isProgressDialogVisible.value = true;
+  updateTaskName.value = taskName;
+  updateModuleName.value = moduleName;
 }
 
 function calcDayTime(tsStr, missStr) {
@@ -297,6 +314,9 @@ function calcDayTime(tsStr, missStr) {
     prefix = diff * -1 + "天前 ";
   }
   return prefix + time;
+}
+
+function calcTimeOrder(tsStr) {
 }
 </script>
 
