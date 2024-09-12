@@ -1,6 +1,6 @@
 <template>
   <!-- <el-tabs tab-position="left"> -->
-  <el-tabs>
+  <el-tabs type="card">
     <el-tab-pane
       v-for="(config, code) in configData.value"
       :key="code"
@@ -79,7 +79,7 @@ onMounted(async () => {
 const colHeaders = [
   { label: "回复匹配", name: "resp" },
   { label: "处理结果", name: "result" },
-  { label: "等待前置", name: "wait" },
+  { label: "等待前置", name: "wait", width: "50" },
   { label: "触发类型", name: "next_type", width: "50" },
   { label: "延迟量", name: "next_duration", width: "50" },
   { label: "延迟单位", name: "next_unit", width: "50" },
