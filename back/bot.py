@@ -31,6 +31,17 @@ class Bot:
         # 日志记录文件,便于回溯
         # print(log_msg)
 
+    def execute(self, cmd_type, cmd) -> str:
+        """按命令类型向机器人发送/接收/监听指令"""
+        if cmd_type == 'recv':
+            return self.receive(cmd)
+        if cmd_type == "send":
+            self.send(cmd)
+            return ""
+        if cmd_type == 'listen':
+            return self.listen()
+        raise Exception("Bot: 无效的命令类型")
+
     def send(self, msg):
         """仅向机器人发送指令"""
         pyautogui.click(self.i_x, self.i_y)
@@ -78,7 +89,9 @@ class Bot:
         return ""
 
     def set_bot_data(self, bot_data):
+        """向机器人更新配置数据"""
         self.__dict__.update(bot_data)
 
     def get_bot_data(self):
+        """导出机器人配置数据"""
         return {"i_x": self.i_x, "i_y": self.i_y, "o_x": self.o_x, "o_y": self.o_y}

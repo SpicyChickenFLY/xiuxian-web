@@ -1,7 +1,6 @@
 """自动化机器人"""
 
 import time
-import os
 import json
 from typing import Dict
 
@@ -14,8 +13,8 @@ class Task():
     def __init__(self, task_name, task_data, plugins, path) -> None:
         self.bot = Bot()
 
-        self.path = path
-        self.task_name = task_name
+        self._path = path
+        self.name = task_name
         self.enable =  False
         self.modules: Dict[str, Module] = {}
         modules = task_data["modules"] if "modules" in task_data else {}
@@ -25,7 +24,7 @@ class Task():
     def _init_modules(self, plugins, modules_data):
         # 根据插件配置创建任务模块
         for code, plugin_data in plugins.items():
-            self.modules[code] = Module(code, plugin_data, {})
+            self.modules[code] = Module(code, plugin_data, {}, self._path)
 
         # 根据任务配置填充模块数据
         for module_data in modules_data:
@@ -35,8 +34,8 @@ class Task():
 
     def save(self):
         """保存任务信息到本地"""
-        file_path = self.path['task']
-        with open(f"{file_path}/{self.task_name}.json", "w", encoding="utf-8") as fw:
+        file_path = self._path['task']
+        with open(f"{file_path}/{self.name}.json", "w", encoding="utf-8") as fw:
             fw.write(json.dumps(self.get_task_data(), ensure_ascii=False, indent=4))
 
     def get_task_data(self):
@@ -45,7 +44,7 @@ class Task():
         for _, module in self.modules.items():
             module_data.append(module.get_module_data())
         return {
-            "name": self.task_name,
+            "name": self.name,
             "enable": self.enable,
             "bot": self.bot.get_bot_data(),
             "modules": module_data,
@@ -78,15 +77,8 @@ class Task():
                 continue  # 不满足运行要求, 下一个
 
             next_cmd, cmd_type = module.get_next_cmd_and_cmd_type()
-            resp = ""
-            if cmd_type == 'recv':
-                resp = self.bot.receive(next_cmd)
-            elif cmd_type == "send":
-                self.bot.send(next_cmd)
-            elif cmd_type == 'listen':
-                resp = self.bot.listen()
-            else:
-                pass
+            resp = self.bot.execute(cmd_type, next_cmd)
+
             wait, log = module.run(resp, now)
             if wait != "":
                 if self.modules[wait].enable:
@@ -94,7 +86,7 @@ class Task():
                 else:
                     module.set_delay('5', 'min')
             if log != "":
-                self.bot.log(self.task_name, log)
+                self.bot.log(self.name, log)
 
             self.save()
             break  # 一次循环至多执行一个模块

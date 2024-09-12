@@ -14,6 +14,7 @@ class TaskMgr:
     def __init__(self) -> None:
         self.is_running = False
         self._thread = None
+        # 路径需要是相对路径
         self.path = {
             'task': 'task',
             'plugin': 'plugin',
@@ -21,6 +22,7 @@ class TaskMgr:
             'misc': 'misc'
         }
 
+        # 把所有路径都创建好
         for _, path in self.path.items():
             os.makedirs(path, exist_ok=True)
 
@@ -152,6 +154,7 @@ class TaskMgr:
                 fw.write(json.dumps(plugin_data, ensure_ascii=False, indent=4))
         except Exception as e:
             print(f"写入插件配置文件{file_path}失败 {type(e)} {e}")
+        # NOTE: 更新插件配置需要重启自动化任务
 
     def get_funcs(self):
         """获取自定义方法列表"""
@@ -176,6 +179,7 @@ class TaskMgr:
                 fw.write(func_data)
         except Exception as e:
             print(f"写入模块配置文件{file_path}失败 {type(e)} {e}")
+        # NOTE: 模块加载自定义方法通过导入的方式,不需要重新加载自动化任务
 
     def get_miscs(self):
         """获取自定义数据列表"""
@@ -198,3 +202,4 @@ class TaskMgr:
                 fw.write(misc_data)
         except Exception as e:
             print(f"写入模块配置文件{file_path}失败 {type(e)} {e}")
+        # NOTE: 模块加载自定义数据通过导入的方式,不需要重新加载自动化任务

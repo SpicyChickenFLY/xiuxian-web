@@ -9,9 +9,10 @@ import importlib
 class Module:
     """自动化功能模块基类"""
 
-    def __init__(self, module_name, plugin, module_data) -> None:
+    def __init__(self, module_name, plugin, module_data, path) -> None:
         self._progress_profiles = plugin["progress_profile"]
 
+        self._path = path
         self.name = module_name
         self.enable = True
         self.prev = 0.0
@@ -57,16 +58,70 @@ class Module:
             days += 1
         self.next = time.mktime(curr_period.timetuple())
         if days > 0:
-            self.log += f" cd  {days}日后{hour}:{minute}:{second}"
+            self.log += f" cd {days}日后{hour}:{minute}:{second}"
         else:
-            self.log += f" cd  今日{hour}:{minute}:{second}"
+            self.log += f" cd 今日{hour}:{minute}:{second}"
 
     def set_next_timestamp(self, timestamp):
         """直接设置下次触发时间的时间戳"""
         self.next = timestamp
+        self.log += f" cd {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(timestamp))}"
 
-    def _run(self, run_data):
-        # 更新模块数据
+    def _get_progress_profile(self):
+        progress_profile = None
+        for progress_regex in self._progress_profiles:
+            if len(re.findall(progress_regex, self.progress)) > 0:
+                progress_profile = self._progress_profiles[progress_regex]
+                break
+        return progress_profile
+
+    def _get_run_data(self, resp, progress_profile):
+        run_data = None
+        if progress_profile["type"] == "send":
+            run_data = copy.deepcopy(progress_profile)
+        elif progress_profile["type"] == "recv":
+            if resp == "":
+                return None
+            # 尝试匹配回复消息
+            for _run_data in progress_profile["resp"]:
+                if len(re.findall(_run_data["resp"], resp)) > 0:
+                    run_data = copy.deepcopy(_run_data)
+                    break
+        return run_data
+
+    def _pre_run(self, resp, run_data):
+        if "pre" not in run_data:
+            return run_data
+
+        # 预处理数据
+        for data_key, func_info in run_data["pre"].items():
+            func_info["args"]["resp"] = resp
+            func_info["args"]["progress"] = self.progress
+            module = importlib.import_module(f'func.{func_info["func_name"]}')
+            func = getattr(module, func_info['func_name'])
+            run_data[data_key] = func(func_info['args'])
+        return run_data
+
+    def run(self, resp, trigger):
+        """运行模块功能"""
+        self.prev = trigger
+        self.wait = ""
+
+        progress_profile = self._get_progress_profile()
+        if progress_profile is None:
+            self.log = f"{self.progress} 获取状态配置异常"
+            self.set_delay(15, "min")
+            return self.wait, self.log
+
+        run_data = self._get_run_data(resp, progress_profile)
+        if run_data is None:
+            self.log = f"{self.progress} 返回异常({resp})"
+            self.set_delay(5, "min")
+            return self.wait, self.log
+
+        run_data = self._pre_run(resp, run_data)
+
+        # 根据模块配置匹配填充返回数据
         self.log = f"{self.progress} {run_data['result']}"
         if "next_type" in run_data:
             if run_data["next_type"] == "delay":
@@ -81,53 +136,11 @@ class Module:
             self.wait = run_data["wait"]
         if "progress" in run_data:
             self.progress = run_data["progress"]
-
-
-    def run(self, resp, trigger):
-        """运行模块功能"""
-        self.prev = trigger
-        progress_profile = {}
-        for progress_regex in self._progress_profiles:
-            if len(re.findall(progress_regex, self.progress)) > 0:
-                progress_profile = self._progress_profiles[progress_regex]
-                break
-        else:
-            self.log = f"获取状态配置异常({self.progress})"
-            self.set_delay(15, "min")
-            return self.wait, self.log
-        self.wait = ""
-        run_data = copy.deepcopy(progress_profile)
-        if progress_profile["type"] == "recv":
-            if resp == "":
-                self.log = f"{self.progress} 无返回"
-                self.set_delay(15, "min")
-                return self.wait, self.log
-            # 尝试匹配回复消息
-            for _run_data in progress_profile["resp"]:
-                if len(re.findall(_run_data["resp"], resp)) > 0:
-                    run_data = copy.deepcopy(_run_data)
-                    break
-            else:
-                self.log = f"{self.progress} 返回异常{resp}"
-                self.set_delay(1, "min")
-                return self.wait, self.log
-
-        # 预处理数据
-        if "pre" in run_data:
-            for data_key, func_info in run_data["pre"].items():
-                func_info["args"]["resp"] = resp
-                func_info["args"]["progress"] = self.progress
-                module = importlib.import_module(f'func.{func_info["func_name"]}')
-                func = getattr(module, func_info['func_name'])
-                run_data[data_key] = func(func_info['args'])
-        self._run(run_data)
         return self.wait, self.log
 
     def get_next_cmd_and_cmd_type(self):
         """命令接口"""
-        for resp_regex, progress_profile in self._progress_profiles.items():
-            if len(re.findall(resp_regex, self.progress)) > 0:
-                cmd_type = progress_profile["type"]
-                return self.progress, cmd_type
-        print(f"异常返回{self.progress}")
-        return self.progress, "send"
+        progress_profile = self._get_progress_profile()
+        if progress_profile is None:
+            return self.progress, "send"
+        return self.progress, progress_profile["type"]
