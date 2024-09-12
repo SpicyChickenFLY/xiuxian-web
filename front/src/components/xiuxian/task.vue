@@ -12,10 +12,7 @@
         />
       </el-col>
       <el-col :span="16">
-        <el-input
-          v-model="createTaskName"
-          placeholder="新任务名称(建议使用用户名)"
-        >
+        <el-input v-model="createTaskName" placeholder="新任务名称(建议道号区分)">
           <template #append>
             <el-button @click="createTask">创建自动化任务</el-button>
           </template>
@@ -82,7 +79,7 @@
           <el-table-column label="下次触发" width="100">
             <template #default="{ row }">
               <el-button
-                :type="!!row.next && row.next > moment().unix() ? 'info': 'warning'"
+                :type="!row.enable || !!row.next && row.next > moment().unix() ? 'info': 'warning'"
                 size="small"
                 link
                 @click="showNextDialog(task.name, row.name)"
@@ -94,7 +91,7 @@
           <el-table-column label="当前状态" width="100" show-overflow-tooltip>
             <template #default="{ row }">
               <el-button
-                type="primary"
+                :type="row.enable ? 'primary': 'info'"
                 size="small"
                 link
                 @click="showProgressDialog(task.name, row.name)"
