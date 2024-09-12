@@ -30,7 +30,6 @@
           <el-collapse-item
             v-for="(progress_profile, progress) in pluginData.progress_profile"
             :key="progress"
-            :title="progress + progress_profile.type"
           >
             <template #title>
               <el-space>
@@ -42,6 +41,12 @@
                 >
                   默认状态 ({{ pluginData.default_cmd }})
                 </el-tag>
+                  <el-button size="small" plain type="warning"
+                    @click.stop.prevent=""
+                    >修改</el-button>
+                  <el-button size="small" plain type="danger"
+                    @click.stop.prevent=""
+                    >删除</el-button>
               </el-space>
             </template>
             <el-table :data="progress_profile.resp" size="small">
@@ -79,6 +84,47 @@
         </el-collapse>
       </el-tab-pane>
     </el-tabs>
+
+    <el-dialog
+      width="90%"
+      :model-value="isProgressDialogVisible"
+      :title="`${updatePlugin} 的 ${updateProgress}状态 修改`"
+    >
+      <el-table :data="updateProgress.resp" size="small">
+        <el-table-column
+          v-for="col in colHeaders"
+          :key="col.name"
+          :label="col.label"
+          :width="col.width"
+          show-overflow-tooltip
+        >
+          <template #default="{ row }">
+            <el-input
+              v-if="col.name in row"
+              size="small"
+              @click="updateProgress(pluginCode, progress)"
+              link
+            >
+              <template #append>
+                <el-button @click="toggleValFunc()">切换方法</el-button>
+              </template>
+              {{ row[col.name] }}
+            </el-input>
+            <el-tooltip
+              v-else-if="'pre' in row && col.name in row['pre']"
+            >
+              <template #content>
+                {{ row.pre[col.name].func_name }}
+                <br />
+                {{ row.pre[col.name].args }}
+              </template>
+              <el-tag type="info" size="small">方法</el-tag>
+            </el-tooltip>
+            <span v-else>/</span>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
   </div>
 </template>
 
@@ -93,7 +139,7 @@ const props = defineProps({
   visible: { type: Boolean, default: false },
 });
 
-const emit = defineEmits(["update:visible"]);
+const isProgressDialogVisible = ref(false);
 
 const createPluginName = ref("");
 const activeProgress = ref("");
@@ -164,10 +210,6 @@ const createPlugin = async () => {
 </script>
 
 <style scoped>
-a {
-  color: #42b983;
-}
-
 .el-switch {
   --el-switch-on-color: #95d475;
   --el-switch-off-color: #f89898;
