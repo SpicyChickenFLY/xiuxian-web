@@ -7,7 +7,6 @@
   >
     <el-radio-group
       v-model="triggerType"
-      size="large"
       style="margin-bottom: 20px"
     >
       <el-radio-button label="延迟触发" value="delay" />
@@ -15,14 +14,13 @@
     </el-radio-group>
 
     <div v-if="triggerType === 'delay'">
-      <el-input v-model="delayDuration" size="large">
+      <el-input v-model="delayDuration">
         <template #prepend> 当前时间延迟 </template>
         <template #append>
           <el-select
             v-model="delayUnit"
             placeholder="单位"
             style="width: 100px"
-            size="large"
           >
             <el-option label="秒" value="second" />
             <el-option label="分钟" value="minute" />
@@ -34,7 +32,6 @@
 
       <el-button
         type="primary"
-        size="large"
         style="margin-top: 20px"
         @click="setModuleNext(moment().add(delayDuration, delayUnit).unix())"
         >设置下次触发时间为

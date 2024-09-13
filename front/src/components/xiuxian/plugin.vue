@@ -33,17 +33,15 @@
           >
             <template #title>
               <el-space>
-                <el-tag>{{ progress_profile.type }}</el-tag>
-                <span>{{ progress }}</span>
+                <el-tag>{{ progress_type_label_map[progress_profile.type] }}</el-tag>
+                <span>步骤 - {{ progress }}</span>
                 <el-tag
                   v-if="new RegExp(progress).test(pluginData.default_cmd)"
                   type="info"
                 >
-                  默认状态 ({{ pluginData.default_cmd }})
+                  默认步骤 (初始命令 - {{ pluginData.default_cmd }})
                 </el-tag>
-                  <el-button size="small" plain type="warning"
-                    @click.stop.prevent=""
-                    >修改</el-button>
+                  <el-button size="small" plain type="info">新增匹配项</el-button>
                   <el-button size="small" plain type="danger"
                     @click.stop.prevent=""
                     >删除</el-button>
@@ -87,43 +85,14 @@
 
     <el-dialog
       width="90%"
-      :model-value="isProgressDialogVisible"
+      :model-value="false"
       :title="`${updatePlugin} 的 ${updateProgress}状态 修改`"
     >
-      <el-table :data="updateProgress.resp" size="small">
-        <el-table-column
-          v-for="col in colHeaders"
-          :key="col.name"
-          :label="col.label"
-          :width="col.width"
-          show-overflow-tooltip
-        >
-          <template #default="{ row }">
-            <el-input
-              v-if="col.name in row"
-              size="small"
-              @click="updateProgress(pluginCode, progress)"
-              link
-            >
-              <template #append>
-                <el-button @click="toggleValFunc()">切换方法</el-button>
-              </template>
-              {{ row[col.name] }}
-            </el-input>
-            <el-tooltip
-              v-else-if="'pre' in row && col.name in row['pre']"
-            >
-              <template #content>
-                {{ row.pre[col.name].func_name }}
-                <br />
-                {{ row.pre[col.name].args }}
-              </template>
-              <el-tag type="info" size="small">方法</el-tag>
-            </el-tooltip>
-            <span v-else>/</span>
-          </template>
-        </el-table-column>
-      </el-table>
+      <el-radio-group v-model="valType">
+        <el-radio-button value="empty" size="large">不设置值</el-radio-button>
+        <el-radio-button value="set" size="large"> 直接设置值 </el-radio-button>
+        <el-radio-button value="func" size="large"> 自定义方法计算值 </el-radio-button>
+      </el-radio-group>
     </el-dialog>
   </div>
 </template>
@@ -139,11 +108,25 @@ const props = defineProps({
   visible: { type: Boolean, default: false },
 });
 
+
 const isProgressDialogVisible = ref(false);
+const updatePlugin = ref("");
+const updateProgress = ref("");
+const updateInfo = reactive({});
 
 const createPluginName = ref("");
 const activeProgress = ref("");
 const pluginListData = reactive({});
+
+const progress_type_label_map = {
+  "send": "发送不等待回复",
+  "recv": "发送并处理回复",
+  "listen": "监听用户消息",
+};
+const delay_type_label_map = {
+  "set": '设置触发周期',
+  "delay": '延迟触发时间'
+};
 
 const loadingData = {
   lock: true,
@@ -156,12 +139,11 @@ onMounted(async () => {
 });
 
 const colHeaders = [
-  { label: "回复匹配", name: "resp" },
   { label: "处理结果", name: "result" },
-  { label: "等待前置", name: "wait", width: "50" },
-  { label: "触发类型", name: "next_type", width: "50" },
-  { label: "延迟量", name: "next_duration", width: "50" },
-  { label: "延迟单位", name: "next_unit", width: "50" },
+  { label: "等待前置", name: "wait", width: "70" },
+  { label: "下次触发类型", name: "next_type", width: "90" },
+  { label: "延迟量", name: "next_duration", width: "60" },
+  { label: "延迟单位", name: "next_unit", width: "70" },
   { label: "时", name: "next_hour", width: "30" },
   { label: "分", name: "next_minute", width: "30" },
   { label: "秒", name: "next_second", width: "30" },
@@ -207,6 +189,12 @@ const createPlugin = async () => {
     .catch((error) => onError("创建任务失败", error));
 };
 
+function showProgressDialog (plugin, progress) {
+  isProgressDialogVisible.value = true;
+  updatePlugin.value = plugin;
+  updateProgress.value = progress;
+  updateInfo.value = pluginListData.value[plugin]['progress_profile'][progress]
+}
 </script>
 
 <style scoped>

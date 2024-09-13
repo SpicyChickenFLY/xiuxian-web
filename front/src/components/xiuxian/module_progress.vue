@@ -80,10 +80,6 @@ const updateModule = async (taskName, moduleName, moduleData) => {
 </script>
 
 <style scoped>
-a {
-  color: #42b983;
-}
-
 .el-switch {
   --el-switch-on-color: #95d475;
   --el-switch-off-color: #f89898;
