@@ -39,7 +39,7 @@
                   v-if="new RegExp(progress).test(pluginData.default_cmd)"
                   type="info"
                 >
-                  默认步骤 (初始命令 - {{ pluginData.default_cmd }})
+                  初始命令 - {{ pluginData.default_cmd }}
                 </el-tag>
                   <el-button size="small" plain type="info">新增匹配项</el-button>
                   <el-button size="small" plain type="danger"
@@ -48,6 +48,19 @@
               </el-space>
             </template>
             <el-table :data="progress_profile.resp" size="small">
+              <el-table-column label="回复结果" show-overflow-tooltip>
+                <template #default="{ row }">
+                  <el-button
+                    size="small"
+                    type="primary"
+                    @click="updateProgress(pluginCode, progress)"
+                    link
+                  >
+                   {{ row['resp'] }}
+                  </el-button>
+                </template>
+
+              </el-table-column>
               <el-table-column
                 v-for="col in colHeaders"
                 :key="col.name"
@@ -119,9 +132,9 @@ const activeProgress = ref("");
 const pluginListData = reactive({});
 
 const progress_type_label_map = {
-  "send": "发送不等待回复",
-  "recv": "发送并处理回复",
-  "listen": "监听用户消息",
+  "send": "发送类",
+  "recv": "回复类",
+  "listen": "监听类",
 };
 const delay_type_label_map = {
   "set": '设置触发周期',
