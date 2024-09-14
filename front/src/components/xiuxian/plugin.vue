@@ -43,7 +43,6 @@
                 >
                   初始命令 - {{ pluginData.default_cmd }}
                 </el-tag>
-                <el-button size="small" plain type="info">新增匹配项</el-button>
                 <el-button
                   size="small"
                   plain
@@ -59,7 +58,7 @@
                   <el-button
                     size="small"
                     type="primary"
-                    @click="updateProgress(pluginCode, progress, row['resp'])"
+                    @click="showRespDialog(pluginCode, progress, row)"
                     link
                   >
                     {{ row["resp"] }}
@@ -79,8 +78,7 @@
                     v-else-if="'pre' in row && col.name in row['pre']"
                   >
                     <template #content>
-                      {{ row.pre[col.name].func_name }}
-                      <br />
+                      {{ row.pre[col.name].func_name }} <br />
                       {{ row.pre[col.name].args }}
                     </template>
                     <el-tag type="info" size="small">方法</el-tag>
@@ -89,6 +87,7 @@
                 </template>
               </el-table-column>
             </el-table>
+            <el-button size="small" plain type="info">新增匹配项</el-button>
           </el-collapse-item>
         </el-collapse>
       </el-tab-pane>
@@ -96,16 +95,52 @@
 
     <el-dialog
       width="90%"
-      :model-value="false"
-      :title="`${updatePlugin} 的 ${updateProgress}状态 修改`"
+      v-model="isRespDialogVisible"
+      :title="`插件:${updatePlugin} 步骤:${updateProgress} 回复项: ${updateResp} 修改`"
     >
-      <el-radio-group v-model="valType">
-        <el-radio-button value="empty" size="large">不设置值</el-radio-button>
-        <el-radio-button value="set" size="large"> 直接设置值 </el-radio-button>
-        <el-radio-button value="func" size="large">
-          自定义方法计算值
-        </el-radio-button>
-      </el-radio-group>
+      <el-form label-width="100px">
+        <el-form-item
+          v-for="col in colHeaders"
+          :key="col.name"
+          :label="col.label"
+        >
+          <div
+            v-if="col.name in updateResp.value"
+            style="width: 100%; display: flex"
+          >
+            <span style="flex: 1">
+              <el-input v-model="updateResp.value[col.name]" size="small" />
+            </span>
+            <el-button size="small">不设置值</el-button>
+            <el-button size="small">调用方法</el-button>
+          </div>
+          <div
+            v-else-if="
+              'pre' in updateResp.value && col.name in updateResp.value['pre']
+            "
+            style="width: 100%; display: flex"
+          >
+            <span style="flex: 1">
+              <el-select v-model="updateResp.value.pre[col.name].func_name">
+                <el-option />
+              </el-select>
+              <JsonEditorVue
+                v-model="updateResp.value.pre[col.name].args"
+                class="json"
+              />
+            </span>
+            <el-button size="small">不设置值</el-button>
+            <el-button size="small">直接设置</el-button>
+          </div>
+          <div v-else style="width: 100%; display: flex">
+            <span style="flex: 1; text-align: left">
+              未设置
+            </span>
+            <el-button size="small">直接设置</el-button>
+            <el-button size="small">调用方法</el-button>
+          </div>
+        </el-form-item>
+      </el-form>
     </el-dialog>
   </div>
 </template>
@@ -113,6 +148,7 @@
 <script setup>
 import axios from "axios";
 import { ElNotification, ElLoading, ElMessageBox } from "element-plus";
+import JsonEditorVue from 'json-editor-vue';
 import { ref, reactive, onMounted, watch, computed } from "vue";
 import Next from "./module_next.vue";
 import moment from "moment";
@@ -121,10 +157,10 @@ const props = defineProps({
   visible: { type: Boolean, default: false },
 });
 
-const isProgressDialogVisible = ref(false);
+const isRespDialogVisible = ref(false);
 const updatePlugin = ref("");
 const updateProgress = ref("");
-const updateInfo = reactive({});
+const updateResp = reactive({});
 
 const createPluginName = ref("");
 const activeProgress = ref("");
@@ -146,9 +182,7 @@ const loadingData = {
   background: "rgba(0, 0, 0, 0.7)",
 };
 
-onMounted(async () => {
-  refreshPlugin();
-});
+onMounted(async () => refreshPlugin());
 
 const colHeaders = [
   { label: "处理结果", name: "result" },
@@ -159,7 +193,7 @@ const colHeaders = [
   { label: "时", name: "next_hour", width: "30" },
   { label: "分", name: "next_minute", width: "30" },
   { label: "秒", name: "next_second", width: "30" },
-  { label: "后续命令", name: "progress" },
+  { label: "下个命令", name: "progress" },
 ];
 
 const onError = async (msg, error) => {
@@ -187,7 +221,7 @@ const getPluginList = async () => {
 
 const createPlugin = async () => {
   if (!createPluginName.value) {
-    onError("创建任务失败", "任务名不能为空");
+    onError("创建插件失败", "插件名不能为空");
     return;
   }
   const loading = ElLoading.service(loadingData);
@@ -201,16 +235,16 @@ const createPlugin = async () => {
     .catch((error) => onError("创建任务失败", error));
 };
 
-function showProgressDialog(plugin, progress) {
-  isProgressDialogVisible.value = true;
-  updatePlugin.value = plugin;
-  updateProgress.value = progress;
-  updateInfo.value = pluginListData.value[plugin]["progress_profile"][progress];
+function showRespDialog(pluginName, progressName, respData) {
+  isRespDialogVisible.value = true;
+  updatePlugin.value = pluginName;
+  updateProgress.value = progressName;
+  updateResp.value = respData;
 }
 </script>
 
 <style scoped>
-.el-switch {
+::v-deep .el-switch {
   --el-switch-on-color: #95d475;
   --el-switch-off-color: #f89898;
 }
