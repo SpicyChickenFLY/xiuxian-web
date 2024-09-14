@@ -33,7 +33,9 @@
           >
             <template #title>
               <el-space>
-                <el-tag>{{ progress_type_label_map[progress_profile.type] }}</el-tag>
+                <el-tag>{{
+                  progress_type_label_map[progress_profile.type]
+                }}</el-tag>
                 <span>步骤 - {{ progress }}</span>
                 <el-tag
                   v-if="new RegExp(progress).test(pluginData.default_cmd)"
@@ -41,10 +43,14 @@
                 >
                   初始命令 - {{ pluginData.default_cmd }}
                 </el-tag>
-                  <el-button size="small" plain type="info">新增匹配项</el-button>
-                  <el-button size="small" plain type="danger"
-                    @click.stop.prevent=""
-                    >删除</el-button>
+                <el-button size="small" plain type="info">新增匹配项</el-button>
+                <el-button
+                  size="small"
+                  plain
+                  type="danger"
+                  @click.stop.prevent=""
+                  >删除</el-button
+                >
               </el-space>
             </template>
             <el-table :data="progress_profile.resp" size="small">
@@ -53,13 +59,12 @@
                   <el-button
                     size="small"
                     type="primary"
-                    @click="updateProgress(pluginCode, progress)"
+                    @click="updateProgress(pluginCode, progress, row['resp'])"
                     link
                   >
-                   {{ row['resp'] }}
+                    {{ row["resp"] }}
                   </el-button>
                 </template>
-
               </el-table-column>
               <el-table-column
                 v-for="col in colHeaders"
@@ -69,14 +74,7 @@
                 show-overflow-tooltip
               >
                 <template #default="{ row }">
-                  <el-button
-                    v-if="col.name in row"
-                    size="small"
-                    @click="updateProgress(pluginCode, progress)"
-                    link
-                  >
-                   {{ row[col.name] }}
-                  </el-button>
+                  <span v-if="col.name in row"> {{ row[col.name] }} </span>
                   <el-tooltip
                     v-else-if="'pre' in row && col.name in row['pre']"
                   >
@@ -104,7 +102,9 @@
       <el-radio-group v-model="valType">
         <el-radio-button value="empty" size="large">不设置值</el-radio-button>
         <el-radio-button value="set" size="large"> 直接设置值 </el-radio-button>
-        <el-radio-button value="func" size="large"> 自定义方法计算值 </el-radio-button>
+        <el-radio-button value="func" size="large">
+          自定义方法计算值
+        </el-radio-button>
       </el-radio-group>
     </el-dialog>
   </div>
@@ -121,7 +121,6 @@ const props = defineProps({
   visible: { type: Boolean, default: false },
 });
 
-
 const isProgressDialogVisible = ref(false);
 const updatePlugin = ref("");
 const updateProgress = ref("");
@@ -132,13 +131,13 @@ const activeProgress = ref("");
 const pluginListData = reactive({});
 
 const progress_type_label_map = {
-  "send": "发送类",
-  "recv": "回复类",
-  "listen": "监听类",
+  send: "发送类",
+  recv: "回复类",
+  listen: "监听类",
 };
 const delay_type_label_map = {
-  "set": '设置触发周期',
-  "delay": '延迟触发时间'
+  set: "设置触发周期",
+  delay: "延迟触发时间",
 };
 
 const loadingData = {
@@ -202,11 +201,11 @@ const createPlugin = async () => {
     .catch((error) => onError("创建任务失败", error));
 };
 
-function showProgressDialog (plugin, progress) {
+function showProgressDialog(plugin, progress) {
   isProgressDialogVisible.value = true;
   updatePlugin.value = plugin;
   updateProgress.value = progress;
-  updateInfo.value = pluginListData.value[plugin]['progress_profile'][progress]
+  updateInfo.value = pluginListData.value[plugin]["progress_profile"][progress];
 }
 </script>
 
