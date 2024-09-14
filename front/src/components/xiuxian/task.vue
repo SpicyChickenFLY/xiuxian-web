@@ -318,7 +318,7 @@ function calcTimeOrder(tsStr) {
 </script>
 
 <style scoped>
-.el-switch {
+::v-deep .el-switch {
   --el-switch-on-color: #95d475;
   --el-switch-off-color: #f89898;
 }

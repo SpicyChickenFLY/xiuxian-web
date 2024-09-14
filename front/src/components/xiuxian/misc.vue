@@ -63,15 +63,11 @@ const getConfigs = async () => {
 </script>
 
 <style scoped>
-a {
-  color: #42b983;
-}
-
 .json {
   text-align: left;
 }
 
-.el-switch {
+::v-deep .el-switch {
   --el-switch-on-color: #95d475;
   --el-switch-off-color: #f89898;
 }

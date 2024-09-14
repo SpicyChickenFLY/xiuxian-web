@@ -100,16 +100,12 @@ const collapseChange = async () => {
 </script>
 
 <style scoped>
-a {
-  color: #42b983;
-}
-
 .code {
   text-align: left;
   min-height: 200px;
 }
 
-.el-switch {
+::v-deep .el-switch {
   --el-switch-on-color: #95d475;
   --el-switch-off-color: #f89898;
 }
