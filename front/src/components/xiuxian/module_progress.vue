@@ -80,7 +80,7 @@ const updateModule = async (taskName, moduleName, moduleData) => {
 </script>
 
 <style scoped>
-::v-deep .el-switch {
+:deep(.el-switch){
   --el-switch-on-color: #95d475;
   --el-switch-off-color: #f89898;
 }

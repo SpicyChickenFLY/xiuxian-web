@@ -105,7 +105,7 @@ const collapseChange = async () => {
   min-height: 200px;
 }
 
-::v-deep .el-switch {
+:deep(.el-switch){
   --el-switch-on-color: #95d475;
   --el-switch-off-color: #f89898;
 }

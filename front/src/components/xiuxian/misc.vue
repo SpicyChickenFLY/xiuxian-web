@@ -67,7 +67,7 @@ const getConfigs = async () => {
   text-align: left;
 }
 
-::v-deep .el-switch {
+:deep(.el-switch){
   --el-switch-on-color: #95d475;
   --el-switch-off-color: #f89898;
 }
