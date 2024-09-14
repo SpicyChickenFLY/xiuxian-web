@@ -91,9 +91,9 @@ class PluginListApi(Resource):
 class PluginApi(Resource):
     """插件API"""
 
-    # def post(self, plugin_name):
-    #     """新建插件"""
-    #     return taskMgr.create_plugin(plugin_name, request.json)
+    def post(self, plugin_name):
+        """新建插件"""
+        return taskMgr.update_plugin(plugin_name, request.json)
 
     def put(self, plugin_name):
         """更新插件信息"""
