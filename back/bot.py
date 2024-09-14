@@ -28,8 +28,6 @@ class Bot:
         pyautogui.hotkey("enter")
         time.sleep(0.25)
         pyautogui.hotkey("enter")  # 确保发送
-        # 日志记录文件,便于回溯
-        # print(log_msg)
 
     def execute(self, cmd_type, cmd) -> str:
         """按命令类型向机器人发送/接收/监听指令"""
@@ -53,7 +51,7 @@ class Bot:
         pyautogui.hotkey("enter")
         pyperclip.copy(msg)
         pyautogui.hotkey("ctrl", "v")
-        time.sleep(0.25)
+        time.sleep(0.50)
         pyautogui.hotkey("enter")
         time.sleep(0.25)
         pyautogui.hotkey("enter")  # 确保发送
