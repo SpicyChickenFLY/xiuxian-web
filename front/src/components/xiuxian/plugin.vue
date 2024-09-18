@@ -1,24 +1,24 @@
 <template>
   <div>
-    <el-row>
-      <el-col :span="8">
-        <el-switch
-          v-model="isMgrRunning"
-          size="large"
-          inline-prompt
-          active-text="自动化管理运行中"
-          inactive-text="自动化管理停止"
-          @change="updateMgrInfo"
-        />
-      </el-col>
-      <el-col :span="16">
-        <el-input v-model="createPluginName" placeholder="新插件名称">
-          <template #append>
-            <el-button @click="createPlugin">创建新插件</el-button>
-          </template>
-        </el-input>
-      </el-col>
-    </el-row>
+    <!-- <el-row> -->
+    <!--   <el-col :span="8"> -->
+    <!--     <el-switch -->
+    <!--       v-model="isMgrRunning" -->
+    <!--       size="large" -->
+    <!--       inline-prompt -->
+    <!--       active-text="自动化管理运行中" -->
+    <!--       inactive-text="自动化管理停止" -->
+    <!--       @change="updateMgrInfo" -->
+    <!--     /> -->
+    <!--   </el-col> -->
+    <!--   <el-col :span="16"> -->
+    <!--     <el-input v-model="createPluginName" placeholder="新插件名称"> -->
+    <!--       <template #append> -->
+    <!--         <el-button @click="createPlugin">创建新插件</el-button> -->
+    <!--       </template> -->
+    <!--     </el-input> -->
+    <!--   </el-col> -->
+    <!-- </el-row> -->
     <el-tabs type="card">
       <el-tab-pane
         v-for="(pluginData, pluginCode) in pluginListData.value"
@@ -43,13 +43,13 @@
                 >
                   初始命令 - {{ pluginData.default_cmd }}
                 </el-tag>
-                <el-button
-                  size="small"
-                  plain
-                  type="danger"
-                  @click.stop.prevent=""
-                  >删除</el-button
-                >
+                <!-- <el-button -->
+                <!--   size="small" -->
+                <!--   plain -->
+                <!--   type="danger" -->
+                <!--   @click.stop.prevent="" -->
+                <!--   >删除</el-button -->
+                <!-- > -->
               </el-space>
             </template>
             <el-table :data="progress_profile.resp" size="small">
@@ -87,7 +87,7 @@
                 </template>
               </el-table-column>
             </el-table>
-            <el-button size="small" plain type="info">新增匹配项</el-button>
+            <!-- <el-button size="small" plain type="info">新增匹配项</el-button> -->
           </el-collapse-item>
         </el-collapse>
       </el-tab-pane>
@@ -98,49 +98,10 @@
       v-model="isRespDialogVisible"
       :title="`插件:${updatePlugin} 步骤:${updateProgress} 回复项: ${updateResp} 修改`"
     >
-      <el-form label-width="100px">
-        <el-form-item
-          v-for="col in colHeaders"
-          :key="col.name"
-          :label="col.label"
-        >
-          <div
-            v-if="col.name in updateResp.value"
-            style="width: 100%; display: flex"
-          >
-            <span style="flex: 1">
-              <el-input v-model="updateResp.value[col.name]" size="small" />
-            </span>
-            <el-button size="small">不设置值</el-button>
-            <el-button size="small">调用方法</el-button>
-          </div>
-          <div
-            v-else-if="
-              'pre' in updateResp.value && col.name in updateResp.value['pre']
-            "
-            style="width: 100%; display: flex"
-          >
-            <span style="flex: 1">
-              <el-select v-model="updateResp.value.pre[col.name].func_name">
-                <el-option />
-              </el-select>
-              <JsonEditorVue
-                v-model="updateResp.value.pre[col.name].args"
-                class="json"
-              />
-            </span>
-            <el-button size="small">不设置值</el-button>
-            <el-button size="small">直接设置</el-button>
-          </div>
-          <div v-else style="width: 100%; display: flex">
-            <span style="flex: 1; text-align: left">
-              未设置
-            </span>
-            <el-button size="small">直接设置</el-button>
-            <el-button size="small">调用方法</el-button>
-          </div>
-        </el-form-item>
-      </el-form>
+      <JsonEditorVue
+        v-model="updateResp.value"
+        class="json"
+      />
     </el-dialog>
   </div>
 </template>
@@ -236,14 +197,30 @@ const createPlugin = async () => {
 };
 
 function showRespDialog(pluginName, progressName, respData) {
-  isRespDialogVisible.value = true;
-  updatePlugin.value = pluginName;
-  updateProgress.value = progressName;
-  updateResp.value = respData;
+  // isRespDialogVisible.value = true;
+  // updatePlugin.value = pluginName;
+  // updateProgress.value = progressName;
+  // updateResp.value = respData;
 }
 </script>
 
 <style scoped>
+.json {
+  text-align: left;
+}
+
+.row {
+  width: 100%;
+  display: flex;
+  align-items: baseline;
+}
+
+:deep(.el-dialog){
+  --el-dialog-margin-top: 5vh;
+  height: 90vh;
+  overflow: scroll;
+}
+
 :deep(.el-switch){
   --el-switch-on-color: #95d475;
   --el-switch-off-color: #f89898;

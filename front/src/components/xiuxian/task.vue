@@ -290,9 +290,9 @@ function showNextDialog (taskName, moduleName) {
 }
 
 function showProgressDialog (taskName, moduleName) {
-  isProgressDialogVisible.value = true;
-  updateTaskName.value = taskName;
-  updateModuleName.value = moduleName;
+  // isProgressDialogVisible.value = true;
+  // updateTaskName.value = taskName;
+  // updateModuleName.value = moduleName;
 }
 
 function calcDayTime(tsStr, missStr) {

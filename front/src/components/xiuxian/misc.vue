@@ -35,7 +35,7 @@ const loadingData = {
 };
 
 onMounted(async () => {
-  refreshConfig();
+  refreshMisc();
 });
 
 const onError = async (msg, error) => {
@@ -46,11 +46,11 @@ const onError = async (msg, error) => {
   });
 };
 
-const refreshConfig = async () => {
-  getConfigs();
+const refreshMisc = async () => {
+  getMiscList();
 };
 
-const getConfigs = async () => {
+const getMiscList = async () => {
   const loading = ElLoading.service(loadingData);
   axios
     .get(`/api/mgr/misc`)
