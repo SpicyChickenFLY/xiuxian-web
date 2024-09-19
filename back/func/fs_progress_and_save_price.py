@@ -11,24 +11,24 @@ def fs_progress_and_save_price(args) -> str:
 
     fs_type_list = []
     try:
-        with open("data/misc/fs_type_list.json", "r", encoding="utf-8") as rf:
+        with open("misc/fs_type_list.json", "r", encoding="utf-8") as rf:
             fs_type_list = json.load(rf)
     except json.JSONDecodeError as e:
-        print(f"解析坊市类别页数配置文件(data/fs_type_page_map.json)失败 {e}")
+        print(f"解析坊市类别页数配置文件(misc/fs_type_page_map.json)失败 {e}")
     except Exception as e:
         print(
-            f"加载坊市类别页数配置文件(data/fs_type_page_map.json)失败 {type(e)} {e}"
+            f"加载坊市类别页数配置文件(misc/fs_type_page_map.json)失败 {type(e)} {e}"
         )
 
     fs_page_map = {}
     try:
-        with open("data/misc/fs_page_map.json", "r", encoding="utf-8") as rf:
+        with open("misc/fs_page_map.json", "r", encoding="utf-8") as rf:
             fs_page_map = json.load(rf)
     except json.JSONDecodeError as e:
-        print(f"解析坊市类别页数配置文件(data/fs_type_page_map.json)失败 {e}")
+        print(f"解析坊市类别页数配置文件(misc/fs_type_page_map.json)失败 {e}")
     except Exception as e:
         print(
-            f"加载坊市类别页数配置文件(data/fs_type_page_map.json)失败 {type(e)} {e}"
+            f"加载坊市类别页数配置文件(misc/fs_type_page_map.json)失败 {type(e)} {e}"
         )
 
     fs_type_name, fs_page_str = re.findall(r"坊市查看([^\d]+)(\d+)", progress)[0]

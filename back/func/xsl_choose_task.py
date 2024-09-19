@@ -10,13 +10,13 @@ def xsl_choose_task(args) -> str:
     # 加载奖励价值表
     reward_map = {}
     try:
-        with open("data/misc/reward_value_map.json", "r", encoding="utf-8") as rf:
+        with open("misc/reward_value_map.json", "r", encoding="utf-8") as rf:
             reward_map = json.load(rf)
     except json.JSONDecodeError as e:
-        print(f"解析奖励价值配置文件(data/misc/reward_value_map.json)失败 {e}")
+        print(f"解析奖励价值配置文件(misc/reward_value_map.json)失败 {e}")
     except Exception as e:
         print(
-            f"加载奖励价值配置文件(data/misc/reward_value_map.json)失败 {type(e)} {e}"
+            f"加载奖励价值配置文件(misc/reward_value_map.json)失败 {type(e)} {e}"
         )
         raise e
 
