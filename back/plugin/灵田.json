@@ -8,7 +8,7 @@
                     "resp": "道友成功收取药材",
                     "result": "成功,跳过阶段",
                     "next_type": "delay",
-                    "next_duration": 48,
+                    "next_duration": 24,
                     "next_unit": "h"
                 },
                 {
@@ -24,6 +24,13 @@
                     },
                     "next_type": "delay",
                     "next_unit": "h"
+                },
+                {
+                    "resp": "道友还没有洞天福地",
+                    "result": "失败,延迟收取",
+                    "next_type": "delay",
+                    "next_duration": 5,
+                    "next_unit": "min"
                 }
             ]
         }
