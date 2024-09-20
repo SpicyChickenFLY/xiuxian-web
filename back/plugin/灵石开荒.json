@@ -1,0 +1,75 @@
+{
+    "default_cmd": "灵庄升级会员",
+    "progress_profile": {
+        "灵庄升级会员": {
+            "type": "recv",
+            "resp": [
+                {
+                    "resp": "成功升级灵庄会员",
+                    "result": "成功,跳过阶段",
+                    "next_type": "delay",
+                    "next_duration": 5,
+                    "next_unit": "min"
+                },
+                {
+                    "resp": "本灵庄最大的会员",
+                    "result": "最大,跳过阶段",
+                    "progress": "洞天福地购买"
+                },
+                {
+                    "resp": "灵石数不足",
+                    "result": "没钱,延迟购买",
+                    "next_type": "delay",
+                    "next_duration": 5,
+                    "next_unit": "min",
+                }
+            ]
+        },
+        "洞天福地购买": {
+            "type": "recv",
+            "resp": [
+                {
+                    "resp": "道友已经拥有洞天福地",
+                    "result": "已有,准备开垦",
+                    "progress": "灵田开垦"
+                },
+                {
+                    "resp": "道友的灵石不足",
+                    "result": "没钱,延迟购买",
+                    "next_type": "delay",
+                    "next_duration": 5,
+                    "next_unit": "min"
+                }
+            ]
+        },
+        "灵田开垦": {
+            "type": "recv",
+            "resp": [
+                {
+                    "resp": "成功消耗灵石",
+                    "result": "成功,继续开垦",
+                    "progress": "灵田开垦"
+                },
+                {
+                    "resp": "已全部开垦完毕",
+                    "result": "已开,跳过阶段",
+                    "next_type": "delay",
+                    "next_duration": 24,
+                    "next_unit": "h"
+                },
+                {
+                    "resp": "道友的灵石不足",
+                    "result": "没钱,延迟购买",
+                    "next_type": "delay",
+                    "next_duration": 5,
+                    "next_unit": "min"
+                },
+                {
+                    "resp": "道友还没有洞天福地",
+                    "result": "失败,退回购买",
+                    "progress": "洞天福地购买"
+                }
+            ]
+        }
+    }
+}
