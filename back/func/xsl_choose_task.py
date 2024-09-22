@@ -24,6 +24,7 @@ def xsl_choose_task(args) -> str:
     probailities = re.findall(r"完成几率(\d+)", resp)
     rewards = re.findall(r"可能额外获得：(.*):", resp)
     if len(probailities) == 0:
+        print("解析悬赏令异常!")
         return "悬赏令接取1"
     rewards_values = [
         reward_map[level] if level in reward_map else level for level in rewards
@@ -33,6 +34,8 @@ def xsl_choose_task(args) -> str:
         key=lambda x: x[1],
         reverse=True,
     )
+    print("解析悬赏令结果: ")
+    print(tasks)
 
     # 根据算法选择任务
     choice = 1
