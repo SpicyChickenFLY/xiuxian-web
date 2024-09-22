@@ -40,6 +40,7 @@ def xsl_choose_task(args) -> str:
     # 根据算法选择任务
     choice = 1
     while choice <= len(tasks) and int(tasks[choice - 1][0]) < 70:
+        print(f"不做任务{choice}")
         choice += 1
     if choice > len(tasks):
         choice = 1
