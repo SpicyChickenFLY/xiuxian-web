@@ -6,8 +6,8 @@
           v-model="isMgrRunning"
           size="large"
           inline-prompt
-          active-text="自动化管理运行中"
-          inactive-text="自动化管理停止"
+          active-text="自动化管理"
+          inactive-text="自动化管理"
           @change="updateMgrInfo"
         />
       </el-col>
@@ -43,9 +43,7 @@
               消息框({{ task.bot.o_x }}, {{ task.bot.o_y }})
             </el-button>
             <span>
-              支持插件 {{ task.modules.length }}
-              /
-              已启用 {{ task.modules.filter((obj) => obj.enable).length }}
+              启用插件 {{ task.modules.filter((obj) => obj.enable).length }}
               /
               待触发 {{ task.modules.filter((obj) => obj.enable && obj.next < moment().unix()).length }}
             </span>
