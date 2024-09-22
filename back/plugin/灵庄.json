@@ -17,7 +17,7 @@
                 {
                     "resp": "当前灵石",
                     "pre": {
-                        "progress": [
+                        "progress": {
                             "func_name": "deposit_or_not",
                             "args": {
                                 "regex": "| (\\d+)"
@@ -42,7 +42,7 @@
                     "resp": "可以继续存",
                     "result": "失败,重新决定",
                     "pre": {
-                        "progress": [
+                        "progress": {
                             "func_name": "deposit_or_not",
                             "args": {
                                 "regex": "可以继续存(\\d+)枚灵石"

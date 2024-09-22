@@ -21,7 +21,7 @@
                     "result": "没钱,延迟购买",
                     "next_type": "delay",
                     "next_duration": 5,
-                    "next_unit": "min",
+                    "next_unit": "min"
                 }
             ]
         },
