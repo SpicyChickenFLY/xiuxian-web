@@ -3,7 +3,7 @@
 #import webbrowser
 import time
 import mimetypes
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_file
 from flask_cors import CORS
 from flask_restful import Api, Resource
 
@@ -25,6 +25,18 @@ def index():
     """打开前端页面"""
     return render_template("index.html")
 
+class ScreenSizeApi(Resource):
+    """屏幕尺寸API"""
+    def get(self):
+        """获取当前屏幕尺寸"""
+        pyautogui.size()
+
+class ScreenApi(Resource):
+    """屏幕API"""
+    def get(self):
+        """获取屏幕截图"""
+        pyautogui.screenshot().save("screen.png")
+        return send_file("screen.png")
 
 class CursorApi(Resource):
     """光标API"""
