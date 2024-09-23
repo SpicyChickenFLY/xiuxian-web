@@ -82,7 +82,7 @@ class Task():
             wait, log = module.run(resp, now)
             if wait != "":
                 if self.modules[wait].enable:
-                    module.set_next_timestamp(self.modules[wait].next - 5)
+                    module.set_next_timestamp(self.modules[wait].next + 300)
                 else:
                     module.set_delay('5', 'min')
             if log != "":
