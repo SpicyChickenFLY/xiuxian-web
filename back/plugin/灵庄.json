@@ -35,7 +35,7 @@
                     "resp": "道友存入灵石",
                     "result": "成功,跳过阶段",
                     "next_type": "delay",
-                    "next_duration": 5,
+                    "next_duration": 15,
                     "next_unit": "min",
                     "progress": "灵庄结算"
                 },
@@ -51,7 +51,7 @@
                         }
                     },
                     "next_type": "delay",
-                    "next_duration": 5,
+                    "next_duration": 15,
                     "next_unit": "min"
                 }
             ]
