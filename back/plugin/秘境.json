@@ -1,4 +1,5 @@
 {
+    "priority": 3,
     "default_cmd": "探索秘境",
     "progress_profile": {
         "探索秘境": {

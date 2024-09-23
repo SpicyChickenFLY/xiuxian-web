@@ -1,4 +1,5 @@
 {
+    "priority": 1,
     "default_cmd": "修炼",
     "progress_profile": {
         "修炼": {

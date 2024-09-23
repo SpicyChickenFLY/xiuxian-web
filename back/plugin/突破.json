@@ -1,4 +1,5 @@
 {
+    "priority": 2,
     "default_cmd": "我的修仙信息",
     "progress_profile": {
         "我的修仙信息": {

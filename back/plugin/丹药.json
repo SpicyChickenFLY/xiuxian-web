@@ -1,4 +1,5 @@
 {
+    "priority": 2,
     "default_cmd": "宗门丹药领取",
     "progress_profile": {
         "宗门丹药领取": {

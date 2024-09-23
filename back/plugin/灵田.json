@@ -1,4 +1,5 @@
 {
+    "priority": 2,
     "default_cmd": "灵田收取",
     "progress_profile": {
         "灵田收取": {

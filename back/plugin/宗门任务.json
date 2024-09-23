@@ -1,4 +1,5 @@
 {
+    "priority": 2,
     "default_cmd": "宗门任务接取",
     "progress_profile": {
         "宗门任务接取": {

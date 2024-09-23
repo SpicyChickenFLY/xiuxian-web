@@ -1,4 +1,5 @@
 {
+    "priority": 3,
     "default_cmd": "悬赏令刷新",
     "progress_profile": {
         "悬赏令刷新": {

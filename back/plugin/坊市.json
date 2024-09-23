@@ -1,4 +1,5 @@
 {
+    "priority": 0,
     "default_cmd": "坊市查看技能1",
     "progress_profile": {
         "坊市查看": {

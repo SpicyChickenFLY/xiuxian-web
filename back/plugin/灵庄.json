@@ -1,4 +1,5 @@
 {
+    "priority": 2,
     "default_cmd": "灵庄结算",
     "progress_profile": {
         "灵庄结算": {
