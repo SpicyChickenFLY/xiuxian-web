@@ -7,7 +7,8 @@ from typing import Dict
 from bot import Bot
 from module import Module
 
-class Task():
+
+class Task:
     """自动化任务"""
 
     def __init__(self, task_name, task_data, plugins, path) -> None:
@@ -15,7 +16,7 @@ class Task():
 
         self._path = path
         self.name = task_name
-        self.enable =  False
+        self.enable = False
         self.modules: Dict[str, Module] = {}
         modules = task_data["modules"] if "modules" in task_data else {}
         self._init_modules(plugins, modules)
@@ -28,13 +29,13 @@ class Task():
 
         # 根据任务配置填充模块数据
         for module_data in modules_data:
-            module_name = module_data['name']
+            module_name = module_data["name"]
             if module_name in self.modules:
                 self.modules[module_name].update_module(module_data)
 
     def save(self):
         """保存任务信息到本地"""
-        file_path = self._path['task']
+        file_path = self._path["task"]
         with open(f"{file_path}/{self.name}.json", "w", encoding="utf-8") as fw:
             fw.write(json.dumps(self.get_task_data(), ensure_ascii=False, indent=4))
 
@@ -55,7 +56,7 @@ class Task():
         if "enable" in task_data:
             self.enable = task_data["enable"]
         if "bot" in task_data:
-            self.bot.set_bot_data(task_data['bot'])
+            self.bot.set_bot_data(task_data["bot"])
 
         self.save()
 
@@ -72,7 +73,10 @@ class Task():
             return
 
         now = time.time()
-        for _, module in self.modules.items():
+        filtered_module = [
+            m for m in self.modules.values() if m.enable and m.next >= now
+        ] # 筛选启用且待触发的模块
+        for module in sorted(filtered_module, key=lambda m: -m.priority):
             if not module.enable or now <= module.next:
                 continue  # 不满足运行要求, 下一个
 
@@ -84,7 +88,7 @@ class Task():
                 if self.modules[wait].enable:
                     module.set_next_timestamp(self.modules[wait].next + 300)
                 else:
-                    module.set_delay('5', 'min')
+                    module.set_delay("5", "min")
             if log != "":
                 self.bot.log(self.name, log)
 

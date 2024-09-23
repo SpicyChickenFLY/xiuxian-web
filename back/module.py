@@ -6,20 +6,22 @@ import re
 import copy
 import importlib
 
+
 class Module:
     """自动化功能模块基类"""
 
     def __init__(self, module_name, plugin, module_data, path) -> None:
         self._progress_profiles = plugin["progress_profile"]
-
         self._path = path
+
+        self.priority = plugin["priority"]
         self.name = module_name
         self.enable = True
         self.prev = 0.0
         self.next = 0.0
         self.progress = ""
         self.log = ""
-        self.wait = "" # 等待状态每次都需要重置，避免死锁
+        self.wait = ""  # 等待状态每次都需要重置，避免死锁
         self.__dict__.update(module_data)
 
         # 给异常状态附上默认值
@@ -65,7 +67,9 @@ class Module:
     def set_next_timestamp(self, timestamp):
         """直接设置下次触发时间的时间戳"""
         self.next = timestamp
-        self.log += f" cd {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(timestamp))}"
+        self.log += (
+            f" cd {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(timestamp))}"
+        )
 
     def _get_progress_profile(self):
         progress_profile = None
@@ -98,8 +102,8 @@ class Module:
             func_info["args"]["resp"] = resp
             func_info["args"]["progress"] = self.progress
             module = importlib.import_module(f'func.{func_info["func_name"]}')
-            func = getattr(module, func_info['func_name'])
-            run_data[data_key] = func(func_info['args'])
+            func = getattr(module, func_info["func_name"])
+            run_data[data_key] = func(func_info["args"])
         return run_data
 
     def run(self, resp, trigger):
