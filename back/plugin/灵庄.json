@@ -42,7 +42,7 @@
                 },
                 {
                     "resp": "可以继续存",
-                    "result": "失败,重新决定",
+                    "result": "多了,重新决定",
                     "pre": {
                         "progress": {
                             "func_name": "deposit_or_not",
@@ -54,6 +54,11 @@
                     "next_type": "delay",
                     "next_duration": 15,
                     "next_unit": "min"
+                },
+                {
+                    "resp": "灵石数不足",
+                    "result": "不足,重新决定",
+                    "progress": "灵石"
                 }
             ]
         }
