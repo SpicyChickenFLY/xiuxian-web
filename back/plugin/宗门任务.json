@@ -78,9 +78,8 @@
                     "resp": "不扣你任务次数了",
                     "result": "无效,等待回血",
                     "next_type": "delay",
-                    "next_duration": 120,
-                    "next_unit": "s",
-                    "wait": "修炼"
+                    "next_duration": 10,
+                    "next_unit": "min"
                 },
                 {
                     "resp": "冷静一下",
