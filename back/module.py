@@ -14,9 +14,9 @@ class Module:
         self._progress_profiles = plugin["progress_profile"]
         self._path = path
 
-        self.priority = plugin["priority"]
         self.name = module_name
         self.enable = True
+        self.priority = plugin["priority"]
         self.prev = 0.0
         self.next = 0.0
         self.progress = ""
@@ -33,6 +33,7 @@ class Module:
         return {
             "name": self.name,
             "enable": self.enable,
+            "priority": self.priority,
             "prev": self.prev,
             "next": self.next,
             "progress": self.progress,

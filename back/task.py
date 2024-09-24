@@ -74,11 +74,9 @@ class Task:
 
         now = time.time()
         filtered_module = [
-            m for m in self.modules.values() if m.enable and m.next >= now
+            m for m in self.modules.values() if m.enable and m.next < now
         ] # 筛选启用且待触发的模块
         for module in sorted(filtered_module, key=lambda m: -m.priority):
-            if not module.enable or now <= module.next:
-                continue  # 不满足运行要求, 下一个
 
             next_cmd, cmd_type = module.get_next_cmd_and_cmd_type()
             resp = self.bot.execute(cmd_type, next_cmd)

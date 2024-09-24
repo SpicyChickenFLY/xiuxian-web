@@ -1,45 +1,34 @@
 <template>
   <div>
     <el-row>
-      <el-col :span="8">
-        <el-switch
-          v-model="isMgrRunning"
-          size="default"
-          inline-prompt
-          active-text="启动"
-          inactive-text="停止"
-          @change="updateMgrInfo"
-        />
-        <el-radio-group
-          v-model="moduleListMode"
-          size="small"
-          :fill="moduleListModeFillColorMap[moduleListMode]"
-        >
-          <el-radio-button label="全部" value="all" />
-          <el-radio-button label="已启用" value="enabled" />
-          <el-radio-button label="待触发" value="ready" />
-        </el-radio-group>
-        <el-switch
-          v-model="expandAllTask"
-          inline-prompt
-          active-text="全部展开"
-          inactive-text="风琴折叠"
-        />
-      </el-col>
-      <el-col :span="16">
-        <el-input
-          v-model="createTaskName"
-          size="small"
-          placeholder="新任务名称(建议道号区分)"
-        >
-          <template #append>
-            <el-button @click="createTask">创建自动化任务</el-button>
-          </template>
-        </el-input>
-      </el-col>
+      <el-switch
+        v-model="isMgrRunning"
+        size="default"
+        inline-prompt
+        active-text="启动"
+        inactive-text="停止"
+        @change="updateMgrInfo"
+      />
+      <el-radio-group
+        v-model="moduleListMode"
+        size="small"
+        :fill="moduleListModeFillColorMap[moduleListMode]"
+      >
+        <el-radio-button label="全部" value="all" />
+        <el-radio-button label="已启用" value="enabled" />
+        <el-radio-button label="待触发" value="ready" />
+      </el-radio-group>
+      <el-switch
+        v-model="isAllExpandOrAccordion"
+        inline-prompt
+        active-text="全部展开"
+        inactive-text="风琴折叠"
+        @change="changeExpand"
+      />
+      <el-button size="small" @click="createTask">创建自动化任务</el-button>
     </el-row>
-    <el-collapse v-model="activeTask" :accordion="expandAllTask">
-      <el-collapse-item v-for="task in taskListData" :key="task.name">
+    <el-collapse v-model="activeTask" :accordion="isAllExpandOrAccordion">
+      <el-collapse-item v-for="task in taskListData" :key="task.name" :name="task.name">
         <template #title>
           <el-space>
             <el-switch
@@ -58,7 +47,9 @@
               size="small"
               @click.stop.prevent="showLocationDialog(task.name, task.bot)"
             >
-              输入框({{ task.bot.i_x }}, {{ task.bot.i_y }}) 消息框({{
+              输入框({{ task.bot.i_x }}, {{ task.bot.i_y }})
+              <br />
+              消息框({{
                 task.bot.o_x
               }}, {{ task.bot.o_y }})
             </el-button>
@@ -66,58 +57,35 @@
               <el-tag
                 :type="task.modules.length > 0 ? 'primary' : 'info'"
                 size="small"
-                @click.stop.prevent="moduleListMode = 'all'"
               >
                 <a>插件数 {{ task.modules.length }}</a>
               </el-tag>
               <el-tag
                 :type="
-                  task.modules.filter((obj) => obj.enable).length > 0
+                  filterModules(task.modules, 'enable').length > 0
                     ? 'success'
                     : 'info'
                 "
                 size="small"
-                @click.stop.prevent="moduleListMode = 'enabled'"
               >
-                <a
-                  >已启用
-                  {{ task.modules.filter((obj) => obj.enable).length }}</a
-                >
+                <a>已启用 {{ filterModules(task.modules, "enable").length }}</a>
               </el-tag>
               <el-tag
                 :type="
-                  task.modules.filter(
-                    (obj) => obj.enable && obj.next < moment().unix(),
-                  ).length > 0
+                  filterModules(task.modules, 'ready').length > 0
                     ? 'warning'
                     : 'info'
                 "
                 size="small"
-                @click.stop.prevent="moduleListMode = 'ready'"
               >
-                <a
-                  >待触发
-                  {{
-                    task.modules.filter(
-                      (obj) => obj.enable && obj.next < moment().unix(),
-                    ).length
-                  }}</a
-                >
+                <a>待触发 {{ filterModules(task.modules, "ready").length }}</a>
               </el-tag>
             </span>
             <span> </span>
           </el-space>
         </template>
         <el-table
-          :data="
-            moduleListMode === 'all'
-              ? task.modules
-              : moduleListMode === 'enabled'
-                ? task.modules.filter((obj) => obj.enable)
-                : task.modules.filter(
-                    (obj) => obj.enable && obj.next < moment().unix(),
-                  )
-          "
+          :data="filterModules(task.modules, moduleListMode)"
           size="small"
           border
           :row-style="{ height: '20px' }"
@@ -214,7 +182,7 @@ import {
 } from "vue";
 import axios from "axios";
 import moment from "moment";
-import { ElNotification, ElLoading } from "element-plus";
+import { ElNotification, ElLoading, ElMessageBox } from "element-plus";
 
 import Location from "./location.vue";
 import ModuleNext from "./module_next.vue";
@@ -227,12 +195,11 @@ const moduleListModeFillColorMap = {
   ready: "#E6A23C",
 };
 const activeTask = ref("");
-const createTaskName = ref("");
 
 const timer = reactive(null);
 const taskListData = ref([]);
 const isMgrRunning = ref(false);
-const expandAllTask = ref(false);
+const isAllExpandOrAccordion = ref(false);
 
 const isLocationDialogVisible = ref(false);
 const isNextDialogVisible = ref(false);
@@ -286,20 +253,32 @@ const updateMgrInfo = async (val) => {
     .catch((error) => onError("更新管理器状态失败", error));
 };
 
-const createTask = async () => {
-  if (!createTaskName.value) {
-    onError("创建任务失败", "任务名不能为空");
-    return;
+const changeExpand = async (val) => {
+  if (!!val) {
+    activeTask.value = taskListData.value.map((task) => task.name);
+  } else {
+    activeTask.value = "";
+    if (taskListData.value.length > 0)
+      activeTask.value = taskListData.value[0].name
   }
-  const loading = ElLoading.service(loadingData);
-  axios
-    .post(`/api/mgr/task/${createTaskName.value}`, {})
-    .then((res) => {
-      createTaskName.value = "";
-      loading.close();
-      refresh();
-    })
-    .catch((error) => onError("创建任务失败", error));
+};
+
+const createTask = async () => {
+  ElMessageBox.prompt("新任务名称(建议道号区分)", "新建任务", {
+    confirmButtonText: "创建",
+    cancelButtonText: "取消",
+    inputPattern: /[\w]+/,
+    inputErrorMessage: "任务名不能为空",
+  }).then(({ value }) => {
+    const loading = ElLoading.service(loadingData);
+    axios
+      .post(`/api/mgr/task/${value}`, {})
+      .then((res) => {
+        loading.close();
+        refresh();
+      })
+      .catch((error) => onError("创建任务失败", error));
+  });
 };
 
 const setTaskEnable = async (taskName, enable) =>
@@ -377,31 +356,39 @@ function calcDayTime(tsStr, missStr) {
   }
   const ts = moment.unix(parseInt(tsStr));
   const today = moment().startOf("day");
-  let prefix = "";
   const time = ts.format("HH:mm:ss");
   const diff = Math.trunc(moment(ts.startOf("day").diff(today, "days")));
   if (diff > 0) {
-    prefix = diff + "天后 ";
+    return diff + "天后 ";
   }
   if (diff < 0) {
-    prefix = diff * -1 + "天前 ";
+    return diff * -1 + "天前 ";
   }
-  return prefix + time;
+  return time;
 }
 
-function filterModules(moduleList) {
+function filterModules(moduleList, mode) {
   const filteredModuleList = moduleList.filter((m) => {
-    if (moduleListMode === "enabled" && !m.enable) return false;
-    if (moduleListMode === "ready" && !m.enable) return false;
-    if (moduleListMode === "ready" && m.next >= moment().unix()) return false;
+    if (mode === "enabled" && !m.enable) return false;
+    if (mode === "ready" && !m.enable) return false;
+    if (mode === "ready" && m.next >= moment().unix()) return false;
+    return true;
   });
-  return filteredModuleList.sort((a, b) => { a.priority > b.priority });
+  return filteredModuleList.sort((a, b) => {
+    a.priority > b.priority;
+  });
 }
 
 function calcTimeOrder(tsStr) {}
 </script>
 
 <style scoped>
+:deep .el-table--small .el-table__cell {
+  padding: 0;
+}
+:deep .el-collapse-item__content {
+  padding-bottom: 5px;
+}
 :deep .el-collapse-item__header {
   height: 30px;
 }
