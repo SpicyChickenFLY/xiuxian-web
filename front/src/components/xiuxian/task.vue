@@ -4,28 +4,48 @@
       <el-col :span="8">
         <el-switch
           v-model="isMgrRunning"
-          size="large"
+          size="default"
           inline-prompt
-          active-text="自动化管理"
-          inactive-text="自动化管理"
+          active-text="启动"
+          inactive-text="停止"
           @change="updateMgrInfo"
+        />
+        <el-radio-group
+          v-model="moduleListMode"
+          size="small"
+          :fill="moduleListModeFillColorMap[moduleListMode]"
+        >
+          <el-radio-button label="全部" value="all" />
+          <el-radio-button label="已启用" value="enabled" />
+          <el-radio-button label="待触发" value="ready" />
+        </el-radio-group>
+        <el-switch
+          v-model="expandAllTask"
+          inline-prompt
+          active-text="全部展开"
+          inactive-text="风琴折叠"
         />
       </el-col>
       <el-col :span="16">
-        <el-input v-model="createTaskName" placeholder="新任务名称(建议道号区分)">
+        <el-input
+          v-model="createTaskName"
+          size="small"
+          placeholder="新任务名称(建议道号区分)"
+        >
           <template #append>
             <el-button @click="createTask">创建自动化任务</el-button>
           </template>
         </el-input>
       </el-col>
     </el-row>
-    <el-collapse v-model="activeTask" accordion>
-      <el-collapse-item v-for="task in mgrData" :key="task.name">
+    <el-collapse v-model="activeTask" :accordion="expandAllTask">
+      <el-collapse-item v-for="task in taskListData" :key="task.name">
         <template #title>
           <el-space>
             <el-switch
               v-model="task.enable"
-              size="large"
+              size="default"
+              width="80"
               inline-prompt
               :active-text="task.name"
               :inactive-text="task.name"
@@ -38,22 +58,68 @@
               size="small"
               @click.stop.prevent="showLocationDialog(task.name, task.bot)"
             >
-              输入框({{ task.bot.i_x }}, {{ task.bot.i_y }})
-              <br />
-              消息框({{ task.bot.o_x }}, {{ task.bot.o_y }})
+              输入框({{ task.bot.i_x }}, {{ task.bot.i_y }}) 消息框({{
+                task.bot.o_x
+              }}, {{ task.bot.o_y }})
             </el-button>
             <span>
-              启用插件 {{ task.modules.filter((obj) => obj.enable).length }}
-              /
-              待触发 {{ task.modules.filter((obj) => obj.enable && obj.next < moment().unix()).length }}
+              <el-tag
+                :type="task.modules.length > 0 ? 'primary' : 'info'"
+                size="small"
+                @click.stop.prevent="moduleListMode = 'all'"
+              >
+                <a>插件数 {{ task.modules.length }}</a>
+              </el-tag>
+              <el-tag
+                :type="
+                  task.modules.filter((obj) => obj.enable).length > 0
+                    ? 'success'
+                    : 'info'
+                "
+                size="small"
+                @click.stop.prevent="moduleListMode = 'enabled'"
+              >
+                <a
+                  >已启用
+                  {{ task.modules.filter((obj) => obj.enable).length }}</a
+                >
+              </el-tag>
+              <el-tag
+                :type="
+                  task.modules.filter(
+                    (obj) => obj.enable && obj.next < moment().unix(),
+                  ).length > 0
+                    ? 'warning'
+                    : 'info'
+                "
+                size="small"
+                @click.stop.prevent="moduleListMode = 'ready'"
+              >
+                <a
+                  >待触发
+                  {{
+                    task.modules.filter(
+                      (obj) => obj.enable && obj.next < moment().unix(),
+                    ).length
+                  }}</a
+                >
+              </el-tag>
             </span>
-            <span>
-            </span>
+            <span> </span>
           </el-space>
         </template>
         <el-table
-          :data="task.modules"
+          :data="
+            moduleListMode === 'all'
+              ? task.modules
+              : moduleListMode === 'enabled'
+                ? task.modules.filter((obj) => obj.enable)
+                : task.modules.filter(
+                    (obj) => obj.enable && obj.next < moment().unix(),
+                  )
+          "
           size="small"
+          border
           :row-style="{ height: '20px' }"
           :cell-style="{ padding: '0px' }"
           style="width: 100%"
@@ -77,7 +143,11 @@
           <el-table-column label="下次触发" width="100">
             <template #default="{ row }">
               <el-button
-                :type="!row.enable || !!row.next && row.next > moment().unix() ? 'info': 'warning'"
+                :type="
+                  !row.enable || (!!row.next && row.next > moment().unix())
+                    ? 'info'
+                    : 'warning'
+                "
                 size="small"
                 link
                 @click="showNextDialog(task.name, row.name)"
@@ -89,7 +159,7 @@
           <el-table-column label="当前状态" width="100" show-overflow-tooltip>
             <template #default="{ row }">
               <el-button
-                :type="row.enable ? 'primary': 'info'"
+                :type="row.enable ? 'primary' : 'info'"
                 size="small"
                 link
                 @click="showProgressDialog(task.name, row.name)"
@@ -140,6 +210,7 @@ import {
   onMounted,
   onBeforeMount,
   onBeforeUnmount,
+  computed,
 } from "vue";
 import axios from "axios";
 import moment from "moment";
@@ -148,12 +219,20 @@ import { ElNotification, ElLoading } from "element-plus";
 import Location from "./location.vue";
 import ModuleNext from "./module_next.vue";
 import ModuleProgress from "./module_progress.vue";
+
+const moduleListMode = ref("all"); // all, enabled, ready
+const moduleListModeFillColorMap = {
+  all: "#409EFF",
+  enabled: "#67C23A",
+  ready: "#E6A23C",
+};
 const activeTask = ref("");
 const createTaskName = ref("");
 
 const timer = reactive(null);
-const mgrData = ref([]);
+const taskListData = ref([]);
 const isMgrRunning = ref(false);
+const expandAllTask = ref(false);
 
 const isLocationDialogVisible = ref(false);
 const isNextDialogVisible = ref(false);
@@ -162,7 +241,6 @@ const isProgressDialogVisible = ref(false);
 const updateTaskName = ref("");
 const updateModuleName = ref("");
 const locationInfo = reactive({});
-
 
 const loadingData = {
   lock: true,
@@ -191,7 +269,7 @@ const getMgrInfo = async () => {
   axios
     .get("/api/mgr")
     .then((res) => {
-      mgrData.value = res.data.data.tasks;
+      taskListData.value = res.data.data.tasks;
       isMgrRunning.value = res.data.data.is_running;
     })
     .catch((error) => onError("获取管理器信息失败", error));
@@ -275,19 +353,19 @@ const updateModule = async (taskName, moduleName, moduleData) => {
     .catch((error) => onError("更新模块失败", error));
 };
 
-function showLocationDialog (taskName, location) {
+function showLocationDialog(taskName, location) {
   isLocationDialogVisible.value = true;
   updateTaskName.value = taskName;
   locationInfo.value = location;
 }
 
-function showNextDialog (taskName, moduleName) {
+function showNextDialog(taskName, moduleName) {
   isNextDialogVisible.value = true;
   updateTaskName.value = taskName;
   updateModuleName.value = moduleName;
 }
 
-function showProgressDialog (taskName, moduleName) {
+function showProgressDialog(taskName, moduleName) {
   // isProgressDialogVisible.value = true;
   // updateTaskName.value = taskName;
   // updateModuleName.value = moduleName;
@@ -311,11 +389,22 @@ function calcDayTime(tsStr, missStr) {
   return prefix + time;
 }
 
-function calcTimeOrder(tsStr) {
+function filterModules(moduleList) {
+  const filteredModuleList = moduleList.filter((m) => {
+    if (moduleListMode === "enabled" && !m.enable) return false;
+    if (moduleListMode === "ready" && !m.enable) return false;
+    if (moduleListMode === "ready" && m.next >= moment().unix()) return false;
+  });
+  return filteredModuleList.sort((a, b) => { a.priority > b.priority });
 }
+
+function calcTimeOrder(tsStr) {}
 </script>
 
 <style scoped>
+:deep .el-collapse-item__header {
+  height: 30px;
+}
 :deep .el-switch {
   --el-switch-on-color: #95d475;
   --el-switch-off-color: #f89898;
