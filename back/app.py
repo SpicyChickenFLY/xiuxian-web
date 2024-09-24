@@ -144,6 +144,8 @@ class MiscApi(Resource):
         return taskMgr.update_misc(misc_name, request.json)
 
 
+api.add_resource(ScreenSizeApi, "/api/screen/size")
+api.add_resource(ScreenApi, "/api/screen")
 api.add_resource(CursorApi, "/api/cursor")
 api.add_resource(MgrApi, "/api/mgr")
 api.add_resource(TaskApi, "/api/mgr/task/<task_name>")
