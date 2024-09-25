@@ -47,7 +47,7 @@ class Bot:
         time.sleep(0.25)
         pyperclip.copy("@小小")
         pyautogui.hotkey("ctrl", "v")
-        time.sleep(1.00)
+        time.sleep(1.50)
         pyautogui.hotkey("enter")
         pyperclip.copy(msg)
         pyautogui.hotkey("ctrl", "v")
