@@ -8,10 +8,7 @@
                 {
                     "resp": "成功",
                     "result": "成功,跳过阶段",
-                    "next_type": "set",
-                    "next_hour": 14,
-                    "next_minute": 0,
-                    "next_second": 0
+                    "progress": "丹药背包"
                 },
                 {
                     "resp": "贪心",
@@ -20,6 +17,36 @@
                     "next_hour": 14,
                     "next_minute": 0,
                     "next_second": 0
+                }
+            ]
+        },
+        "丹药背包": {
+            "type": "recv",
+            "resp": [
+                {
+                    "resp": "的丹药背包",
+                    "result": "成功,尝试炼金",
+                    "pre": {
+                        "progress": {
+                            "func_name": "sell_dy_or_not",
+                            "args": {}
+                        }
+                    }
+                }
+            ]
+        },
+        "炼金": {
+            "type": "recv",
+            "resp": [
+                {
+                    "resp": "炼金成功",
+                    "result": "成功,继续尝试",
+                    "progress": "丹药背包"
+                },
+                {
+                    "resp": "没有这个物品",
+                    "result": "失败,检查背包",
+                    "progress": "丹药背包"
                 }
             ]
         }
