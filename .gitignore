@@ -29,5 +29,5 @@ yarn-error.log*
 # python
 __pycache__
 
-start.sh
+start_*.sh
 build.sh
