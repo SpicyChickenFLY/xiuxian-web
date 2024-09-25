@@ -29,7 +29,9 @@ class ScreenSizeApi(Resource):
     """屏幕尺寸API"""
     def get(self):
         """获取当前屏幕尺寸"""
-        pyautogui.size()
+        width, height = pyautogui.size()
+        return { "width": width, "height": height }
+
 
 class ScreenApi(Resource):
     """屏幕API"""
