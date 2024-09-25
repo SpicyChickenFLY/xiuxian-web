@@ -1,12 +1,12 @@
 <template>
   <div>
-    <el-row>
+    <el-space>
       <el-switch
         v-model="isMgrRunning"
         size="default"
         inline-prompt
-        active-text="启动"
-        inactive-text="停止"
+        active-text="自动化"
+        inactive-text="自动化"
         @change="updateMgrInfo"
       />
       <el-radio-group
@@ -14,7 +14,7 @@
         size="small"
         :fill="moduleListModeFillColorMap[moduleListMode]"
       >
-        <el-radio-button label="全部" value="all" />
+        <el-radio-button label="全部组件" value="all" />
         <el-radio-button label="已启用" value="enabled" />
         <el-radio-button label="待触发" value="ready" />
       </el-radio-group>
@@ -25,8 +25,8 @@
         inactive-text="风琴折叠"
         @change="changeExpand"
       />
-      <el-button size="small" @click="createTask">创建自动化任务</el-button>
-    </el-row>
+      <el-button size="small" type="primary" @click="createTask">创建自动化任务</el-button>
+    </el-space>
     <el-collapse v-model="activeTask" :accordion="isAllExpandOrAccordion">
       <el-collapse-item v-for="task in taskListData" :key="task.name" :name="task.name">
         <template #title>
