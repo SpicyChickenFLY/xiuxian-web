@@ -383,16 +383,23 @@ function calcTimeOrder(tsStr) {}
 </script>
 
 <style scoped>
-:deep .el-table--small .el-table__cell {
+:deep(.el-table--small .el-table__cell) {
   padding: 0;
 }
-:deep .el-collapse-item__content {
+:deep(.el-collapse-item__content) {
   padding-bottom: 5px;
 }
-:deep .el-collapse-item__header {
+:deep(.el-collapse-item__header) {
   height: 30px;
 }
-:deep .el-switch {
+:deep(.el-table__empty-block) {
+  min-height: 30px;
+}
+:deep(.el-table__empty-text) {
+  line-height: 20px;
+  height: 20px;
+}
+:deep(.el-switch) {
   --el-switch-on-color: #95d475;
   --el-switch-off-color: #f89898;
 }
