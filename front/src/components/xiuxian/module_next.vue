@@ -120,6 +120,12 @@ const updateModule = async (taskName, moduleName, moduleData) => {
 </script>
 
 <style scoped>
+
+:deep(.el-dialog){
+  --el-dialog-margin-top: 5vh;
+  height: 90vh;
+  overflow: scroll;
+}
 :deep(.el-switch){
   --el-switch-on-color: #95d475;
   --el-switch-off-color: #f89898;
