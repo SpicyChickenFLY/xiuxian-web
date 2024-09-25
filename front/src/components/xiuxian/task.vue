@@ -103,7 +103,7 @@
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column label="上次触发" width="65">
+          <el-table-column label="上次触发" width="70">
             <template #default="{ row }">
               {{ calcDayTime(row.prev, "尚未触发") }}
             </template>
