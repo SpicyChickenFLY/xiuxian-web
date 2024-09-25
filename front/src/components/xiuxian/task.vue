@@ -26,6 +26,7 @@
         @change="changeExpand"
       />
       <el-button size="small" type="primary" @click="createTask">创建自动化任务</el-button>
+      <el-button size="small" type="primary" @click="screen">截图</el-button>
     </el-space>
     <el-collapse v-model="activeTask" :accordion="isAllExpandOrAccordion">
       <el-collapse-item v-for="task in taskListData" :key="task.name" :name="task.name">
@@ -331,6 +332,10 @@ const updateModule = async (taskName, moduleName, moduleData) => {
     })
     .catch((error) => onError("更新模块失败", error));
 };
+
+function screen() {
+  window.open("/api/screen");
+}
 
 function showLocationDialog(taskName, location) {
   isLocationDialogVisible.value = true;
