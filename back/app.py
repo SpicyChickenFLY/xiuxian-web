@@ -5,7 +5,7 @@ import time
 import mimetypes
 import logging
 from io import BytesIO
-from flask import Flask, render_template, request, send_file
+from flask import Flask, render_template, request, make_response
 from flask_cors import CORS
 from flask_restful import Api, Resource
 
@@ -46,7 +46,9 @@ class ScreenApi(Resource):
         """获取屏幕截图"""
         io = BytesIO()
         pyautogui.screenshot().save(io, "PNG")
-        return send_file(io, mimetype='image/png')
+        resp = make_response(io.getvalue())
+        resp.headers['Content-Type'] = 'image/png'
+        return resp
 
 class CursorApi(Resource):
     """光标API"""
