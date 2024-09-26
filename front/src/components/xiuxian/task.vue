@@ -19,16 +19,133 @@
         <el-radio-button label="待触发" value="ready" />
       </el-radio-group>
       <el-switch
-        v-model="isAllExpandOrAccordion"
+        v-model="isCollapseAccordion"
         inline-prompt
-        active-text="全部展开"
-        inactive-text="风琴折叠"
-        @change="changeExpand"
+        active-text="风琴折叠"
+        inactive-text="随意展开"
+        @change="changeCollapseAccordion"
       />
       <el-button size="small" type="primary" @click="createTask">创建自动化任务</el-button>
       <el-button size="small" type="primary" @click="screen">截图</el-button>
     </el-space>
-    <el-collapse v-model="activeTask" :accordion="isAllExpandOrAccordion">
+    <el-collapse v-if="isCollapseAccordion" v-model="activeTask" accordion>
+      <el-collapse-item v-for="task in taskListData" :key="task.name" :name="task.name">
+        <template #title>
+          <el-space>
+            <el-switch
+              v-model="task.enable"
+              size="default"
+              width="80"
+              inline-prompt
+              :active-text="task.name"
+              :inactive-text="task.name"
+              @change="(val) => setTaskEnable(task.name, val)"
+              @click.stop.prevent=""
+            />
+            <el-button
+              link
+              type="primary"
+              size="small"
+              @click.stop.prevent="showLocationDialog(task.name, task.bot)"
+            >
+              输入框({{ task.bot.i_x }}, {{ task.bot.i_y }})
+              <br />
+              消息框({{
+                task.bot.o_x
+              }}, {{ task.bot.o_y }})
+            </el-button>
+            <span>
+              <el-tag
+                :type="task.modules.length > 0 ? 'primary' : 'info'"
+                size="small"
+              >
+                <a>插件数 {{ task.modules.length }}</a>
+              </el-tag>
+              <el-tag
+                :type="
+                  filterModules(task.modules, 'enable').length > 0
+                    ? 'success'
+                    : 'info'
+                "
+                size="small"
+              >
+                <a>已启用 {{ filterModules(task.modules, "enable").length }}</a>
+              </el-tag>
+              <el-tag
+                :type="
+                  filterModules(task.modules, 'ready').length > 0
+                    ? 'warning'
+                    : 'info'
+                "
+                size="small"
+              >
+                <a>待触发 {{ filterModules(task.modules, "ready").length }}</a>
+              </el-tag>
+            </span>
+            <span> </span>
+          </el-space>
+        </template>
+        <el-table
+          :data="filterModules(task.modules, moduleListMode)"
+          size="small"
+          border
+          :row-style="{ height: '20px' }"
+          :cell-style="{ padding: '0px' }"
+          style="width: 100%"
+        >
+          <el-table-column label="模块" width="80">
+            <template #default="{ row }">
+              <el-tag
+                :type="row.enable ? 'success' : 'danger'"
+                size="small"
+                @click="setModuleEnable(task.name, row.name, !row.enable)"
+              >
+                <a>{{ row.name }}</a>
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column label="上次触发" width="70">
+            <template #default="{ row }">
+              {{ calcDayTime(row.prev, "尚未触发") }}
+            </template>
+          </el-table-column>
+          <el-table-column label="下次触发" width="70">
+            <template #default="{ row }">
+              <el-button
+                :type="
+                  !row.enable || (!!row.next && row.next > moment().unix())
+                    ? 'info'
+                    : 'warning'
+                "
+                size="small"
+                link
+                @click="showNextDialog(task.name, row.name)"
+              >
+                {{ calcDayTime(row.next, "随时可以") }}
+              </el-button>
+            </template>
+          </el-table-column>
+          <el-table-column label="当前状态" width="100" show-overflow-tooltip>
+            <template #default="{ row }">
+              <el-button
+                :type="row.enable ? 'primary' : 'info'"
+                size="small"
+                link
+                @click="showProgressDialog(task.name, row.name)"
+              >
+                {{ !!row.progress ? row.progress : "未开始" }}
+              </el-button>
+            </template>
+          </el-table-column>
+          <el-table-column label="执行结果" show-overflow-tooltip>
+            <template #default="{ row }">
+              {{ !!row.log ? row.log : "无" }}
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-collapse-item>
+    </el-collapse>
+    <el-collapse v-else v-model="activeTasks">
       <el-collapse-item v-for="task in taskListData" :key="task.name" :name="task.name">
         <template #title>
           <el-space>
@@ -195,12 +312,13 @@ const moduleListModeFillColorMap = {
   enabled: "#67C23A",
   ready: "#E6A23C",
 };
-const activeTask = ref("");
-
 const timer = reactive(null);
-const taskListData = ref([]);
 const isMgrRunning = ref(false);
-const isAllExpandOrAccordion = ref(false);
+
+const taskListData = ref([]);
+const isCollapseAccordion = ref(true);
+const activeTasks = ref([]);
+const activeTask = ref("");
 
 const isLocationDialogVisible = ref(false);
 const isNextDialogVisible = ref(false);
@@ -254,13 +372,13 @@ const updateMgrInfo = async (val) => {
     .catch((error) => onError("更新管理器状态失败", error));
 };
 
-const changeExpand = async (val) => {
-  if (!!val) {
-    activeTask.value = taskListData.value.map((task) => task.name);
-  } else {
-    activeTask.value = "";
+const changeCollapseAccordion = async (val) => {
+  if (val) {
+    activeTask.value = ""
     if (taskListData.value.length > 0)
       activeTask.value = taskListData.value[0].name
+  } else {
+    activeTasks.value = taskListData.value.map((task) => task.name);
   }
 };
 
