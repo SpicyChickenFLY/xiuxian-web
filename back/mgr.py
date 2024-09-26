@@ -52,7 +52,8 @@ class TaskMgr:
                 try:
                     task.run()
                 except Exception as e:
-                    print(f"任务{task.name}运行出错 {type(e)} {e}")
+                    print(f"任务{task.name}执行失败 {type(e)}")
+                    print(e)
             if not self.is_running:
                 return
 

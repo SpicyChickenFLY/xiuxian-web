@@ -73,24 +73,31 @@ class Task:
             return
 
         now = time.time()
+        # 筛选启用且待触发的模块
         filtered_module = [
             m for m in self.modules.values() if m.enable and m.next < now
-        ] # 筛选启用且待触发的模块
-        for module in sorted(filtered_module, key=lambda m: -m.priority):
+        ]
+        # 根据优先级排序，优先执行级别高的任务
+        sorted_module = sorted(filtered_module, key=lambda m: -m.priority)
 
-            next_cmd, cmd_type = module.get_next_cmd_and_cmd_type()
-            resp = self.bot.execute(cmd_type, next_cmd)
+        for module in sorted_module:
 
-            wait, log = module.run(resp, now)
-            if wait != "":
-                if self.modules[wait].enable:
-                    module.set_next_timestamp(self.modules[wait].next + 300)
-                else:
-                    module.set_delay("5", "min")
-            if log != "":
-                self.bot.log(self.name, log)
+            try:
+                next_cmd, cmd_type = module.get_next_cmd_and_cmd_type()
+                resp = self.bot.execute(cmd_type, next_cmd)
+                wait, log = module.run(resp, now)
+                if wait != "":
+                    if self.modules[wait].enable:
+                        module.set_next_timestamp(self.modules[wait].next + 300)
+                    else:
+                        module.set_delay("5", "min")
+                if log != "":
+                    self.bot.log(self.name, log)
+                self.save()
+            except Exception as e:
+                print(f"插件{module.name}运行出错 {type(e)}")
+                raise e
 
-            self.save()
             break  # 一次循环至多执行一个模块
         else:
             time.sleep(1)  # 没有可执行模块

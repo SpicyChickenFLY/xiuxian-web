@@ -104,7 +104,11 @@ class Module:
             func_info["args"]["progress"] = self.progress
             module = importlib.import_module(f'func.{func_info["func_name"]}')
             func = getattr(module, func_info["func_name"])
-            run_data[data_key] = func(func_info["args"])
+            try:
+                run_data[data_key] = func(func_info["args"])
+            except Exception as e:
+                print(f"调用方法{func_info["func_name"]}出错 {type(e)}")
+                raise e
         return run_data
 
     def run(self, resp, trigger):
