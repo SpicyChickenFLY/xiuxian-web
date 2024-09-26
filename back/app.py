@@ -3,6 +3,7 @@
 #import webbrowser
 import time
 import mimetypes
+import logging
 from flask import Flask, render_template, request, send_file
 from flask_cors import CORS
 from flask_restful import Api, Resource
@@ -11,6 +12,11 @@ import pyautogui
 from mgr import TaskMgr
 
 app = Flask(__name__, static_folder="./static/assets/", template_folder="./static/")
+
+app.logger.setLevel(logging.WARNING)
+log  = logging.getLogger('werkzeug')
+log.setLevel(logging.WARNING)
+
 CORS(app)
 api = Api(app)
 
