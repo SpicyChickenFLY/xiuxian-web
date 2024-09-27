@@ -90,12 +90,12 @@ class Task:
                     if self.modules[wait].enable:
                         module.set_next_timestamp(self.modules[wait].next + 300)
                     else:
-                        module.set_delay("5", "min")
+                        module.set_delay(5, "min")
                 if log != "":
                     self.bot.log(self.name, log)
                 self.save()
             except Exception as e:
-                print(f"插件{module.name}运行出错 {type(e)}")
+                print(f"插件[{module.name}]运行出错 {type(e)}")
                 raise e
 
             break  # 一次循环至多执行一个模块

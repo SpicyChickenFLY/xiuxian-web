@@ -134,7 +134,7 @@ class Module:
         self.log = f"{self.progress} {run_data['result']}"
         if "next_type" in run_data:
             if run_data["next_type"] == "delay":
-                self.set_delay(run_data["next_duration"], run_data["next_unit"])
+                self.set_delay(float(run_data["next_duration"]), run_data["next_unit"])
             else:
                 self.set_next_period(
                     run_data["next_hour"],
