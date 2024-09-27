@@ -16,6 +16,7 @@
       >
         <el-radio-button label="全部组件" value="all" />
         <el-radio-button label="已启用" value="enabled" />
+        <el-radio-button label="今日" value="today" />
         <el-radio-button label="待触发" value="ready" />
       </el-radio-group>
       <el-switch
@@ -25,11 +26,17 @@
         inactive-text="随意展开"
         @change="changeCollapseAccordion"
       />
-      <el-button size="small" type="primary" @click="createTask">创建自动化任务</el-button>
+      <el-button size="small" type="primary" @click="createTask"
+        >创建自动化任务</el-button
+      >
       <el-button size="small" type="primary" @click="screen">截图</el-button>
     </el-space>
     <el-collapse v-if="isCollapseAccordion" v-model="activeTask" accordion>
-      <el-collapse-item v-for="task in taskListData" :key="task.name" :name="task.name">
+      <el-collapse-item
+        v-for="task in taskListData"
+        :key="task.name"
+        :name="task.name"
+      >
         <template #title>
           <el-space>
             <el-switch
@@ -50,9 +57,7 @@
             >
               输入框({{ task.bot.i_x }}, {{ task.bot.i_y }})
               <br />
-              消息框({{
-                task.bot.o_x
-              }}, {{ task.bot.o_y }})
+              消息框({{ task.bot.o_x }}, {{ task.bot.o_y }})
             </el-button>
             <span>
               <el-tag
@@ -146,7 +151,11 @@
       </el-collapse-item>
     </el-collapse>
     <el-collapse v-else v-model="activeTasks">
-      <el-collapse-item v-for="task in taskListData" :key="task.name" :name="task.name">
+      <el-collapse-item
+        v-for="task in taskListData"
+        :key="task.name"
+        :name="task.name"
+      >
         <template #title>
           <el-space>
             <el-switch
@@ -167,9 +176,7 @@
             >
               输入框({{ task.bot.i_x }}, {{ task.bot.i_y }})
               <br />
-              消息框({{
-                task.bot.o_x
-              }}, {{ task.bot.o_y }})
+              消息框({{ task.bot.o_x }}, {{ task.bot.o_y }})
             </el-button>
             <span>
               <el-tag
@@ -306,10 +313,11 @@ import Location from "./location.vue";
 import ModuleNext from "./module_next.vue";
 import ModuleProgress from "./module_progress.vue";
 
-const moduleListMode = ref("all"); // all, enabled, ready
+const moduleListMode = ref("all"); // all, enabled, today, ready
 const moduleListModeFillColorMap = {
-  all: "#409EFF",
+  all: "#909399",
   enabled: "#67C23A",
+  today: "#409EFF",
   ready: "#E6A23C",
 };
 const timer = reactive(null);
@@ -370,16 +378,6 @@ const updateMgrInfo = async (val) => {
       refresh();
     })
     .catch((error) => onError("更新管理器状态失败", error));
-};
-
-const changeCollapseAccordion = async (val) => {
-  if (val) {
-    activeTask.value = ""
-    if (taskListData.value.length > 0)
-      activeTask.value = taskListData.value[0].name
-  } else {
-    activeTasks.value = taskListData.value.map((task) => task.name);
-  }
 };
 
 const createTask = async () => {
@@ -455,6 +453,16 @@ function screen() {
   window.open("/api/screen");
 }
 
+function changeCollapseAccordion(val) {
+  if (val) {
+    activeTask.value = "";
+    if (taskListData.value.length > 0)
+      activeTask.value = taskListData.value[0].name;
+  } else {
+    activeTasks.value = taskListData.value.map((task) => task.name);
+  }
+};
+
 function showLocationDialog(taskName, location) {
   isLocationDialogVisible.value = true;
   updateTaskName.value = taskName;
@@ -481,28 +489,27 @@ function calcDayTime(tsStr, missStr) {
   const today = moment().startOf("day");
   const time = ts.format("HH:mm:ss");
   const diff = Math.trunc(moment(ts.startOf("day").diff(today, "days")));
-  if (diff > 0) {
-    return diff + "天后 ";
-  }
-  if (diff < 0) {
-    return diff * -1 + "天前 ";
-  }
+  if (diff > 0) return diff + "天后 ";
+  if (diff < 0) return diff * -1 + "天前 ";
   return time;
 }
 
 function filterModules(moduleList, mode) {
   const filteredModuleList = moduleList.filter((m) => {
-    if (mode === "enabled" && !m.enable) return false;
-    if (mode === "ready" && !m.enable) return false;
-    if (mode === "ready" && m.next >= moment().unix()) return false;
+    const needEnableList = ["enabled", "today", "ready"];
+    const beforeToday = m.next > moment().endOf("day").unix();
+    const inFuture = m.next >= moment().unix();
+
+    if (needEnableList.includes(mode) && !m.enable) return false;
+    if (mode === "today" && beforeToday) return false;
+    if (mode === "ready" && inFuture) return false;
+
     return true;
   });
-  return filteredModuleList.sort((a, b) => {
-    a.priority > b.priority;
-  });
+  const sortFn = (a, b) => a.priority > b.priority ;
+  return filteredModuleList.sort(sortFn);
 }
 
-function calcTimeOrder(tsStr) {}
 </script>
 
 <style scoped>
