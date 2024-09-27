@@ -8,8 +8,8 @@ def sell_dy_or_not(args) -> str:
     """正则匹配回复中的灵石数,并准备存放"""
 
     resp = args["resp"]
-    dy_names = re.findall("名字：(\\w+)", resp)
-    if len(dy_names) == 0:
+    dy_list = re.findall("名字：(\\w+)\n物品功效拥有数量:(\\d+)---", resp)
+    if len(dy_list) == 0:
         return "宗门丹药领取"
 
     dy_useless_list = []
@@ -25,8 +25,13 @@ def sell_dy_or_not(args) -> str:
         )
         raise e
 
-    for dy_name in dy_names:
+    for (dy_name, dy_num) in dy_list:
         if dy_name in dy_useless_list:
-            return f"炼金{dy_name} 1"
+            return f"炼金{dy_name} {dy_num}"
 
     return "宗门丹药领取"
+
+# args = {
+#         "resp": "名字：冰心丹\n物品功效拥有数量:3---炼金\n名字：培元丹\n物品功效拥有数量:3---炼金",
+#         }
+# print(sell_dy_or_not(args))
