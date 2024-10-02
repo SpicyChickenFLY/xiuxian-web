@@ -34,8 +34,7 @@ def xsl_choose_task(args) -> str:
         key=lambda x: x[1],
         reverse=True,
     )
-    print("解析悬赏令结果: ")
-    print(tasks)
+    print(f"解析悬赏令结果: {tasks}")
 
     # 根据算法选择任务
     choice = 0
