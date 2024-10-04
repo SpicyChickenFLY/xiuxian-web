@@ -53,9 +53,9 @@
                     "result": "未完,延迟结算",
                     "pre": {
                         "next_duration": {
-                            "func_name": "find_one_int",
+                            "func_name": "find_one_float",
                             "args": {
-                                "regex": "(\\d+)分钟"
+                                "regex": "(\\d+\\.?\\d*)分钟"
                             }
                         }
                     },
