@@ -34,14 +34,11 @@ def xsl_choose_task(args) -> str:
         key=lambda x: x[1],
         reverse=True,
     )
-    print(f"解析悬赏令结果: {tasks}")
 
     # 根据算法选择任务
     choice = 0
     while choice <= len(tasks) and int(tasks[choice][0]) < 70:
-        print(f"鉴于概率不做高价值任务{tasks[choice][2]}")
         choice += 1
     if choice > len(tasks):
-        print(f"鉴于概率都不高,还是做任务{tasks[choice][2]}")
         choice = 0
     return f"悬赏令接取{tasks[choice][2]}"
