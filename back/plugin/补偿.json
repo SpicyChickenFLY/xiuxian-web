@@ -5,9 +5,10 @@
         "补偿": {
             "type": "send",
             "result": "结束,跳过阶段",
-            "next_type": "delay",
-            "next_duration": 12,
-            "next_unit": "h"
+            "next_type": "set",
+            "next_hour": 12,
+            "next_minute": 0,
+            "next_second": 0
         }
     }
 }
