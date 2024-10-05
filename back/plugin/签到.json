@@ -7,17 +7,15 @@
             "resp": [
                 {
                     "resp": "签到成功",
-                    "result": "成功,跳过阶段",
-                    "next_type": "delay",
-                    "next_duration": 8,
-                    "next_unit": "h"
+                    "result": "成功,再次尝试"
                 },
                 {
                     "resp": "贪心",
                     "result": "失败,跳过阶段",
-                    "next_type": "delay",
-                    "next_duration": 8,
-                    "next_unit": "h"
+                    "next_type": "set",
+                    "next_hour": 6,
+                    "next_minute": 0,
+                    "next_second": 0
                 }
             ]
         }

@@ -7,10 +7,7 @@
             "resp": [
                 {
                     "resp": "道友成功收取药材",
-                    "result": "成功,跳过阶段",
-                    "next_type": "delay",
-                    "next_duration": 24,
-                    "next_unit": "h"
+                    "result": "成功,再次尝试"
                 },
                 {
                     "resp": "道友的灵田还不能收取",
@@ -30,7 +27,7 @@
                     "resp": "道友还没有洞天福地",
                     "result": "失败,延迟收取",
                     "next_type": "delay",
-                    "next_duration": 5,
+                    "next_duration": 30,
                     "next_unit": "min"
                 }
             ]
