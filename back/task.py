@@ -101,3 +101,14 @@ class Task:
             break  # 一次循环至多执行一个模块
         else:
             time.sleep(1)  # 没有可执行模块
+
+    def exec_cmd(self, cmd_data):
+        """单次命令执行请求"""
+        try:
+            cmd, cmd_type = cmd_data['cmd'], cmd_data['type']
+            resp = self.bot.execute(cmd_type, cmd)
+            return { "success": True, "data": resp }
+        except Exception as e:
+            err = f"命令运行出错 {type(e)}"
+            print(err)
+            return { "success": False, "msg": err }

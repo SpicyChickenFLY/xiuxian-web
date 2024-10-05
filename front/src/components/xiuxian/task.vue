@@ -9,16 +9,24 @@
         inactive-text="自动化"
         @change="updateMgrInfo"
       />
-      <el-radio-group
-        v-model="moduleListMode"
-        size="small"
-        :fill="moduleListModeFillColorMap[moduleListMode]"
-      >
-        <el-radio-button label="全部组件" value="all" />
-        <el-radio-button label="已启用" value="enabled" />
-        <el-radio-button label="今日" value="today" />
-        <el-radio-button label="待触发" value="ready" />
-      </el-radio-group>
+      <el-select v-model="moduleListMode" size="small" style="width: 80px">
+        <el-option
+          v-for="o in moduleListModeOpts"
+          :key="o.value"
+          :label="o.label"
+          :value="o.value"
+        />
+      </el-select>
+      <!-- <el-radio-group -->
+      <!--   v-model="moduleListMode" -->
+      <!--   size="small" -->
+      <!--   :fill="moduleListModeFillColorMap[moduleListMode]" -->
+      <!-- > -->
+      <!--   <el-radio-button label="全部组件" value="all" /> -->
+      <!--   <el-radio-button label="已启用" value="enabled" /> -->
+      <!--   <el-radio-button label="今日" value="today" /> -->
+      <!--   <el-radio-button label="待触发" value="ready" /> -->
+      <!-- </el-radio-group> -->
       <el-switch
         v-model="isCollapseAccordion"
         inline-prompt
@@ -87,7 +95,14 @@
                 <a>待触发 {{ filterModules(task.modules, "ready").length }}</a>
               </el-tag>
             </span>
-            <span> </span>
+            <el-button
+              plain
+              type="info"
+              size="small"
+              @click.stop.prevent="showCmdDialog(task.name)"
+            >
+              手动命令
+            </el-button>
           </el-space>
         </template>
         <el-table
@@ -206,7 +221,14 @@
                 <a>待触发 {{ filterModules(task.modules, "ready").length }}</a>
               </el-tag>
             </span>
-            <span> </span>
+            <el-button
+              plain
+              type="info"
+              size="small"
+              @click.stop.prevent="showCmdDialog(task.name)"
+            >
+              手动命令
+            </el-button>
           </el-space>
         </template>
         <el-table
@@ -277,6 +299,12 @@
       :info="locationInfo"
       @refresh="refresh"
     />
+    <cmd
+      v-if="isCmdDialogVisible"
+      v-model:visible="isCmdDialogVisible"
+      :taskName="updateTaskName"
+      @refresh="refresh"
+    />
 
     <module-progress
       v-if="isProgressDialogVisible"
@@ -309,11 +337,18 @@ import axios from "axios";
 import moment from "moment";
 import { ElNotification, ElLoading, ElMessageBox } from "element-plus";
 
+import Cmd from "./cmd.vue";
 import Location from "./location.vue";
 import ModuleNext from "./module_next.vue";
 import ModuleProgress from "./module_progress.vue";
 
 const moduleListMode = ref("all"); // all, enabled, today, ready
+const moduleListModeOpts = [
+  {value: 'all', label: '全部'},
+  {value: 'enabled', label: '已启用'},
+  {value: 'today', label: '今日'},
+  {value: 'ready', label: '待触发'},
+];
 const moduleListModeFillColorMap = {
   all: "#909399",
   enabled: "#67C23A",
@@ -328,6 +363,7 @@ const isCollapseAccordion = ref(true);
 const activeTasks = ref([]);
 const activeTask = ref("");
 
+const isCmdDialogVisible = ref(false);
 const isLocationDialogVisible = ref(false);
 const isNextDialogVisible = ref(false);
 const isProgressDialogVisible = ref(false);
@@ -467,6 +503,11 @@ function showLocationDialog(taskName, location) {
   isLocationDialogVisible.value = true;
   updateTaskName.value = taskName;
   locationInfo.value = location;
+}
+
+function showCmdDialog(taskName) {
+  isCmdDialogVisible.value = true;
+  updateTaskName.value = taskName;
 }
 
 function showNextDialog(taskName, moduleName) {

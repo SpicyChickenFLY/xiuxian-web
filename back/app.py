@@ -109,7 +109,7 @@ class PluginListApi(Resource):
 
     def get(self):
         """获取插件信息"""
-        return taskMgr.get_plugins()
+        return taskMgr.get_plugin_list()
 
 
 class PluginApi(Resource):
@@ -129,7 +129,7 @@ class FuncListApi(Resource):
 
     def get(self):
         """获取自定义方法信息"""
-        return taskMgr.get_funcs()
+        return taskMgr.get_func_list()
 
 
 class FuncApi(Resource):
@@ -145,7 +145,7 @@ class MiscListApi(Resource):
 
     def get(self):
         """获取自定义方法信息"""
-        return taskMgr.get_miscs()
+        return taskMgr.get_misc_list()
 
 
 class MiscApi(Resource):
@@ -154,6 +154,25 @@ class MiscApi(Resource):
     def put(self, misc_name):
         """更新自定义方法信息"""
         return taskMgr.update_misc(misc_name, request.json)
+
+
+class CmdListApi(Resource):
+    """数据列表API"""
+
+    def get(self):
+        """获取历史命令信息"""
+        return taskMgr.get_cmd_list()
+
+    def put(self):
+        """更新自定义方法信息"""
+        return taskMgr.exec_cmd(request.json)
+
+class CmdApi(Resource):
+    """数据API"""
+
+    def delete(self, cmd_name):
+        """更新自定义方法信息"""
+        return taskMgr.delete_cmd(cmd_name)
 
 
 api.add_resource(ScreenSizeApi, "/api/screen/size")
@@ -168,6 +187,8 @@ api.add_resource(FuncListApi, "/api/mgr/func")
 api.add_resource(FuncApi, "/api/mgr/func/<func_name>")
 api.add_resource(MiscListApi, "/api/mgr/misc")
 api.add_resource(MiscApi, "/api/mgr/misc/<misc_name>")
+api.add_resource(CmdListApi, "/api/mgr/cmd")
+api.add_resource(CmdApi, "/api/mgr/cmd/<cmd_name>")
 
 if __name__ == "__main__":
     # webbrowser.open("http://127.0.0.1:8010/")
