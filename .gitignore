@@ -5,7 +5,7 @@ back/build
 back/dist
 back/static
 back/task/*
-back/data/prices/*
+back/data/*
 app.spec
 
 # local env files
