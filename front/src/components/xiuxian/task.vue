@@ -72,7 +72,7 @@
                 :type="task.modules.length > 0 ? 'primary' : 'info'"
                 size="small"
               >
-                <a>插件数 {{ task.modules.length }}</a>
+                <a>插件 {{ task.modules.length }}</a>
               </el-tag>
               <el-tag
                 :type="
@@ -99,10 +99,9 @@
               plain
               type="info"
               size="small"
+              :icon="Promotion"
               @click.stop.prevent="showCmdDialog(task.name)"
-            >
-              手动命令
-            </el-button>
+            />
           </el-space>
         </template>
         <el-table
@@ -198,7 +197,7 @@
                 :type="task.modules.length > 0 ? 'primary' : 'info'"
                 size="small"
               >
-                <a>插件数 {{ task.modules.length }}</a>
+                <a>插件 {{ task.modules.length }}</a>
               </el-tag>
               <el-tag
                 :type="
@@ -225,10 +224,9 @@
               plain
               type="info"
               size="small"
+              :icon="Promotion"
               @click.stop.prevent="showCmdDialog(task.name)"
-            >
-              手动命令
-            </el-button>
+            />
           </el-space>
         </template>
         <el-table
@@ -336,6 +334,7 @@ import {
 import axios from "axios";
 import moment from "moment";
 import { ElNotification, ElLoading, ElMessageBox } from "element-plus";
+import { Promotion } from '@element-plus/icons-vue'
 
 import Cmd from "./cmd.vue";
 import Location from "./location.vue";
