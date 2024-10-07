@@ -2,7 +2,7 @@
   <el-dialog
     :model-value="props.visible"
     @update:modelValue="emit('update:visible', $event)"
-    width="600px"
+    width="400px"
     :title="`任务- ${props.taskName} 手动命令`"
   >
     <el-space>
