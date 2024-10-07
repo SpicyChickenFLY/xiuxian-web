@@ -34,10 +34,8 @@
         inactive-text="随意展开"
         @change="changeCollapseAccordion"
       />
-      <el-button size="small" type="primary" @click="createTask"
-        >创建自动化任务</el-button
-      >
-      <el-button size="small" type="primary" @click="screen">截图</el-button>
+      <el-button size="small" type="primary" :icon="Plus" @click="createTask" />
+      <el-button size="small" type="primary" :icon="Camera" @click="screen" />
     </el-space>
     <el-collapse v-if="isCollapseAccordion" v-model="activeTask" accordion>
       <el-collapse-item
@@ -334,7 +332,7 @@ import {
 import axios from "axios";
 import moment from "moment";
 import { ElNotification, ElLoading, ElMessageBox } from "element-plus";
-import { Promotion } from '@element-plus/icons-vue'
+import { Promotion, Camera, Plus } from "@element-plus/icons-vue";
 
 import Cmd from "./cmd.vue";
 import Location from "./location.vue";
@@ -343,10 +341,10 @@ import ModuleProgress from "./module_progress.vue";
 
 const moduleListMode = ref("all"); // all, enabled, today, ready
 const moduleListModeOpts = [
-  {value: 'all', label: '全部'},
-  {value: 'enabled', label: '已启用'},
-  {value: 'today', label: '今日'},
-  {value: 'ready', label: '待触发'},
+  { value: "all", label: "全部" },
+  { value: "enabled", label: "已启用" },
+  { value: "today", label: "今日" },
+  { value: "ready", label: "待触发" },
 ];
 const moduleListModeFillColorMap = {
   all: "#909399",
@@ -496,7 +494,7 @@ function changeCollapseAccordion(val) {
   } else {
     activeTasks.value = taskListData.value.map((task) => task.name);
   }
-};
+}
 
 function showLocationDialog(taskName, location) {
   isLocationDialogVisible.value = true;
@@ -546,10 +544,9 @@ function filterModules(moduleList, mode) {
 
     return true;
   });
-  const sortFn = (a, b) => a.priority > b.priority ;
+  const sortFn = (a, b) => a.priority > b.priority;
   return filteredModuleList.sort(sortFn);
 }
-
 </script>
 
 <style scoped>
