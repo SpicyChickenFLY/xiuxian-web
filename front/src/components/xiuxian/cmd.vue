@@ -15,7 +15,7 @@
     </el-space>
     <el-input
       v-model="cmdResult"
-      style="width: 80%; padding-top: 20px"
+      style="width: 100%; padding-top: 20px"
       :autosize="{ minRows: 2, maxRows: 4 }"
       type="textarea"
       readonly
