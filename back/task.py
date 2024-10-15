@@ -105,10 +105,15 @@ class Task:
     def exec_cmd(self, cmd_data):
         """单次命令执行请求"""
         try:
-            cmd, cmd_type = cmd_data['cmd'], cmd_data['type']
-            resp = self.bot.execute(cmd_type, cmd)
-            return { "success": True, "data": resp }
+            cmd, cmd_type = cmd_data["cmd"], cmd_data["type"]
+            resp = ""
+            if "times" in cmd_data:
+                for _ in range(int(cmd_data["times"])):
+                    resp += self.bot.execute(cmd_type, cmd) + "\n"
+            else:
+                resp = self.bot.execute(cmd_type, cmd)
+            return {"success": True, "data": resp}
         except Exception as e:
             err = f"命令运行出错 {type(e)}"
             print(err)
-            return { "success": False, "msg": err }
+            return {"success": False, "msg": err}
