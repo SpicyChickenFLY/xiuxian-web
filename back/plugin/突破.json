@@ -19,10 +19,8 @@
                 },
                 {
                     "resp": "境界: .*境圆满",
-                    "result": "圆满，跳过阶段",
-                    "next_type": "delay",
-                    "next_duration": 30,
-                    "next_unit": "min"
+                    "result": "圆满,准备突破",
+                    "progress": "突破"
                 }
             ]
         },
