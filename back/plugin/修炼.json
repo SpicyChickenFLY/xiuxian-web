@@ -3,40 +3,11 @@
     "default_cmd": "修炼",
     "progress_profile": {
         "修炼": {
-            "type": "recv",
-            "resp": [
-                {
-                    "resp": "开始",
-                    "result": "成功,跳过阶段",
-                    "next_type": "delay",
-                    "next_duration": 1,
-                    "next_unit": "min"
-                },
-                {
-                    "resp": "时间还没到",
-                    "result": "未完,延迟修炼",
-                    "pre": {
-                        "next_duration": {
-                            "func_name": "find_one_int",
-                            "args": {
-                                "regex": "(\\d+)秒"
-                            }
-                        }
-                    },
-                    "next_type": "delay",
-                    "next_unit": "s"
-                },
-                {
-                    "resp": "秘境",
-                    "result": "失败,等待秘境",
-                    "wait": "秘境"
-                },
-                {
-                    "resp": "悬赏令",
-                    "result": "失败,等待悬赏令",
-                    "wait": "悬赏令"
-                }
-            ]
+            "type": "send",
+            "result": "成功，跳过阶段",
+            "next_type": "delay",
+            "next_duration": 1,
+            "next_unit": "min"
         }
     }
 }
