@@ -71,7 +71,7 @@
                         "next_duration": {
                             "func_name": "find_one_float",
                             "args": {
-                                "regex": "(\\d+\\.?\\d*)分钟"
+                                "regex": "(\\d+\\.?\\d+)+\\(?[^()]*\\)?分钟"
                             }
                         }
                     },
