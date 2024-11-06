@@ -11,14 +11,14 @@
                     "progress": "突破"
                 },
                 {
-                    "resp": "境界: .*境[初|中]期[\\s\\S]*状态: 还需.*修为可突破",
+                    "resp": "境界: 状态: 还需.*修为可突破",
                     "result": "不足，延迟突破",
                     "next_type": "delay",
                     "next_duration": 15,
                     "next_unit": "min"
                 },
                 {
-                    "resp": "境界: .*境圆满",
+                    "resp": "境界: .*境圆满[\\s\\S]*状态: 可突破",
                     "result": "圆满,准备突破",
                     "progress": "突破"
                 }
