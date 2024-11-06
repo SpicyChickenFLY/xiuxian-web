@@ -11,7 +11,7 @@
                     "progress": "突破"
                 },
                 {
-                    "resp": "境界: 状态: 还需.*修为可突破",
+                    "resp": "状态: 还需.*修为可突破",
                     "result": "不足，延迟突破",
                     "next_type": "delay",
                     "next_duration": 15,
